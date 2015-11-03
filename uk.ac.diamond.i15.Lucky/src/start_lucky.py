@@ -7,11 +7,11 @@ Created on 3 Nov 2015
 import sys
 from PyQt4 import QtGui
 
-import Lucky.MainUI
+import Lucky.LuckyUIView
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    lucky = Lucky.MainUI.LuckyMainWindow()
+    lucky = Lucky.LuckyUIView.MainWindow()
     lucky.show()
     sys.exit(app.exec_())
 

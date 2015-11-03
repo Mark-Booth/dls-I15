@@ -6,10 +6,10 @@ Created on 3 Nov 2015
 
 #from PyQt4 import QtCore
 
-class ApplicationModel():#QtCore.QObject):
+class MainWindowModel():#QtCore.QObject):
     def __init__(self):
         pass
-        #super(ApplicationModel, self).__init__()
+        #super(MainWindowModel, self).__init__()
     
     def runBtnClicked(self):
         pass

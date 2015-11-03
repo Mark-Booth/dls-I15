@@ -5,12 +5,12 @@ Created on 3 Nov 2015
 '''
 
 from PyQt4 import QtCore, QtGui
-import UIApplicationModel
+from Lucky import LuckyUIModel
 
 class LuckyMainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(LuckyMainWindow, self).__init__()
-        luckyAppModel = UIApplicationModel.ApplicationModel()
+        luckyAppModel = LuckyUIModel.ApplicationModel()
         
         self.setWindowTitle('Lucky')
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))

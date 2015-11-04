@@ -7,7 +7,7 @@ Created on 3 Nov 2015
 from PyQt4 import QtCore, QtGui
 from Lucky import LuckyUIModel
 
-class MainWindow(QtGui.QWidget):    
+class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.luckyAppModel = LuckyUIModel.MainWindowModel()
@@ -15,6 +15,7 @@ class MainWindow(QtGui.QWidget):
         self.setWindowTitle('Lucky')
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
         
+        ####
         #Control buttons
         self.runBtn = QtGui.QPushButton('Run')
         self.runBtn.clicked.connect(self.runBtnPressed)
@@ -25,14 +26,21 @@ class MainWindow(QtGui.QWidget):
         quitBtn = QtGui.QPushButton('Quit')
         quitBtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         
-        #Layout
-        hBoxLayout = QtGui.QHBoxLayout()
-        hBoxLayout.addWidget(self.runBtn)
-        hBoxLayout.addWidget(self.stopBtn)
-        hBoxLayout.addWidget(quitBtn)
+        buttonLayout = QtGui.QHBoxLayout()
+        buttonLayout.addWidget(self.runBtn)
+        buttonLayout.addWidget(self.stopBtn)
+        buttonLayout.addWidget(quitBtn)
+        ####
         
+        ####
+        #Final layer on which everything sits
+        widgetSpace = QtGui.QWidget()
+        widgetSpace.setLayout(buttonLayout)
+        self.setCentralWidget(widgetSpace)
+        
+        #Set initial states of the widgets as defined by model
         self.updateWidgetStates()
-        self.setLayout(hBoxLayout)
+        
         
     def runBtnPressed(self):
     	self.luckyAppModel.runLuckyCalcs()

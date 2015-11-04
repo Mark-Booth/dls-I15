@@ -9,6 +9,7 @@ class MainWindowModel():
     def __init__(self):
     	self.runEnabled = True
         self.stopEnabled = False
+        self.isLive = True
     
     def runLuckyCalcs(self):
     	self.runEnabled = False

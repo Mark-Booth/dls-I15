@@ -16,6 +16,17 @@ class MainWindow(QtGui.QWidget):
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
         
         ####
+        #Mode controls
+        modeGrpBox = QtGui.QGroupBox("Mode:")
+        self.liveRadBtn = QtGui.QRadioButton("Live")
+        self.postRadBtn = QtGui.QRadioButton("Offline")
+        
+        modeLayout = QtGui.QHBoxLayout()
+        modeLayout.addWidget(self.liveRadBtn)
+        modeLayout.addWidget(self.postRadBtn)
+        modeGrpBox.setLayout(modeLayout)
+        
+        ####
         #Control buttons
         self.runBtn = QtGui.QPushButton('Run')
         self.runBtn.clicked.connect(self.runBtnPressed)
@@ -35,6 +46,7 @@ class MainWindow(QtGui.QWidget):
         ####
         #Final layout on which everything sits
         masterLayout = QtGui.QVBoxLayout()
+        masterLayout.addWidget(modeGrpBox)
         masterLayout.addLayout(buttonLayout)
         self.setLayout(masterLayout)
         
@@ -51,5 +63,12 @@ class MainWindow(QtGui.QWidget):
     	self.updateWidgetStates()
     
     def updateWidgetStates(self):
+    	#Set mode
+    	if self.luckyAppModel.isLive:
+    	    self.liveRadBtn.setChecked(True)
+    	else:
+    	    self.postRadBtn.setChecked(True)
+    	
+	#Set button state
     	self.runBtn.setEnabled(self.luckyAppModel.runEnabled)
     	self.stopBtn.setEnabled(self.luckyAppModel.stopEnabled)

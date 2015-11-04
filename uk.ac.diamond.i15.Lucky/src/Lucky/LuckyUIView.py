@@ -52,23 +52,22 @@ class MainWindow(QtGui.QWidget):
         
         #Set initial states of the widgets as defined by model
         self.updateWidgetStates()
-        
-        
+
     def runBtnPressed(self):
-    	self.luckyAppModel.runLuckyCalcs()
-    	self.updateWidgetStates()
+        self.luckyAppModel.runLuckyCalcs()
+        self.updateWidgetStates()
     
     def stopBtnPressed(self):
-    	self.luckyAppModel.stopLuckyCalcs()
-    	self.updateWidgetStates()
+        self.luckyAppModel.stopLuckyCalcs()
+        self.updateWidgetStates()
     
     def updateWidgetStates(self):
-    	#Set mode
-    	if self.luckyAppModel.isLive:
-    	    self.liveRadBtn.setChecked(True)
-    	else:
-    	    self.postRadBtn.setChecked(True)
-    	
-	#Set button state
-    	self.runBtn.setEnabled(self.luckyAppModel.runEnabled)
-    	self.stopBtn.setEnabled(self.luckyAppModel.stopEnabled)
+        #Set mode
+        if self.luckyAppModel.isLive:
+            self.liveRadBtn.setChecked(True)
+        else:
+            self.postRadBtn.setChecked(True)
+        
+        #Set button state
+        self.runBtn.setEnabled(self.luckyAppModel.runEnabled)
+        self.stopBtn.setEnabled(self.luckyAppModel.stopEnabled)

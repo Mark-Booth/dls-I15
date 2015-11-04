@@ -10,41 +10,38 @@ from Lucky import LuckyUIModel
 class MainWindow(QtGui.QWidget):    
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.initUI()
-        
-    def initUI(self):
-        luckyAppModel = LuckyUIModel.MainWindowModel()
+        self.luckyAppModel = LuckyUIModel.MainWindowModel()
         
         self.setWindowTitle('Lucky')
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
         
         #Control buttons
-        runBtn = QtGui.QPushButton('Run')
-        runBtn.clicked.connect(self.runBtnPressed)
+        self.runBtn = QtGui.QPushButton('Run')
+        self.runBtn.clicked.connect(self.runBtnPressed)
         
-        stopBtn = QtGui.QPushButton('Stop')
-        stopBtn.clicked.connect(self.stopBtnPressed)
+        self.stopBtn = QtGui.QPushButton('Stop')
+        self.stopBtn.clicked.connect(self.stopBtnPressed)
         
         quitBtn = QtGui.QPushButton('Quit')
         quitBtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         
         #Layout
         hBoxLayout = QtGui.QHBoxLayout()
-        hBoxLayout.addWidget(runBtn)
-        hBoxLayout.addWidget(stopBtn)
+        hBoxLayout.addWidget(self.runBtn)
+        hBoxLayout.addWidget(self.stopBtn)
         hBoxLayout.addWidget(quitBtn)
         
         self.updateWidgetStates()
         self.setLayout(hBoxLayout)
         
     def runBtnPressed(self):
-    	luckyAppModel.runLuckyCalcs()
+    	self.luckyAppModel.runLuckyCalcs()
     	self.updateWidgetStates()
     
     def stopBtnPressed(self):
-    	luckyAppModel.stopLuckyCalcs()
+    	self.luckyAppModel.stopLuckyCalcs()
     	self.updateWidgetStates()
     
     def updateWidgetStates(self):
-    	runBtn.setEnabled(luckyAppModel.runEnabled)
-    	stopBtn.setEnabled(luckyAppModel.stopEnabled)
+    	self.runBtn.setEnabled(self.luckyAppModel.runEnabled)
+    	self.stopBtn.setEnabled(self.luckyAppModel.stopEnabled)

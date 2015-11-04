@@ -7,7 +7,7 @@ Created on 3 Nov 2015
 from PyQt4 import QtCore, QtGui
 from Lucky import LuckyUIModel
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtGui.QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.luckyAppModel = LuckyUIModel.MainWindowModel()
@@ -33,10 +33,10 @@ class MainWindow(QtGui.QMainWindow):
         ####
         
         ####
-        #Final layer on which everything sits
-        widgetSpace = QtGui.QWidget()
-        widgetSpace.setLayout(buttonLayout)
-        self.setCentralWidget(widgetSpace)
+        #Final layout on which everything sits
+        masterLayout = QtGui.QVBoxLayout()
+        masterLayout.addLayout(buttonLayout)
+        self.setLayout(masterLayout)
         
         #Set initial states of the widgets as defined by model
         self.updateWidgetStates()

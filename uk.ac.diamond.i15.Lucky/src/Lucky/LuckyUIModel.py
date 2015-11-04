@@ -6,14 +6,22 @@ Created on 3 Nov 2015
 
 #from PyQt4 import QtCore
 
-class MainWindowModel():#QtCore.QObject):
+class MainWindowModel():
+    runEnabled = True
+    stopEnabled = False
+	
+	
     def __init__(self):
-        pass
-        #super(MainWindowModel, self).__init__()
+    	pass
+	#Do nothing
     
-    def runBtnClicked(self):
-        pass
+    def runLuckyCalcs(self):
+    	runEnabled = False
+    	stopEnabled = True
     
-    def stopBtnClicked(self):
-        pass
+    def stopLuckyCalcs(self):
+    	runEnabled = True
+    	stopEnabled = False
+    
+
     

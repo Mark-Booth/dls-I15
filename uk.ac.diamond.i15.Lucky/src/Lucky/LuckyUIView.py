@@ -17,21 +17,22 @@ class MainWindow(QtGui.QMainWindow):
         
         #Control buttons
         runBtn = QtGui.QPushButton('Run', self)
-        runBtn.clicked.connect(self.runBtnClicked())
+        runBtn.clicked.connect(self.runBtnPressed)
         
         stopBtn = QtGui.QPushButton('Stop', self)
-        stopBtn.clicked.connect(self.stopBtnClicked())
+        stopBtn.clicked.connect(self.stopBtnPressed)
         
         quitBtn = QtGui.QPushButton('Quit', self)
         quitBtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         
-        
-        
-        
-    def runBtnClicked(self):
-        sender = self.sender()
-        sender.text()
+    def runBtnPressed():
+    	luckyAppModel.runLuckyCalcs()
+    	self.updateWidgetStates()
     
-    def stopBtnClicked(self):
-        sender = self.sender()
-        sender.text()
+    def stopBtnPressed():
+    	luckyAppModel.stopLuckyCalcs()
+    	self.updateWidgetStates()
+    
+    def updateWidgetStates():
+    	runBtn.setEnabled(luckyAppModel.runEnabled)
+    	stopBtn.setEnabled(luckyAppModel.stopEnabled)

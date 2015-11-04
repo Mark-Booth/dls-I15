@@ -18,12 +18,13 @@ class MainWindow(QtGui.QWidget):
         ####
         #Mode controls
         modeGrpBox = QtGui.QGroupBox("Mode:")
-        self.liveRadBtn = QtGui.QRadioButton("Live")
-        self.postRadBtn = QtGui.QRadioButton("Offline")
+        self.modeRadBtns = []
+        self.modeRadBtns.append(QtGui.QRadioButton("Live"))
+        self.modeRadBtns.append(QtGui.QRadioButton("Offline"))
         
         modeLayout = QtGui.QHBoxLayout()
-        modeLayout.addWidget(self.liveRadBtn)
-        modeLayout.addWidget(self.postRadBtn)
+        modeLayout.addWidget(self.modeRadBtns[0])
+        modeLayout.addWidget(self.modeRadBtns[1])
         modeGrpBox.setLayout(modeLayout)
         
         ####
@@ -63,10 +64,13 @@ class MainWindow(QtGui.QWidget):
     
     def updateWidgetStates(self):
         #Set mode
-        if self.luckyAppModel.isLive:
-            self.liveRadBtn.setChecked(True)
-        else:
-            self.postRadBtn.setChecked(True)
+        try:
+            self.luckyAppModel.checkMode()
+            for nBtn in range(len(self.modeRadBtns)):
+                if (self.luckyAppModel.mode[nBtn] == 1):
+                    self.modeRadBtns[nBtn].setChecked(True)
+        except AttributeError as aE:
+            print aE
         
         #Set button state
         self.runBtn.setEnabled(self.luckyAppModel.runEnabled)

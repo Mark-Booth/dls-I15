@@ -9,7 +9,8 @@ class MainWindowModel():
     def __init__(self):
         self.runEnabled = True
         self.stopEnabled = False
-        self.isLive = True
+        self.mode = (1, 0) #Current mode
+        self._mode = self.mode #Old mode
     
     def runLuckyCalcs(self):
         self.runEnabled = False
@@ -18,3 +19,10 @@ class MainWindowModel():
     def stopLuckyCalcs(self):
         self.runEnabled = True
         self.stopEnabled = False
+    
+    def checkMode(self):
+        if (sum(self.mode) == 1):
+            self._mode = self.mode
+        else:
+            raise AttributeError("Invalid mode setting")
+        

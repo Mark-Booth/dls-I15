@@ -101,15 +101,17 @@ class MainUI(QtGui.QWidget):
         #Final magic to put this all together
         controlsLayout = QtGui.QGridLayout()
         controlsLayout.addWidget(modeGrpBox, 0, 0)
-        controlsLayout.addWidget(calibGrpBox, 0, 1)
-        controlsLayout.addWidget(fileGrpBox, 0, 2)
-        controlsLayout.addWidget(dataDirGrpBox, 1, 0)
+        controlsLayout.addWidget(calibGrpBox, 1, 0)
+        controlsLayout.addWidget(fileGrpBox, 2, 0)
+        controlsLayout.addWidget(dataDirGrpBox, 0, 1)
         controlsLayout.addWidget(calibConfigGrpBox, 1, 1)
-        controlsLayout.addLayout(resultsLayout, 1, 2)
+        controlsLayout.addLayout(resultsLayout, 2, 1)
         
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addLayout(controlsLayout)
-        mainLayout.addLayout(buttonLayout, alignment=QtCore.Qt.AlignCenter)
+        mainLayout.addLayout(buttonLayout)
+        
+        self.setLayout(mainLayout)
         
             
     def addWidgetListToLayout(self, widgetList, layout):

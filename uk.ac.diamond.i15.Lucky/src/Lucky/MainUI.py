@@ -3,10 +3,13 @@ Created on 4 Nov 2015
 
 @author: wnm24546
 '''
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtCore
+from PyQt4.QtGui import (QWidget, QGridLayout, QGroupBox, QHBoxLayout, 
+                         QLabel, QLineEdit, QPushButton, QRadioButton, 
+                         QVBoxLayout)
 
 
-class MainUI(QtGui.QWidget):
+class MainUI(QWidget):
     def __init__(self, parent=None):
         super(MainUI, self).__init__(parent)
         self.setWindowTitle("Lucky")
@@ -14,35 +17,35 @@ class MainUI(QtGui.QWidget):
         
         ####
         #Mode controls
-        modeGrpBox = QtGui.QGroupBox("Mode:")
+        modeGrpBox = QGroupBox("Mode:")
         self.modeRadBtns = []
-        self.modeRadBtns.append(QtGui.QRadioButton("Live"))
-        self.modeRadBtns.append(QtGui.QRadioButton("Offline"))
+        self.modeRadBtns.append(QRadioButton("Live"))
+        self.modeRadBtns.append(QRadioButton("Offline"))
         
-        modeLayout = QtGui.QHBoxLayout()
+        modeLayout = QHBoxLayout()
         self.addWidgetListToLayout(self.modeRadBtns, modeLayout)
         modeGrpBox.setLayout(modeLayout)
         
         ####
         #Calib controls
-        calibGrpBox = QtGui.QGroupBox("Calibration Type:")
+        calibGrpBox = QGroupBox("Calibration Type:")
         self.calibRadBtns = []
-        self.calibRadBtns.append(QtGui.QRadioButton("Calibration F1"))
-        self.calibRadBtns.append(QtGui.QRadioButton("Calibration F2"))
-        self.calibRadBtns.append(QtGui.QRadioButton("Calibration"))
+        self.calibRadBtns.append(QRadioButton("Calibration"))
+        self.calibRadBtns.append(QRadioButton("Calibration F1"))
+        self.calibRadBtns.append(QRadioButton("Calibration F2"))
         
-        calibLayout = QtGui.QVBoxLayout()
+        calibLayout = QVBoxLayout()
         self.addWidgetListToLayout(self.calibRadBtns, calibLayout)
         calibGrpBox.setLayout(calibLayout)
         
         ####
         #Filename selector
-        fileGrpBox = QtGui.QGroupBox("File:")
-        self.prevFileBtn = QtGui.QPushButton("<")
-        self.nextFileBtn = QtGui.QPushButton(">")
-        self.currFileTextBox = QtGui.QLineEdit()#Default needs to be set from the model!
+        fileGrpBox = QGroupBox("File:")
+        self.prevFileBtn = QPushButton("<")
+        self.nextFileBtn = QPushButton(">")
+        self.currFileTextBox = QLineEdit()#Default needs to be set from the model!
         
-        fileLayout = QtGui.QHBoxLayout()
+        fileLayout = QHBoxLayout()
         fileLayout.addWidget(self.prevFileBtn)
         fileLayout.addWidget(self.currFileTextBox)
         fileLayout.addWidget(self.nextFileBtn)
@@ -50,23 +53,23 @@ class MainUI(QtGui.QWidget):
         
         ####
         #Data location
-        dataDirGrpBox = QtGui.QGroupBox("Data directory:")
-        self.workDirTextBox = QtGui.QLineEdit()#Default needs to be set from the model!
-        self.browseDirBtn = QtGui.QPushButton("Browse...")
+        dataDirGrpBox = QGroupBox("Data directory:")
+        self.workDirTextBox = QLineEdit()#Default needs to be set from the model!
+        self.browseDirBtn = QPushButton("Browse...")
         
-        dataDirLayout = QtGui.QHBoxLayout()
+        dataDirLayout = QHBoxLayout()
         dataDirLayout.addWidget(self.workDirTextBox)
         dataDirLayout.addWidget(self.browseDirBtn)
         dataDirGrpBox.setLayout(dataDirLayout)
         
         ####
         #Not sure what this is, probably to do with calib config
-        calibConfigGrpBox = QtGui.QGroupBox("Calibration configuration:")
-        self.calibDirLabel = QtGui.QLabel("Calibration path:")
-        self.calibDirTextBox = QtGui.QLineEdit()#Default needs to be set from the model!
-        self.calibConfigBtn = QtGui.QPushButton("Configure...")
+        calibConfigGrpBox = QGroupBox("Calibration configuration:")
+        self.calibDirLabel = QLabel("Calibration path:")
+        self.calibDirTextBox = QLineEdit()#Default needs to be set from the model!
+        self.calibConfigBtn = QPushButton("Configure...")
         
-        calibConfigLayout = QtGui.QGridLayout()
+        calibConfigLayout = QGridLayout()
         calibConfigLayout.addWidget(self.calibDirLabel, 0, 0)
         calibConfigLayout.addWidget(self.calibDirTextBox, 1, 0)
         calibConfigLayout.addWidget(self.calibConfigBtn, 1, 1)
@@ -74,12 +77,12 @@ class MainUI(QtGui.QWidget):
         
         ###
         #Calculation results
-        self.tempLabel = QtGui.QLabel("Temperature:")
-        self.tempValLabel = QtGui.QLabel("- K")#Default needs to be set from the model!
-        self.dTempLabel = QtGui.QLabel(u"\u0394 T:")
-        self.dTempValLabel = QtGui.QLabel("- K")#Default needs to be set from the model!
+        self.tempLabel = QLabel("Temperature:")
+        self.tempValLabel = QLabel("- K")#Default needs to be set from the model!
+        self.dTempLabel = QLabel(u"\u0394 T:")
+        self.dTempValLabel = QLabel("- K")#Default needs to be set from the model!
         
-        resultsLayout = QtGui.QVBoxLayout()
+        resultsLayout = QVBoxLayout()
         resultsLayout.addWidget(self.tempLabel)
         resultsLayout.addWidget(self.tempValLabel, alignment=QtCore.Qt.AlignCenter)
         resultsLayout.addWidget(self.dTempLabel)
@@ -87,19 +90,19 @@ class MainUI(QtGui.QWidget):
         
         ####
         #Control buttons
-        self.runBtn = QtGui.QPushButton('Run')
-        self.stopBtn = QtGui.QPushButton('Stop')
-        quitBtn = QtGui.QPushButton('Quit')
+        self.runBtn = QPushButton('Run')
+        self.stopBtn = QPushButton('Stop')
+        quitBtn = QPushButton('Quit')
         quitBtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         
-        buttonLayout = QtGui.QHBoxLayout()
+        buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self.runBtn)
         buttonLayout.addWidget(self.stopBtn)
         buttonLayout.addWidget(quitBtn)
         
         ####
         #Final magic to put this all together
-        controlsLayout = QtGui.QGridLayout()
+        controlsLayout = QGridLayout()
         controlsLayout.addWidget(modeGrpBox, 0, 0)
         controlsLayout.addWidget(calibGrpBox, 1, 0)
         controlsLayout.addWidget(fileGrpBox, 2, 0)
@@ -107,9 +110,9 @@ class MainUI(QtGui.QWidget):
         controlsLayout.addWidget(calibConfigGrpBox, 1, 1)
         controlsLayout.addLayout(resultsLayout, 2, 1)
         
-        mainLayout = QtGui.QVBoxLayout()
+        mainLayout = QVBoxLayout()
         mainLayout.addLayout(controlsLayout)
-        mainLayout.addLayout(buttonLayout)
+        mainLayout.addLayout(buttonLayout)#, alignment=QtCore.Qt.AlignCenter)
         
         self.setLayout(mainLayout)
         

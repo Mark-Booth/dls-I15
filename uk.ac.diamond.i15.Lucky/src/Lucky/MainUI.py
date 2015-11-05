@@ -53,7 +53,7 @@ class MainUI(QWidget):
         calibConfBtn.clicked.connect(self.calibConfClick)
         calibLayout.addWidget(calibConfBtn)
         
-        controlsLayout.addLayout(calibLayout, 1, 0)
+        controlsLayout.addLayout(calibLayout, 1, 0, 3, 0)
         
         ####
         #Data location
@@ -83,8 +83,19 @@ class MainUI(QWidget):
         
         ###
         #Integration range
-        #TODO!
-#        controlsLayout.addWidget(fileGrpBox, 2, 1)
+        startLabel = QLabel("Beginning:")
+        startTextBox = QLineEdit()#Default needs to be set from the model!
+        stopLabel = QLabel("End:")
+        stopTextBox = QLineEdit()#Default needs to be set from the model!
+        
+        integRangeGrpBox = QGroupBox("Integration Range:")
+        integRangeLayout = QGridLayout()
+        integRangeLayout.addWidget(startLabel, 0, 0)
+        integRangeLayout.addWidget(startTextBox, 0, 1)
+        integRangeLayout.addWidget(stopLabel, 1, 0)
+        integRangeLayout.addWidget(stopTextBox, 1, 1)
+        integRangeGrpBox.setLayout(integRangeLayout)
+        controlsLayout.addWidget(integRangeGrpBox, 2, 1, 2, 1)
         
         ###
         #Calculation results
@@ -98,7 +109,7 @@ class MainUI(QWidget):
         resultsLayout.addWidget(self.tempValLabel, alignment=QtCore.Qt.AlignCenter)
         resultsLayout.addWidget(self.dTempLabel)
         resultsLayout.addWidget(self.dTempValLabel, alignment=QtCore.Qt.AlignCenter)
-        controlsLayout.addLayout(resultsLayout, 3, 1)
+        controlsLayout.addLayout(resultsLayout, 4, 1)
         
         ####
         #Control buttons

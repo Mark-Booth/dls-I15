@@ -19,3 +19,9 @@ class CalibrationConfigUI(QDialog):
         okCancelBtnBox.accepted.connect(self.okClick)
         okCancelBtnBox.rejected.connect(self.cancelClick)
         #layout.addWidget(okCancelBtnBox)
+    
+    def okClick(self):
+        pass
+    
+    def cancelClick(self):
+        pass

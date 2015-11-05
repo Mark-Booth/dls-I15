@@ -49,11 +49,11 @@ class MainUI(QWidget):
         calibGrpBox.setLayout(calibGrpLayout)
         calibLayout.addWidget(calibGrpBox)
         
-        calibConfBtn = QPushButton("Configure calibration...")
+        calibConfBtn = QPushButton("Configure Calibration...")
         calibConfBtn.clicked.connect(self.calibConfClick)
         calibLayout.addWidget(calibConfBtn)
         
-        controlsLayout.addLayout(calibLayout, 1, 0, 3, 0)
+        controlsLayout.addLayout(calibLayout, 1, 0, 3, 1)
         
         ####
         #Data location
@@ -65,11 +65,11 @@ class MainUI(QWidget):
         dataDirLayout.addWidget(self.workDirTextBox)
         dataDirLayout.addWidget(self.browseDirBtn)
         dataDirGrpBox.setLayout(dataDirLayout)
-        controlsLayout.addWidget(dataDirGrpBox, 0, 1)
+        controlsLayout.addWidget(dataDirGrpBox, 0, 1, 1, 2)
         
         ####
         #US/DS selector
-        fileGrpBox = QGroupBox("Measurement number (US/DS pair):")
+        fileGrpBox = QGroupBox("Measurement Number (US/DS pair):")
         self.prevFileBtn = QPushButton("<")
         self.nextFileBtn = QPushButton(">")
         self.currFileTextBox = QLineEdit()#Default needs to be set from the model!
@@ -79,7 +79,7 @@ class MainUI(QWidget):
         fileLayout.addWidget(self.currFileTextBox)
         fileLayout.addWidget(self.nextFileBtn)
         fileGrpBox.setLayout(fileLayout)
-        controlsLayout.addWidget(fileGrpBox, 1, 1)
+        controlsLayout.addWidget(fileGrpBox, 1, 1, 1, 2)
         
         ###
         #Integration range
@@ -95,7 +95,7 @@ class MainUI(QWidget):
         integRangeLayout.addWidget(stopLabel, 1, 0)
         integRangeLayout.addWidget(stopTextBox, 1, 1)
         integRangeGrpBox.setLayout(integRangeLayout)
-        controlsLayout.addWidget(integRangeGrpBox, 2, 1, 2, 1)
+        controlsLayout.addWidget(integRangeGrpBox, 2, 1, 2, 2)
         
         ###
         #Calculation results
@@ -109,7 +109,7 @@ class MainUI(QWidget):
         resultsLayout.addWidget(self.tempValLabel, alignment=QtCore.Qt.AlignCenter)
         resultsLayout.addWidget(self.dTempLabel)
         resultsLayout.addWidget(self.dTempValLabel, alignment=QtCore.Qt.AlignCenter)
-        controlsLayout.addLayout(resultsLayout, 4, 1)
+        controlsLayout.addLayout(resultsLayout, 4, 1, 1, 3)
         
         ####
         #Control buttons

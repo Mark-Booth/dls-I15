@@ -17,7 +17,6 @@ class MainUI(QWidget):
         
         self.setupUI()
         
-        
     def setupUI(self):
         ####
         #Creation of supporting layouts
@@ -38,30 +37,23 @@ class MainUI(QWidget):
         
         ####
         #Calib controls
+        calibLayout = QVBoxLayout()
         calibGrpBox = QGroupBox("Calibration Type:")
         self.calibRadBtns = []
         self.calibRadBtns.append(QRadioButton("Calibration"))
         self.calibRadBtns.append(QRadioButton("Calibration F1"))
         self.calibRadBtns.append(QRadioButton("Calibration F2"))
         
-        calibLayout = QVBoxLayout()
-        self.addWidgetListToLayout(self.calibRadBtns, calibLayout)
-        calibGrpBox.setLayout(calibLayout)
-        controlsLayout.addWidget(calibGrpBox, 1, 0)
+        calibGrpLayout = QVBoxLayout()
+        self.addWidgetListToLayout(self.calibRadBtns, calibGrpLayout)
+        calibGrpBox.setLayout(calibGrpLayout)
+        calibLayout.addWidget(calibGrpBox)
         
-        ####
-        #Filename selector
-        fileGrpBox = QGroupBox("File:")
-        self.prevFileBtn = QPushButton("<")
-        self.nextFileBtn = QPushButton(">")
-        self.currFileTextBox = QLineEdit()#Default needs to be set from the model!
+        calibConfBtn = QPushButton("Configure calibration...")
+        calibConfBtn.clicked.connect(self.calibConfClick)
+        calibLayout.addWidget(calibConfBtn)
         
-        fileLayout = QHBoxLayout()
-        fileLayout.addWidget(self.prevFileBtn)
-        fileLayout.addWidget(self.currFileTextBox)
-        fileLayout.addWidget(self.nextFileBtn)
-        fileGrpBox.setLayout(fileLayout)
-        controlsLayout.addWidget(fileGrpBox, 2, 0)
+        controlsLayout.addLayout(calibLayout, 1, 0)
         
         ####
         #Data location
@@ -76,18 +68,23 @@ class MainUI(QWidget):
         controlsLayout.addWidget(dataDirGrpBox, 0, 1)
         
         ####
-        #Not sure what this is, probably to do with calib config
-        calibConfigGrpBox = QGroupBox("Calibration configuration:")
-        self.calibDirLabel = QLabel("Calibration path:")
-        self.calibDirTextBox = QLineEdit()#Default needs to be set from the model!
-        self.calibConfigBtn = QPushButton("Configure...")
+        #US/DS selector
+        fileGrpBox = QGroupBox("Measurement number (US/DS pair):")
+        self.prevFileBtn = QPushButton("<")
+        self.nextFileBtn = QPushButton(">")
+        self.currFileTextBox = QLineEdit()#Default needs to be set from the model!
         
-        calibConfigLayout = QGridLayout()
-        calibConfigLayout.addWidget(self.calibDirLabel, 0, 0)
-        calibConfigLayout.addWidget(self.calibDirTextBox, 1, 0)
-        calibConfigLayout.addWidget(self.calibConfigBtn, 1, 1)
-        calibConfigGrpBox.setLayout(calibConfigLayout)
-        controlsLayout.addWidget(calibConfigGrpBox, 1, 1)
+        fileLayout = QHBoxLayout()
+        fileLayout.addWidget(self.prevFileBtn)
+        fileLayout.addWidget(self.currFileTextBox)
+        fileLayout.addWidget(self.nextFileBtn)
+        fileGrpBox.setLayout(fileLayout)
+        controlsLayout.addWidget(fileGrpBox, 1, 1)
+        
+        ###
+        #Integration range
+        #TODO!
+#        controlsLayout.addWidget(fileGrpBox, 2, 1)
         
         ###
         #Calculation results
@@ -101,7 +98,7 @@ class MainUI(QWidget):
         resultsLayout.addWidget(self.tempValLabel, alignment=QtCore.Qt.AlignCenter)
         resultsLayout.addWidget(self.dTempLabel)
         resultsLayout.addWidget(self.dTempValLabel, alignment=QtCore.Qt.AlignCenter)
-        controlsLayout.addLayout(resultsLayout, 2, 1)
+        controlsLayout.addLayout(resultsLayout, 3, 1)
         
         ####
         #Control buttons
@@ -126,3 +123,6 @@ class MainUI(QWidget):
     def addWidgetListToLayout(self, widgetList, layout):
         for i in range(len(widgetList)):
             layout.addWidget(widgetList[i])
+    
+    def calibConfClick(self):
+        pass

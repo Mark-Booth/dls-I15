@@ -15,6 +15,10 @@ class MainUI(QWidget):
         self.setWindowTitle("Lucky")
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
         
+        self.setupUI()
+        
+        
+    def setupUI(self):
         ####
         #Creation of supporting layouts
         baseLayout = QVBoxLayout()

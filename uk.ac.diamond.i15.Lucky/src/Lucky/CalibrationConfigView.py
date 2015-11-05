@@ -5,14 +5,14 @@ Created on 4 Nov 2015
 '''
 from PyQt4.QtGui import (QDialog, QDialogButtonBox)
 
-class CalibrationConfigUI(QDialog):
+class CalibrationConfigView(QDialog):
     def __init(self,parent=None):
-        super(CalibrationConfigUI, self).__init__(parent)
+        super(CalibrationConfigView, self).__init__(parent)
         self.setWindowTitle("Calibration Configuration")
         
         self.setupUI()
         
-        self.show()
+#        self.show()
     
     def setupUI(self):
         okCancelBtnBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)

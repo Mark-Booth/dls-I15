@@ -16,6 +16,11 @@ class MainUI(QWidget):
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
         
         ####
+        #Creation of supporting layouts
+        baseLayout = QVBoxLayout()
+        controlsLayout = QGridLayout() #This is everything except the buttons
+        
+        ####
         #Mode controls
         modeGrpBox = QGroupBox("Mode:")
         self.modeRadBtns = []
@@ -25,6 +30,7 @@ class MainUI(QWidget):
         modeLayout = QHBoxLayout()
         self.addWidgetListToLayout(self.modeRadBtns, modeLayout)
         modeGrpBox.setLayout(modeLayout)
+        controlsLayout.addWidget(modeGrpBox, 0, 0)
         
         ####
         #Calib controls
@@ -37,6 +43,7 @@ class MainUI(QWidget):
         calibLayout = QVBoxLayout()
         self.addWidgetListToLayout(self.calibRadBtns, calibLayout)
         calibGrpBox.setLayout(calibLayout)
+        controlsLayout.addWidget(calibGrpBox, 1, 0)
         
         ####
         #Filename selector
@@ -50,6 +57,7 @@ class MainUI(QWidget):
         fileLayout.addWidget(self.currFileTextBox)
         fileLayout.addWidget(self.nextFileBtn)
         fileGrpBox.setLayout(fileLayout)
+        controlsLayout.addWidget(fileGrpBox, 2, 0)
         
         ####
         #Data location
@@ -61,6 +69,7 @@ class MainUI(QWidget):
         dataDirLayout.addWidget(self.workDirTextBox)
         dataDirLayout.addWidget(self.browseDirBtn)
         dataDirGrpBox.setLayout(dataDirLayout)
+        controlsLayout.addWidget(dataDirGrpBox, 0, 1)
         
         ####
         #Not sure what this is, probably to do with calib config
@@ -74,6 +83,7 @@ class MainUI(QWidget):
         calibConfigLayout.addWidget(self.calibDirTextBox, 1, 0)
         calibConfigLayout.addWidget(self.calibConfigBtn, 1, 1)
         calibConfigGrpBox.setLayout(calibConfigLayout)
+        controlsLayout.addWidget(calibConfigGrpBox, 1, 1)
         
         ###
         #Calculation results
@@ -87,6 +97,7 @@ class MainUI(QWidget):
         resultsLayout.addWidget(self.tempValLabel, alignment=QtCore.Qt.AlignCenter)
         resultsLayout.addWidget(self.dTempLabel)
         resultsLayout.addWidget(self.dTempValLabel, alignment=QtCore.Qt.AlignCenter)
+        controlsLayout.addLayout(resultsLayout, 2, 1)
         
         ####
         #Control buttons
@@ -101,20 +112,11 @@ class MainUI(QWidget):
         buttonLayout.addWidget(quitBtn)
         
         ####
-        #Final magic to put this all together
-        controlsLayout = QGridLayout()
-        controlsLayout.addWidget(modeGrpBox, 0, 0)
-        controlsLayout.addWidget(calibGrpBox, 1, 0)
-        controlsLayout.addWidget(fileGrpBox, 2, 0)
-        controlsLayout.addWidget(dataDirGrpBox, 0, 1)
-        controlsLayout.addWidget(calibConfigGrpBox, 1, 1)
-        controlsLayout.addLayout(resultsLayout, 2, 1)
+        #Add the 1st tier layouts to the base layout
+        baseLayout.addLayout(controlsLayout)
+        baseLayout.addLayout(buttonLayout)
         
-        mainLayout = QVBoxLayout()
-        mainLayout.addLayout(controlsLayout)
-        mainLayout.addLayout(buttonLayout)#, alignment=QtCore.Qt.AlignCenter)
-        
-        self.setLayout(mainLayout)
+        self.setLayout(baseLayout)
         
             
     def addWidgetListToLayout(self, widgetList, layout):

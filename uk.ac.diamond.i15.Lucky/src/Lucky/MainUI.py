@@ -108,23 +108,16 @@ class MainUI(QWidget):
         dWienTempLabel = QLabel(u"\u0394 T(Wien):")
         self.dWienTempValLabel = QLabel("- K")#Default needs to be set from the model!
         
-        
         resultsLayout = QGridLayout()
         resultsLayout.addWidget(planckTempLabel, 0, 0)
         resultsLayout.addWidget(self.planckTempValLabel, 0, 1, alignment=QtCore.Qt.AlignRight)
         resultsLayout.addWidget(dPlancKTempLabel, 1, 0)
         resultsLayout.addWidget(self.dPlanckTempValLabel, 1, 1, alignment=QtCore.Qt.AlignRight)
-        resultsLayout.addWidget(wienTempLabel, 0, 2)
-        resultsLayout.addWidget(self.wienTempValLabel, 0, 3, alignment=QtCore.Qt.AlignRight)
-        resultsLayout.addWidget(dWienTempLabel, 1, 2)
-        resultsLayout.addWidget(self.dWienTempValLabel, 1, 3, alignment=QtCore.Qt.AlignRight)
-        
-        
-#         resultsLayout.addWidget(self.tempLabel)
-#         resultsLayout.addWidget(self.tempValLabel, alignment=QtCore.Qt.AlignCenter)
-#         resultsLayout.addWidget(self.dTempLabel)
-#         resultsLayout.addWidget(self.dTempValLabel, alignment=QtCore.Qt.AlignCenter)
-#         
+        resultsLayout.addWidget(QWidget(), 0, 2) #This is in effect a spacer
+        resultsLayout.addWidget(wienTempLabel, 0, 3)
+        resultsLayout.addWidget(self.wienTempValLabel, 0, 4, alignment=QtCore.Qt.AlignRight)
+        resultsLayout.addWidget(dWienTempLabel, 1, 3)
+        resultsLayout.addWidget(self.dWienTempValLabel, 1, 4, alignment=QtCore.Qt.AlignRight)
         controlsLayout.addLayout(resultsLayout, 4, 0, 1, 3)
         
         ####

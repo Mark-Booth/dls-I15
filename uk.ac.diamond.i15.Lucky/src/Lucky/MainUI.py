@@ -84,32 +84,48 @@ class MainUI(QWidget):
         ###
         #Integration range
         startLabel = QLabel("Beginning:")
-        startTextBox = QLineEdit()#Default needs to be set from the model!
+        self.startTextBox = QLineEdit()#Default needs to be set from the model!
         stopLabel = QLabel("End:")
-        stopTextBox = QLineEdit()#Default needs to be set from the model!
+        self.stopTextBox = QLineEdit()#Default needs to be set from the model!
         
         integRangeGrpBox = QGroupBox("Integration Range:")
         integRangeLayout = QGridLayout()
         integRangeLayout.addWidget(startLabel, 0, 0)
-        integRangeLayout.addWidget(startTextBox, 0, 1)
+        integRangeLayout.addWidget(self.startTextBox, 0, 1)
         integRangeLayout.addWidget(stopLabel, 1, 0)
-        integRangeLayout.addWidget(stopTextBox, 1, 1)
+        integRangeLayout.addWidget(self.stopTextBox, 1, 1)
         integRangeGrpBox.setLayout(integRangeLayout)
         controlsLayout.addWidget(integRangeGrpBox, 2, 1, 2, 2)
         
         ###
         #Calculation results
-        self.tempLabel = QLabel("Temperature:")
-        self.tempValLabel = QLabel("- K")#Default needs to be set from the model!
-        self.dTempLabel = QLabel(u"\u0394 T:")
-        self.dTempValLabel = QLabel("- K")#Default needs to be set from the model!
+        planckTempLabel = QLabel("Planck Temperature:")
+        self.planckTempValLabel = QLabel("- K")#Default needs to be set from the model!
+        dPlancKTempLabel = QLabel(u"\u0394 T(Planck):")
+        self.dPlanckTempValLabel = QLabel("- K")#Default needs to be set from the model!
+        wienTempLabel = QLabel("Wien Temperature:")
+        self.wienTempValLabel = QLabel("- K")#Default needs to be set from the model!
+        dWienTempLabel = QLabel(u"\u0394 T(Wien):")
+        self.dWienTempValLabel = QLabel("- K")#Default needs to be set from the model!
         
-        resultsLayout = QVBoxLayout()
-        resultsLayout.addWidget(self.tempLabel)
-        resultsLayout.addWidget(self.tempValLabel, alignment=QtCore.Qt.AlignCenter)
-        resultsLayout.addWidget(self.dTempLabel)
-        resultsLayout.addWidget(self.dTempValLabel, alignment=QtCore.Qt.AlignCenter)
-        controlsLayout.addLayout(resultsLayout, 4, 1, 1, 3)
+        
+        resultsLayout = QGridLayout()
+        resultsLayout.addWidget(planckTempLabel, 0, 0)
+        resultsLayout.addWidget(self.planckTempValLabel, 0, 1, alignment=QtCore.Qt.AlignRight)
+        resultsLayout.addWidget(dPlancKTempLabel, 1, 0)
+        resultsLayout.addWidget(self.dPlanckTempValLabel, 1, 1, alignment=QtCore.Qt.AlignRight)
+        resultsLayout.addWidget(wienTempLabel, 0, 2)
+        resultsLayout.addWidget(self.wienTempValLabel, 0, 3, alignment=QtCore.Qt.AlignRight)
+        resultsLayout.addWidget(dWienTempLabel, 1, 2)
+        resultsLayout.addWidget(self.dWienTempValLabel, 1, 3, alignment=QtCore.Qt.AlignRight)
+        
+        
+#         resultsLayout.addWidget(self.tempLabel)
+#         resultsLayout.addWidget(self.tempValLabel, alignment=QtCore.Qt.AlignCenter)
+#         resultsLayout.addWidget(self.dTempLabel)
+#         resultsLayout.addWidget(self.dTempValLabel, alignment=QtCore.Qt.AlignCenter)
+#         
+        controlsLayout.addLayout(resultsLayout, 4, 0, 1, 3)
         
         ####
         #Control buttons

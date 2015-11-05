@@ -83,17 +83,29 @@ class MainUI(QWidget):
         
         ###
         #Integration range
+        integrationTextInputWidth = 40
         startLabel = QLabel("Beginning:")
         self.startTextBox = QLineEdit()#Default needs to be set from the model!
+        self.startTextBox.setFixedWidth(integrationTextInputWidth)
         stopLabel = QLabel("End:")
         self.stopTextBox = QLineEdit()#Default needs to be set from the model!
+        self.stopTextBox.setFixedWidth(integrationTextInputWidth)
+        deltaLabel = QLabel("Window Size:")
+        self.deltaTextBox = QLineEdit()#Default needs to be set from the model!
+        self.deltaTextBox.setFixedWidth(integrationTextInputWidth)
+        nmLabel1, nmLabel2, nmLabel3 = QLabel("nm"), QLabel("nm"), QLabel("nm")
         
         integRangeGrpBox = QGroupBox("Integration Range:")
         integRangeLayout = QGridLayout()
         integRangeLayout.addWidget(startLabel, 0, 0)
         integRangeLayout.addWidget(self.startTextBox, 0, 1)
-        integRangeLayout.addWidget(stopLabel, 1, 0)
-        integRangeLayout.addWidget(self.stopTextBox, 1, 1)
+        integRangeLayout.addWidget(nmLabel1, 0, 2)
+        integRangeLayout.addWidget(stopLabel, 0, 3)
+        integRangeLayout.addWidget(self.stopTextBox, 0, 4)
+        integRangeLayout.addWidget(nmLabel2, 0, 5)
+        integRangeLayout.addWidget(deltaLabel, 1, 0)
+        integRangeLayout.addWidget(self.deltaTextBox, 1, 1)
+        integRangeLayout.addWidget(nmLabel3, 1, 2)
         integRangeGrpBox.setLayout(integRangeLayout)
         controlsLayout.addWidget(integRangeGrpBox, 2, 1, 2, 2)
         

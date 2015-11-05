@@ -11,6 +11,8 @@ class CalibrationConfigUI(QDialog):
         self.setWindowTitle("Calibration Configuration")
         
         self.setupUI()
+        
+        self.show()
     
     def setupUI(self):
         okCancelBtnBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)

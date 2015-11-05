@@ -8,7 +8,7 @@ import sys
 from PyQt4 import QtGui
 
 import Lucky.LuckyUIView
-import Lucky.CalibrationConfigUI
+import Lucky.CalibrationConfigView
 import Lucky.MainView
 
 def main():

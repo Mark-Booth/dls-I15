@@ -8,6 +8,8 @@ from PyQt4.QtGui import (QWidget, QGridLayout, QGroupBox, QHBoxLayout,
                          QLabel, QLineEdit, QPushButton, QRadioButton, 
                          QVBoxLayout)
 
+from Lucky import CalibrationConfigView
+
 
 class MainView(QWidget):
     def __init__(self, parent=None):
@@ -157,4 +159,5 @@ class MainView(QWidget):
             layout.addWidget(widgetList[i])
     
     def calibConfClick(self):
-        pass
+        calibConfInput = CalibrationConfigView(parent=self)
+        calibConfInput.exec_()

@@ -9,9 +9,9 @@ from PyQt4.QtGui import (QWidget, QGridLayout, QGroupBox, QHBoxLayout,
                          QVBoxLayout)
 
 
-class MainUI(QWidget):
+class MainView(QWidget):
     def __init__(self, parent=None):
-        super(MainUI, self).__init__(parent)
+        super(MainView, self).__init__(parent)
         self.setWindowTitle("Lucky")
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
         

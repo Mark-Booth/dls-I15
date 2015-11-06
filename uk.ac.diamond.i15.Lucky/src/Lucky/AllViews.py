@@ -60,11 +60,11 @@ class MainView(QWidget):
         #Data location
         dataDirGrpBox = QGroupBox("Data directory:")
         self.workDirTextBox = QLineEdit()#Default needs to be set from the model!
-        self.browseDirBtn = QPushButton("Browse...")
+        self.browseDataDirBtn = QPushButton("Browse...")
         
         dataDirLayout = QHBoxLayout()
         dataDirLayout.addWidget(self.workDirTextBox)
-        dataDirLayout.addWidget(self.browseDirBtn)
+        dataDirLayout.addWidget(self.browseDataDirBtn)
         dataDirGrpBox.setLayout(dataDirLayout)
         controlsLayout.addWidget(dataDirGrpBox, 0, 1, 1, 2)
         
@@ -146,10 +146,9 @@ class MainView(QWidget):
         buttonLayout.addWidget(quitBtn)
         
         ####
-        #Add the 1st tier layouts to the base layout
+        #Add the 1st tier layouts & set the base layout
         baseLayout.addLayout(controlsLayout)
         baseLayout.addLayout(buttonLayout)
-        
         self.setLayout(baseLayout)
 
         
@@ -175,15 +174,59 @@ class CalibrationConfigView(QDialog):
         self.setupUI()
     
     def setupUI(self):
-        #Lowest level layouts
+        ####
+        #Creation of supporting layouts
         baseLayout = QVBoxLayout()
         
+        ####
+        #Select the base directory to look for calibration files
+        calibDirGrpBox = QGroupBox("Calibration Directory:")
+        self.calibDirTextBox = QLineEdit()#Default needs to be set from the model!
+        self.browseCalibDirBtn = QPushButton("Browse...")
+        calibDirLayout = QHBoxLayout()
+        calibDirLayout.addWidget(self.calibDirTextBox)
+        calibDirLayout.addWidget(self.browseCalibDirBtn)
+        calibDirGrpBox.setLayout(calibDirLayout)
+        baseLayout.addWidget(calibDirGrpBox)
+        
+        ####
+        #Select specific calibration file names to use
+        calibFileGrpBox = QGroupBox("Calibration Files:")
+        calibFileLabels = [QLabel("Calibration"), QLabel("Calibration F1"), QLabel("Calibration F2")]
+        self.calibFileTextBoxes = [QLineEdit(), QLineEdit(), QLineEdit()]#These will be relative names, populated from model
+        self.calibFileBrowseBtns = [QPushButton("Browse..."), QPushButton("Browse..."), QPushButton("Browse...")]
+        calibFileLayout = QGridLayout()
+        for i in range(len(calibFileLabels)):
+            calibFileLayout.addWidget(calibFileLabels[i], (2 * i), 0, 1, 2)
+            calibFileLayout.addWidget(self.calibFileTextBoxes[i], ((2 * i)+1), 0)
+            calibFileLayout.addWidget(self.calibFileBrowseBtns[i], ((2 * i)+1), 1)
+        calibFileGrpBox.setLayout(calibFileLayout)
+        baseLayout.addWidget(calibFileGrpBox)
+        
+        ####
+        #Define temperature of bulb used for calibration
+        bulbTLabel = QLabel("Bulb Temperature:")
+        
+        #calibTempGrpBox = QGroupBox("Bulb Temperature:")
+        self.calibTempTextBox = QLineEdit()#Populate from model
+        kTempLabel = QLabel("K")
+        calibTempLayout = QHBoxLayout()
+        calibTempLayout.addWidget(bulbTLabel)
+        calibTempLayout.addWidget(self.calibTempTextBox)
+        calibTempLayout.addWidget(kTempLabel)
+        #calibTempGrpBox.setLayout(calibTempLayout)
+        #baseLayout.addWidget(calibTempGrpBox)
+        baseLayout.addLayout(calibTempLayout)
+        
+        ####
         #Buttons to accept/reject dialog
         okCancelBtnBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         okCancelBtnBox.accepted.connect(self.okClick)
         okCancelBtnBox.rejected.connect(self.cancelClick)
         baseLayout.addWidget(okCancelBtnBox)
         
+        ####
+        #Set the base layout
         self.setLayout(baseLayout)
         
     def okClick(self):

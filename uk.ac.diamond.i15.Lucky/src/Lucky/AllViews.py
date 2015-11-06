@@ -215,16 +215,14 @@ class CalibrationConfigView(QDialog):
         ####
         #Define temperature of bulb used for calibration
         bulbTLabel = QLabel("Bulb Temperature:")
-        
-        #calibTempGrpBox = QGroupBox("Bulb Temperature:")
         self.calibTempTextBox = QLineEdit()#Populate from model
+        self.calibTempTextBox.setFixedWidth(40)#Same as integrationTextInputWidth in MainView
         kTempLabel = QLabel("K")
         calibTempLayout = QHBoxLayout()
         calibTempLayout.addWidget(bulbTLabel)
         calibTempLayout.addWidget(self.calibTempTextBox)
         calibTempLayout.addWidget(kTempLabel)
-        #calibTempGrpBox.setLayout(calibTempLayout)
-        #baseLayout.addWidget(calibTempGrpBox)
+        calibTempLayout.addStretch(1)
         baseLayout.addLayout(calibTempLayout)
         
         ####

@@ -3,12 +3,11 @@ Created on 4 Nov 2015
 
 @author: wnm24546
 '''
-from PyQt4 import QtCore
-from PyQt4.QtGui import (QWidget, QGridLayout, QGroupBox, QHBoxLayout, 
-                         QLabel, QLineEdit, QPushButton, QRadioButton, 
-                         QVBoxLayout)
 
-from Lucky import CalibrationConfigView
+from PyQt4.QtGui import (QDialog, QDialogButtonBox, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QPushButton, QRadioButton, QVBoxLayout, QWidget)
+from PyQt4 import QtCore
+
+#from Lucky import CalibrationConfigView
 
 
 class MainView(QWidget):
@@ -152,12 +151,46 @@ class MainView(QWidget):
         baseLayout.addLayout(buttonLayout)
         
         self.setLayout(baseLayout)
+
         
-            
     def addWidgetListToLayout(self, widgetList, layout):
         for i in range(len(widgetList)):
             layout.addWidget(widgetList[i])
     
     def calibConfClick(self):
-        calibConfInput = CalibrationConfigView(parent=self)
-        calibConfInput.exec_()
+        self.calibConfInput = CalibrationConfigView(self)
+        self.calibConfInput.exec_()
+
+
+#####################################
+
+
+class CalibrationConfigView(QDialog):
+
+    def __init__(self, parent_widget):
+        super(CalibrationConfigView, self).__init__(parent=parent_widget)
+        self.setWindowTitle("Configure Calibration")
+        #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
+        
+        self.setupUI()
+    
+    def setupUI(self):
+        #Lowest level layouts
+        baseLayout = QVBoxLayout()
+        
+        #Buttons to accept/reject dialog
+        okCancelBtnBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        okCancelBtnBox.accepted.connect(self.okClick)
+        okCancelBtnBox.rejected.connect(self.cancelClick)
+        baseLayout.addWidget(okCancelBtnBox)
+        
+        self.setLayout(baseLayout)
+        
+    def okClick(self):
+        print "OK!"
+        self.accept()
+         
+     
+    def cancelClick(self):
+        print "Cancel"
+        self.reject()

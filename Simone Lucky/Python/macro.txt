@@ -1,0 +1,8 @@
+reset
+a=1000
+x0=1589
+sigma=5.17285529
+
+f(x)=a*exp((x-x0)**2/(2*sigma**2))
+
+pl f(x)

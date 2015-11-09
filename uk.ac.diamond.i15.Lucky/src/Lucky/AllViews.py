@@ -190,23 +190,21 @@ class CalibrationConfigView(QDialog):
         ####
         #Select specific calibration file names to use
         calibFileGrpBox = QGroupBox("Calibration Files:")
-        calibFileLabels = [QLabel("Calibration (US):"), QLabel("Calibration F1 (US):"), QLabel("Calibration F2 (US):"), 
-                           QLabel("Calibration (DS):"), QLabel("Calibration F1 (DS):"), QLabel("Calibration F2 (DS):")]
-        self.calibFileTextBoxes = [QLineEdit(), QLineEdit(), QLineEdit(),
-                                   QLineEdit(), QLineEdit(), QLineEdit()]#These will be relative names, populated from model
-        self.calibFileBrowseBtns = [QPushButton("Browse..."), QPushButton("Browse..."), QPushButton("Browse..."),
-                                    QPushButton("Browse..."), QPushButton("Browse..."), QPushButton("Browse...")]
+        calibFileLabels = [[QLabel("Calibration (US):"), QLabel("Calibration (DS):")],
+                           [QLabel("Calibration F1 (US):"), QLabel("Calibration F1 (DS):")],
+                           [QLabel("Calibration F2 (US):"), QLabel("Calibration F2 (DS):")]]
+        self.calibFileTextBoxes = [[QLineEdit(), QLineEdit()], 
+                                   [QLineEdit(), QLineEdit()],
+                                   [QLineEdit(), QLineEdit()]]#These will be relative names, populated from model
+        self.calibFileBrowseBtns = [[QPushButton("Browse..."), QPushButton("Browse...")],
+                                    [QPushButton("Browse..."), QPushButton("Browse...")],
+                                    [QPushButton("Browse..."), QPushButton("Browse...")]]
         calibFileLayout = QGridLayout()
-        for i in range(0, 3):
-            calibFileLayout.addWidget(calibFileLabels[i], (2 * i), 0, 1, 2)
-            calibFileLayout.addWidget(self.calibFileTextBoxes[i], ((2 * i)+1), 0)
-            calibFileLayout.addWidget(self.calibFileBrowseBtns[i], ((2 * i)+1), 1)
-            
-            j = i + 3 #This populates the second two columns, but using the same pattern above
-            calibFileLayout.addWidget(calibFileLabels[j], (2 * i), 2, 1, 2)
-            calibFileLayout.addWidget(self.calibFileTextBoxes[j], ((2 * i)+1), 2)
-            calibFileLayout.addWidget(self.calibFileBrowseBtns[j], ((2 * i)+1), 3)
-            
+        for i in range(len(calibFileLabels)):
+            for j in range(len(calibFileLabels[i])):
+                calibFileLayout.addWidget(calibFileLabels[i][j], (2 * i), (2 * j), 1, 2)
+                calibFileLayout.addWidget(self.calibFileTextBoxes[i][j], ((2 * i) + 1), (2 * j))
+                calibFileLayout.addWidget(self.calibFileBrowseBtns[i][j], ((2 * i) + 1), ((2 * j) + 1))            
         calibFileGrpBox.setLayout(calibFileLayout)
         baseLayout.addWidget(calibFileGrpBox)
         

@@ -27,10 +27,9 @@ class MainView(QWidget):
         ####
         #Mode controls
         modeGrpBox = QGroupBox("Mode:")
-        self.modeRadBtns = []
-        self.modeRadBtns.append(QRadioButton("Live"))
-        self.modeRadBtns.append(QRadioButton("Offline"))
-        
+        self.modeRadBtns = [QRadioButton("Live"),
+                            QRadioButton("Offline")]
+
         modeLayout = QHBoxLayout()
         self.addWidgetListToLayout(self.modeRadBtns, modeLayout)
         modeGrpBox.setLayout(modeLayout)
@@ -40,11 +39,10 @@ class MainView(QWidget):
         #Calib controls
         calibLayout = QVBoxLayout()
         calibGrpBox = QGroupBox("Calibration Type:")
-        self.calibRadBtns = []
-        self.calibRadBtns.append(QRadioButton("Calibration"))
-        self.calibRadBtns.append(QRadioButton("Calibration F1"))
-        self.calibRadBtns.append(QRadioButton("Calibration F2"))
-        
+        self.calibRadBtns = [QRadioButton("Calibration"),
+                             QRadioButton("Calibration F1"),
+                             QRadioButton("Calibration F2")]
+      
         calibGrpLayout = QVBoxLayout()
         self.addWidgetListToLayout(self.calibRadBtns, calibGrpLayout)
         calibGrpBox.setLayout(calibGrpLayout)

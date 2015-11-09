@@ -20,7 +20,7 @@ class CalibrationConfigData(object):
                  calibF2US=None, calibF2DS=None):
         self.calibDir = calibDir
         self.bulbTemp = bulbTemp
-        self.calib = [calibUS, calibDS]
-        self.calibF1 = [calibF1US, calibF1DS] 
-        self.calibF2 = [calibF2US, calibF2DS]
+        self.calibFiles = [[calibUS, calibDS],
+                           [calibF1US, calibF1DS],
+                           [calibF2US, calibF2DS]]
         

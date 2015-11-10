@@ -7,10 +7,11 @@ import unittest
 
 import Lucky
 from Lucky.LuckyExceptions import BadModelStateException
+from Lucky.MainPresenter import MainPresenter
 
 class MainPresenterTest(unittest.TestCase):
     def setUp(self):
-        self.mp = Lucky.MainPresenter.MainPresenter()
+        self.mp = MainPresenter()
     
     def tearDown(self):
         self.mp = None

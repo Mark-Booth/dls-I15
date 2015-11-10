@@ -44,3 +44,32 @@ class RunStopPressActiveChangesTest(MainPresenterTest):
         self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled without data')
         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled without data')
 
+class RunPressedAllUIChanges(MainPresenterTest):
+    def runTest(self):
+        self.mp.dataModel.allDataPresent = True
+        self.mp.toggleButtonStates()
+        
+        #This is for offline-mode
+        ####
+        #Fake starting a run
+        self.mp.doRun(test=True)
+        self.assertFalse(self.mp.dataModel.allUIControlsEnabled, 'UI controls should be disabled after start')
+        self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled after start')
+        self.assertTrue(self.mp.dataModel.stopEnabled, 'Stop should be enabled after start')
+        self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled during run')
+        
+        #Fake stopping a run
+        self.mp.doStop(test=True)
+        self.assertTrue(self.mp.dataModel.allUIControlsEnabled, 'UI controls should be enabled after stop')
+        self.assertTrue(self.mp.dataModel.runEnabled, 'Run should be enabled after stop')
+        self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled after stop')
+        self.assertTrue(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be enabled after stop')
+
+        #This is for live-mode
+        ####
+        self.mp.setMode()#TODO This needs thought
+        self.mp.doRun(test=True)
+        self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled in live-mode')
+        
+        self.mp.doStop(test=True)
+        self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled in live-mode')

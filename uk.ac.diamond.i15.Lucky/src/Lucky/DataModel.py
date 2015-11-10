@@ -5,13 +5,22 @@ Created on 9 Nov 2015
 '''
 
 class MainData(object):
-    def __init__(self, mode=(1,0), calibType=(1,0,0), dataDir=None,
+    def __init__(self, mode=(0,1), calibType=(1,0,0), dataDir=None,
                  usdsPair=0, integStart=0, integEnd=0, integDelta=0):
+        #These relate to the calculations
         self.mode = mode
         self.calibType = calibType
         self.dataDir = dataDir
         self.usdsPair = usdsPair
         self.integrationConf = [integStart, integEnd, integDelta]
+        
+        #These are specific UI variables
+        self.runEnabled = False
+        self.stopEnabled = False
+        self.allDataPresent = False
+        self.usdsControlsEnabled = True
+        self.allUIControlsEnabled = True
+        
 
 class CalibrationConfigData(object):
     def __init__(self, calibDir=None, bulbTemp=0,

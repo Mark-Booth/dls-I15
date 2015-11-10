@@ -22,6 +22,8 @@ class MainData(object):
         self.usdsControlsEnabled = True
         self.allUIControlsEnabled = True
         
+        
+        
 
 class CalibrationConfigData(object):
     def __init__(self, calibDir=None, bulbTemp=0,

@@ -69,14 +69,14 @@ class MainView(QWidget):
         ####
         #US/DS selector
         fileGrpBox = QGroupBox("Measurement Number (US/DS pair):")
-        self.prevFileBtn = QPushButton("<")
-        self.nextFileBtn = QPushButton(">")
-        self.currFileTextBox = QLineEdit()#Default needs to be set from the model!
+        self.prevUSDSPairBtn = QPushButton("<")
+        self.nextUSDSPairBtn = QPushButton(">")
+        self.currUSDSPairTextBox = QLineEdit()#Default needs to be set from the model!
         
         fileLayout = QHBoxLayout()
-        fileLayout.addWidget(self.prevFileBtn)
-        fileLayout.addWidget(self.currFileTextBox)
-        fileLayout.addWidget(self.nextFileBtn)
+        fileLayout.addWidget(self.prevUSDSPairBtn)
+        fileLayout.addWidget(self.currUSDSPairTextBox)
+        fileLayout.addWidget(self.nextUSDSPairBtn)
         fileGrpBox.setLayout(fileLayout)
         controlsLayout.addWidget(fileGrpBox, 1, 1, 1, 2)
         

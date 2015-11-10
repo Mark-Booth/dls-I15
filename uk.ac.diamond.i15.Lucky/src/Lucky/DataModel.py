@@ -13,6 +13,7 @@ class MainData(object):
         self.dataDir = dataDir
         self.usdsPair = usdsPair
         self.integrationConf = [integStart, integEnd, integDelta]
+        self.calibConfigData = CalibrationConfigData()
         
         #These are specific UI variables
         self.runEnabled = False

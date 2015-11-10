@@ -44,7 +44,7 @@ class RunStopPressActiveChangesTest(MainPresenterTest):
         self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled without data')
         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled without data')
 
-class RunPressedAllUIChanges(MainPresenterTest):
+class RunPressedAllUIChangesTest(MainPresenterTest):
     def runTest(self):
         self.mp.dataModel.allDataPresent = True
         self.mp.toggleButtonStates()
@@ -73,3 +73,29 @@ class RunPressedAllUIChanges(MainPresenterTest):
         
         self.mp.doStop(test=True)
         self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled in live-mode')
+        
+class UpdateTextFieldTest(MainPresenterTest):
+    def runTest(self):
+        #Needs to test getting string from text box or from browse button
+        pass
+    
+class ModeSettingTest(MainPresenterTest):
+    def runTest(self):
+        #Receive state from UI, check only one active, update model
+        #See also line 70!
+        pass
+
+class CalibrationTypeSettingTest(MainPresenterTest):
+    def runTest(self):
+        #Receive state from UI, check only one active, update model
+        pass
+
+class USDSPairSelectionTest(MainPresenterTest):
+    def runTest(self):
+        #Needs to test incrementing, decrement; needs to test getting string directly from text box
+        pass
+
+class CalibrationConfigUpdateTest(MainPresenterTest):
+    def runTest(self):
+        #Create new CCData object; pass to method; check mp values are now updated
+        pass

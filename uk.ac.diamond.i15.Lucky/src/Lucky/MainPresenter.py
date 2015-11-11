@@ -11,7 +11,9 @@ class MainPresenter(object):
         pass
 
 class StateMachine(object):
-    def __init__(self):
+    def __init__(self, dM):
+        self.dataModel = dM
+        
         #This is a slightly convoluted way to avoid importing StartState
         self.currentState = State().next(State.EVENTS.START)()
         self.currentState.run()
@@ -23,7 +25,7 @@ class StateMachine(object):
             if nextState == self.currentState:
                 break
             self.currentState = nextState()
-            self.currentState.run()
+            self.currentState.run(self.dataModel)
     
     def getState(self):
         return self.currentState.name

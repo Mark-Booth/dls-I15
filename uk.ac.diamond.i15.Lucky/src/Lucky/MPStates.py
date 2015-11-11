@@ -7,11 +7,11 @@ Created on 11 Nov 2015
 from enum import Enum
 
 class State(object):
-    EVENTS = Enum("EVENTS", "LIVE OFFLINE DATAGOOD DATABAD START STOP")
+    EVENTS = Enum("EVENTS", "START LIVE OFFLINE DATAGOOD DATABAD RUN STOP")
     
     def __init__(self):
         self.name = None
-        self.transitions = {}
+        self.transitions = {State.EVENTS.START : StartState}
     
     def run(self):
         assert 0, "Run not implemented"

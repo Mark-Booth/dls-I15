@@ -19,10 +19,10 @@ class MPStateTest(unittest.TestCase):
         self.dM = None
     
     def stateRun(self):
-        self.state.run(self.dm)
+        self.state.run(self.dM)
 
 class LiveSetupTest(MPStateTest):
-    def runtest(self):
+    def runTest(self):
         #Force opposite settings to those used in LiveSetup
         self.dM.mode = (0, 1)
         self.dM.usdsControlsEnabled = True

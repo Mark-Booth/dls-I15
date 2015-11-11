@@ -7,18 +7,30 @@ Created on 10 Nov 2015
 import unittest
 
 from Lucky.DataModel import MainData
-from Lucky.MPStates import (LiveSetup, OfflineSetup)
+from Lucky.MPStates import (LiveSetup, LiveStartable, LiveStoppable,
+                            OfflineSetup, OfflineStartable, OfflineStoppable)
 
 class MPStateTest(unittest.TestCase):
     def setUp(self):
         self.dM = MainData()
-        self.mpState = OfflineSetup(self.dM)
+        self.state = None
     
     def tearDown(self):
         self.dM = None
-        self.mpState = None
+    
+    def stateRun(self):
+        self.state.run(self.dm)
 
-class LiveTransitionsTest(MPStateTest):
-    def runTest(self):
-        self.assertEqual(self.mpState.__class__, OfflineSetup.__class__, 'Unexpected initial state')
-        #self.mpState.changeState(self.mpState.ACTIONS.DATAGOOD)
+class LiveSetupTest(MPStateTest):
+    def runtest(self):
+        #Force opposite settings to those used in LiveSetup
+        self.dM.mode = (0, 1)
+        self.dM.usdsControlsEnabled = True
+        self.dM.runEnabled = True
+        
+        self.state = LiveSetup()
+        self.stateRun()
+        
+        self.assertEqual(self.dM.mode, (1, 0), "Live mode not set")
+        self.assertEqual(self.dM.usdsControlsEnabled, False, "US/DS controls enabled")
+        self.assertEqual(self.dM.runEnabled, False, "Run control enabled")

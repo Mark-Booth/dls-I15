@@ -51,9 +51,11 @@ class LiveSetup(LiveState):
     def run(self, dataModel):
         super(LiveSetup, self).run(dataModel)
         dataModel.runEnabled = False
+        dataModel.stopEnabled = False
+        dataModel.allUIControlsEnabled = True
 
 class LiveStartable(LiveState):
-    def __init__(self, dataModel):
+    def __init__(self):
         super(LiveStartable, self).__init__()
         self.name = "LiveStartable"
         self.transitions = {State.EVENTS.DATABAD : LiveSetup,
@@ -62,9 +64,9 @@ class LiveStartable(LiveState):
     
     def run(self, dataModel):
         super(LiveStartable, self).run(dataModel)
-        self.dataModel.runEnabled = True
-        self.dataModel.stopEnabled = False
-        self.allUIControlsEnabled = False
+        dataModel.runEnabled = True
+        dataModel.stopEnabled = False
+        dataModel.allUIControlsEnabled = True
 
 class LiveStoppable(LiveState):
     def __init__(self, dM):

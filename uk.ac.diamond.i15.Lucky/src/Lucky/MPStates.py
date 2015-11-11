@@ -84,7 +84,7 @@ class LiveStoppable(LiveState):
 #Offline state classes
 ####
 class OfflineState(State):
-    def __init__(self, dM):
+    def __init__(self):
         super(OfflineState, self).__init__()
     
     def run(self, dataModel):
@@ -101,6 +101,8 @@ class OfflineSetup(OfflineState):
     def run(self, dataModel):
         super(OfflineSetup, self).run(dataModel)
         dataModel.runEnabled = False
+        dataModel.stopEnabled = False
+        dataModel.allUIControlsEnabled = True
 
 class OfflineStartable(OfflineState):
     def __init__(self):
@@ -111,10 +113,10 @@ class OfflineStartable(OfflineState):
                             State.EVENTS.RUN     : OfflineStoppable}
     
     def run(self, dataModel):
-        super(OfflineStartable, self).run()
+        super(OfflineStartable, self).run(dataModel)
         dataModel.runEnabled = True
         dataModel.stopEnabled = False
-        dataModel.allUIControlsEnabled = False
+        dataModel.allUIControlsEnabled = True
 
 class OfflineStoppable(OfflineState):
     def __init__(self):

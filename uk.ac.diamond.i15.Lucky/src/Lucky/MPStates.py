@@ -69,16 +69,16 @@ class LiveStartable(LiveState):
         dataModel.allUIControlsEnabled = True
 
 class LiveStoppable(LiveState):
-    def __init__(self, dM):
-        super(LiveStoppable, self).__init__(dM)
+    def __init__(self):
+        super(LiveStoppable, self).__init__()
         self.name = "LiveStoppable"
         self.transitions = {State.EVENTS.STOP : LiveStartable}
     
     def run(self, dataModel):
         super(LiveStoppable, self).run(dataModel)
-        self.dataModel.runEnabled = False
-        self.dataModel.stopEnabled = True
-        self.dataModel.allUIControlsEnabled = False
+        dataModel.runEnabled = False
+        dataModel.stopEnabled = True
+        dataModel.allUIControlsEnabled = False
 
 
 #Offline state classes

@@ -72,3 +72,26 @@ class LiveStartableTest(MPStateTest):
         self.assertTrue(self.dM.runEnabled, "LiveStartable: Run control disabled")
         self.assertFalse(self.dM.stopEnabled, "LiveStartable: Stop control enabled")
         self.assertTrue(self.dM.allUIControlsEnabled, "LiveStartable: UI controls disabled")
+
+class LiveStoppableTest(MPStateTest):
+    def runTest(self):
+        #Force opposite settings to those used in LiveSetup
+        self.dM.mode = (0, 1)
+        self.dM.usdsControlsEnabled = True
+        self.dM.runEnabled = True
+        self.dM.stopEnabled = False
+        self.dM.allUIControlsEnabled = True
+        
+        self.state = LiveStoppable()
+        
+        #Check the correct transitions are present
+        expectedTransitions = [State.EVENTS.STOP]
+        self.compareTransitions(expectedTransitions)
+        
+        self.stateRun()
+        
+        self.assertEqual(self.dM.mode, (1, 0), "LiveStoppable: Live mode not set")
+        self.assertFalse(self.dM.usdsControlsEnabled, "LiveStoppable: US/DS controls enabled")
+        self.assertFalse(self.dM.runEnabled, "LiveStoppable: Run control disabled")
+        self.assertTrue(self.dM.stopEnabled, "LiveStoppable: Stop control enabled")
+        self.assertFalse(self.dM.allUIControlsEnabled, "LiveStoppable: UI controls disabled")

@@ -31,6 +31,8 @@ class LiveSetupTest(MPStateTest):
         self.dM.mode = (0, 1)
         self.dM.usdsControlsEnabled = True
         self.dM.runEnabled = True
+        self.dM.stopEnabled = True
+        self.dM.allUIControlsEnabled = False
         
         self.state = LiveSetup()
         
@@ -41,6 +43,32 @@ class LiveSetupTest(MPStateTest):
         #Do the state's action
         self.stateRun()
         
-        self.assertEqual(self.dM.mode, (1, 0), "Live mode not set")
-        self.assertEqual(self.dM.usdsControlsEnabled, False, "US/DS controls enabled")
-        self.assertEqual(self.dM.runEnabled, False, "Run control enabled")
+        self.assertEqual(self.dM.mode, (1, 0), "LiveSetup: Live mode not set")
+        self.assertFalse(self.dM.usdsControlsEnabled, "LiveSetup: US/DS controls enabled")
+        self.assertFalse(self.dM.runEnabled, "LiveSetup: Run control enabled")
+        self.assertFalse(self.dM.stopEnabled, "LiveSetup: Stop control enabled")
+        self.assertTrue(self.dM.allUIControlsEnabled, "LiveSetup: UI controls disabled")
+
+
+class LiveStartableTest(MPStateTest):
+    def runTest(self):
+        #Force opposite settings to those used in LiveSetup
+        self.dM.mode = (0, 1)
+        self.dM.usdsControlsEnabled = True
+        self.dM.runEnabled = False
+        self.dM.stopEnabled = True
+        self.dM.allUIControlsEnabled = False
+        
+        self.state = LiveStartable()
+        
+        #Check the correct transitions are present
+        expectedTransitions = [State.EVENTS.DATABAD, State.EVENTS.OFFLINE, State.EVENTS.RUN]
+        self.compareTransitions(expectedTransitions)
+        
+        self.stateRun()
+        
+        self.assertEqual(self.dM.mode, (1, 0), "LiveStartable: Live mode not set")
+        self.assertFalse(self.dM.usdsControlsEnabled, "LiveStartable: US/DS controls enabled")
+        self.assertTrue(self.dM.runEnabled, "LiveStartable: Run control disabled")
+        self.assertFalse(self.dM.stopEnabled, "LiveStartable: Stop control enabled")
+        self.assertTrue(self.dM.allUIControlsEnabled, "LiveStartable: UI controls disabled")

@@ -32,19 +32,24 @@ class ModeTransitionTest(MainPresenterTest):
 class RunStopStateChangesTest(MainPresenterTest):
     def runTest(self):
         #Set allDataPresent
-        self.mp.dataModel.allDataPresent = True
         self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled by default')
         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled by default')
          
-        #Activate run by toggling
-        self.mp.stateMach.changeState(State.EVENTS.DATAGOOD)
-        self.assertTrue(self.mp.dataModel.runEnabled, 'Run should be enabled with all data present')
-        self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled with all data present')
+        #Check all data valid: Activate run by toggling
+        self.mp.checkDataValid()
+        self.assertTrue(self.mp.dataModel.runEnabled, 'All data valid: Run should be enabled')
+        self.assertFalse(self.mp.dataModel.stopEnabled, 'All data valid: Stop should be disabled')
          
-        #Activate stop, deactivate run
-        self.mp.stateMach.changeState(State.EVENTS.RUN)
-        self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled after starting')
-        self.assertTrue(self.mp.dataModel.stopEnabled, 'Stop should be enabled after starting')
+        #Press run: Activate stop, deactivate run
+        self.mp.runTrigger()
+        self.assertFalse(self.mp.dataModel.runEnabled, 'Run triggered: Run should be disabled')
+        self.assertTrue(self.mp.dataModel.stopEnabled, 'Run triggered: Stop should be enabled')
+        
+        #Press stop: Activate run, deactivate stop
+        self.mp.stopTrigger()
+        self.assertTrue(self.mp.dataModel.runEnabled, 'Stop triggered: Run should be disabled')
+        self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop triggered: Stop should be enabled')
+        
         
 #         with self.assertRaises(BadModelStateException):
 #             self.mp.dataModel.allDataPresent = False

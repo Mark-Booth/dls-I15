@@ -26,10 +26,13 @@ class MainPresenter(object):
             raise BadModelStateException("Invalid mode setting detected")
     
     def runTrigger(self):
-        pass
+        self.stateMach.changeState(State.EVENTS.RUN)
     
     def stopTrigger(self):
-        pass
+        self.stateMach.changeState(State.EVENTS.STOP)
+    
+    def checkDataValid(self):
+        self.stateMach.changeState(State.EVENTS.DATAGOOD)
         
 
 class StateMachine(object):

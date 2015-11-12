@@ -40,6 +40,9 @@ class MainPresenter(object):
     def setModeTrigger(self, uiData):
         self.stateMach.changeState(self.getModeTransition(uiData))
     
+    def setCalibTypeTrigger(self, uiData):
+        pass
+    
     def isDataValid(self):
         return None
     

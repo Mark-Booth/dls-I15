@@ -129,8 +129,20 @@ class ModeSettingTest(MainPresenterTest):
         
 class CalibrationTypeSettingTest(MainPresenterTest):
     def runTest(self):
-        #Receive state from UI, check only one active, update model
-        pass
+        uiData = (1, 0, 0)
+        self.assertEqual(self.mp.dataModel.calibType, uiData, "Incorrect setting: expecting "+str(uiData))
+        
+        uiData = (0, 1, 0)
+        self.mp.setCalibTypeTrigger(uiData)
+        self.assertEqual(self.mp.dataModel.calibType, uiData, "Incorrect setting: expecting "+str(uiData))
+        
+        uiData = (0, 0, 1)
+        self.mp.setCalibTypeTrigger(uiData)
+        self.assertEqual(self.mp.dataModel.calibType, uiData, "Incorrect setting: expecting "+str(uiData))
+        
+        uiData = (1, 0, 0)
+        self.mp.setCalibTypeTrigger(uiData)
+        self.assertEqual(self.mp.dataModel.calibType, uiData, "Incorrect setting: expecting "+str(uiData))
 
 class USDSPairSelectionTest(MainPresenterTest):
     def runTest(self):

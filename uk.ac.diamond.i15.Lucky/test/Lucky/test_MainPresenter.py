@@ -32,6 +32,8 @@ class StartupModeTest(MainPresenterTest):
 class GetStateTest(MainPresenterTest):
     def runTest(self):
         self.assertEqual(self.mp.getSMStateName(), "OfflineSetup", "Expected OfflineSetup at startup")
+        
+        self.assertTrue(isinstance(self.mp.getSMState(), State), "Returned State machine state is not a state instance")
    
 class DataValidRunStopStateChangesTest(MainPresenterTest):
     def runTest(self):

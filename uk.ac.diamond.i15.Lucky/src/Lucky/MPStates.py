@@ -26,7 +26,8 @@ class StartState(State):
     def __init__(self):
         super(StartState, self).__init__()
         self.name = "Start"
-        self.transitions = {State.EVENTS.LIVE : LiveSetup}
+        self.transitions = {State.EVENTS.LIVE : LiveSetup,
+                            State.EVENTS.OFFLINE: OfflineSetup}
     
     def run(self):
         pass

@@ -31,7 +31,7 @@ class MainPresenter(object):
     def stopTrigger(self):
         self.stateMach.changeState(State.EVENTS.STOP)
     
-    def checkDataValid(self):
+    def dataValidTrigger(self):
         self.stateMach.changeState(State.EVENTS.DATAGOOD)
         
 

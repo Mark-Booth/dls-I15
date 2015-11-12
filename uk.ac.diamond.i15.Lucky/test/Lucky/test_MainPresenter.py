@@ -36,7 +36,7 @@ class RunStopStateChangesTest(MainPresenterTest):
         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled by default')
          
         #Check all data valid: Activate run by toggling
-        self.mp.checkDataValid()
+        self.mp.dataValidTrigger()
         self.assertTrue(self.mp.dataModel.runEnabled, 'All data valid: Run should be enabled')
         self.assertFalse(self.mp.dataModel.stopEnabled, 'All data valid: Stop should be disabled')
          

@@ -46,7 +46,7 @@ class StateMachine(object):
     def changeState(self, event):
         while True:
             nextState = self.currentState.next(event)
-            if nextState == self.currentState:
+            if nextState == type(self.currentState):
                 break
             self.currentState = nextState()
             self.currentState.run(self.mainPres.dataModel)

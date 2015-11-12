@@ -20,7 +20,7 @@ class State(object):
         if event in self.transitions:
             return self.transitions[event]
         else:
-            return self
+            return type(self)
 
 class StartState(State):
     def __init__(self):
@@ -123,7 +123,7 @@ class OfflineStoppable(OfflineState):
     def __init__(self):
         super(OfflineStoppable, self).__init__()
         self.name = "OfflineStoppable"
-        self.transitions = {State.EVENTS.STOP : OfflineStoppable}
+        self.transitions = {State.EVENTS.STOP : OfflineStartable}
     
     def run(self, dataModel):
         super(OfflineStoppable, self).run(dataModel)

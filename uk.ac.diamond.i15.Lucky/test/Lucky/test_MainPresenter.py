@@ -29,7 +29,7 @@ class ModeTransitionTest(MainPresenterTest):
         self.mp = MainPresenter(dM=dM)
         self.assertEqual(self.mp.getModeTransition(), State.EVENTS.LIVE, "Expected live, got offline transition")
         
-class RunStopPressActiveChangesTest(MainPresenterTest):
+class RunStopStateChangesTest(MainPresenterTest):
     def runTest(self):
         #Set allDataPresent
         self.mp.dataModel.allDataPresent = True
@@ -45,7 +45,7 @@ class RunStopPressActiveChangesTest(MainPresenterTest):
         self.mp.stateMach.changeState(State.EVENTS.RUN)
         self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled after starting')
         self.assertTrue(self.mp.dataModel.stopEnabled, 'Stop should be enabled after starting')
-         
+        
 #         with self.assertRaises(BadModelStateException):
 #             self.mp.dataModel.allDataPresent = False
 #             self.mp.toggleButtonStates()

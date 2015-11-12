@@ -29,7 +29,7 @@ class MainPresenter(object):
         if noData:
             dataValid = not self.dataModel.allDataPresent
         else:
-            pass
+            dataValid = self.isDataValid()
         
         if dataValid:
             event = State.EVENTS.DATAGOOD
@@ -39,6 +39,9 @@ class MainPresenter(object):
     
     def setModeTrigger(self, uiData):
         self.stateMach.changeState(self.getModeTransition(uiData))
+    
+    def isDataValid(self):
+        return None
     
     def getModeTransition(self, inputMode=None):
         if inputMode == None:

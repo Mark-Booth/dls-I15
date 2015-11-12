@@ -41,7 +41,7 @@ class MainPresenter(object):
         self.stateMach.changeState(self.getModeTransition(uiData))
     
     def setCalibTypeTrigger(self, uiData):
-        pass
+        self.dataModel.calibType = uiData
     
     def isDataValid(self):
         return None

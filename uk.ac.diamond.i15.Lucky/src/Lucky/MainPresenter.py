@@ -15,6 +15,7 @@ class MainPresenter(object):
             self.dataModel = MainData()
         else:
             self.dataModel = dM
+        self.stateMach = StateMachine(self)
         
     def getModeTransition(self):
         if self.dataModel.mode == (1, 0):
@@ -23,6 +24,13 @@ class MainPresenter(object):
             return State.EVENTS.OFFLINE
         else:
             raise BadModelStateException("Invalid mode setting detected")
+    
+    def runTrigger(self):
+        pass
+    
+    def stopTrigger(self):
+        pass
+        
 
 class StateMachine(object):
     def __init__(self, mp):

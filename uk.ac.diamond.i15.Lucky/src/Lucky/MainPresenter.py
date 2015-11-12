@@ -5,10 +5,23 @@ Created on 5 Nov 2015
 '''
 
 from MPStates import State
+from DataModel import (CalibrationConfigData, MainData)
+from LuckyExceptions import BadModelStateException
 
 class MainPresenter(object):
-    def __init__(self):
-        pass
+    def __init__(self, dM = None):
+        if dM == None:
+            self.dataModel = MainData()
+        else:
+            self.dataModel = dM
+    
+    def getModeTransition(self):
+        if self.dataModel.mode == (1, 0):
+            return State.EVENTS.LIVE
+        elif self.dataModel.mode == (0, 1):
+            return State.EVENTS.OFFLINE
+        else:
+            raise BadModelStateException("Invalid mode setting detected")
 
 class StateMachine(object):
     def __init__(self, dM):

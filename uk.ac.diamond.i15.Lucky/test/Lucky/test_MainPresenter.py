@@ -4,6 +4,7 @@ Created on 5 Nov 2015
 @author: wnm24546
 '''
 import unittest
+import os
 
 import Lucky
 from Lucky.LuckyExceptions import BadModelStateException
@@ -14,6 +15,8 @@ from Lucky.MPStates import State
 class MainPresenterTest(unittest.TestCase):
     def setUp(self):
         self.mp = MainPresenter()
+        self.projectBaseDir = "/scratch/ecl-ws/misc-ws_git/dls-i15.git"
+        self.testPkgDir = os.path.join(self.projectBaseDir, "uk.ac.diamond.i15.Lucky/test/Lucky")
     
     def tearDown(self):
         self.mp = None
@@ -109,7 +112,14 @@ class RunPressedAllUIChangesTest(MainPresenterTest):
         
 class UpdateTextFieldTest(MainPresenterTest):
     def runTest(self):
-        #Needs to test getting string from text box or from browse button
+        dataDir = os.path.join(self.testPkgDir, "testData")
+        uiText = os.path.join(dataDir, "CalibF1.txt")
+        self.mp.textChangedTrigger(uiText, self.mp.dataModel, )
+        self.assertEqual(self.dataModel.dataDir, uiText, "Text field not updated")
+        
+    
+class UpdateNumberFieldTest(MainPresenterTest):
+    def runTest(self):
         pass
     
 class ModeSettingTest(MainPresenterTest):

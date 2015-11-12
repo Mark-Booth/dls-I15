@@ -28,48 +28,48 @@ class MockMainPresenter(object):
 
 class GetStateTest(FSMTest):
     def runTest(self):
-        self.assertEqual(self.fsm.getState(), "LiveSetup")
+        self.assertEqual(self.fsm.getStateName(), "LiveSetup")
 
 class StateChangesTest(FSMTest):
     def runTest(self):
-        self.assertEqual(self.fsm.getState(), "LiveSetup")
+        self.assertEqual(self.fsm.getStateName(), "LiveSetup")
         
         #Set state to LiveStartable
         self.fsm.changeState(State.EVENTS.DATAGOOD)
-        self.assertEqual(self.fsm.getState(), "LiveStartable")
+        self.assertEqual(self.fsm.getStateName(), "LiveStartable")
         
         #Set state to LiveStoppable
         self.fsm.changeState(State.EVENTS.RUN)
-        self.assertEqual(self.fsm.getState(), "LiveStoppable")
+        self.assertEqual(self.fsm.getStateName(), "LiveStoppable")
         
         #Fail to set state to OfflineStoppable
         self.fsm.changeState(State.EVENTS.OFFLINE)
-        self.assertEqual(self.fsm.getState(), "LiveStoppable")
+        self.assertEqual(self.fsm.getStateName(), "LiveStoppable")
         
         #Set state to LiveStartable
         self.fsm.changeState(State.EVENTS.STOP)
-        self.assertEqual(self.fsm.getState(), "LiveStartable")
+        self.assertEqual(self.fsm.getStateName(), "LiveStartable")
         
         #Set state to OfflineStartable
         self.fsm.changeState(State.EVENTS.OFFLINE)
-        self.assertEqual(self.fsm.getState(), "OfflineStartable")
+        self.assertEqual(self.fsm.getStateName(), "OfflineStartable")
         
         #Set state to OfflineStoppable
         self.fsm.changeState(State.EVENTS.RUN)
-        self.assertEqual(self.fsm.getState(), "OfflineStoppable")
+        self.assertEqual(self.fsm.getStateName(), "OfflineStoppable")
         0
         
         #Set state to OfflineStartable
         self.fsm.changeState(State.EVENTS.STOP)
-        self.assertEqual(self.fsm.getState(), "OfflineStartable")
+        self.assertEqual(self.fsm.getStateName(), "OfflineStartable")
         0
         
         #Set state to OfflineSetup
         self.fsm.changeState(State.EVENTS.DATABAD)
-        self.assertEqual(self.fsm.getState(), "OfflineSetup")
+        self.assertEqual(self.fsm.getStateName(), "OfflineSetup")
         0
         
         #Fail to set state to OfflineStoppable
         self.fsm.changeState(State.EVENTS.RUN)
-        self.assertEqual(self.fsm.getState(), "OfflineSetup")
+        self.assertEqual(self.fsm.getStateName(), "OfflineSetup")
     

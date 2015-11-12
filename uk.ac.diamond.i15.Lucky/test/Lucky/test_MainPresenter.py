@@ -18,7 +18,7 @@ class MainPresenterTest(unittest.TestCase):
     def tearDown(self):
         self.mp = None
 
-class ModeTransitionTest(MainPresenterTest):
+class StartupModeTest(MainPresenterTest):
     def runTest(self):
         #Reset the Main Presenter to be our own object.
         dM = MainData(mode=(0, 1))
@@ -28,8 +28,12 @@ class ModeTransitionTest(MainPresenterTest):
         dM = MainData(mode=(1, 0))
         self.mp = MainPresenter(dM=dM)
         self.assertEqual(self.mp.getModeTransition(), State.EVENTS.LIVE, "Expected live, got offline transition")
-        
-class RunStopStateChangesTest(MainPresenterTest):
+
+class GetStateTest(MainPresenterTest):
+    def runTest(self):
+        self.assertEqual(self.mp.getSMStateName(), "OfflineSetup", "Expected OfflineSetup at startup")
+   
+class DataValidRunStopStateChangesTest(MainPresenterTest):
     def runTest(self):
         #Set allDataPresent
         self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled by default')
@@ -101,10 +105,19 @@ class UpdateTextFieldTest(MainPresenterTest):
     
 class ModeSettingTest(MainPresenterTest):
     def runTest(self):
-        #Receive state from UI, check only one active, update model
-        #See also line 70!
-        pass
-
+        self.assertEqual(self.mp.getSMStateName(), "OfflineSetup", "Expected OfflineSetup at startup")
+        
+        #Set to live setup
+        uiData = (1, 0)
+        self.mp.setModeTrigger(uiData)
+        self.assertEqual(self.mp.getSMStateName(), "LiveSetup")
+        
+        #Set to offline setup
+        uiData = (0, 1)
+        self.mp.setModeTrigger(uiData)
+        self.assertEqual(self.mp.getSMStateName(), "OfflineSetup")
+        
+        
 class CalibrationTypeSettingTest(MainPresenterTest):
     def runTest(self):
         #Receive state from UI, check only one active, update model

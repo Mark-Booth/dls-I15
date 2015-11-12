@@ -60,7 +60,7 @@ class LiveStartable(LiveState):
         super(LiveStartable, self).__init__()
         self.name = "LiveStartable"
         self.transitions = {State.EVENTS.DATABAD : LiveSetup,
-                            State.EVENTS.OFFLINE : OfflineSetup,
+                            State.EVENTS.OFFLINE : OfflineStartable,
                             State.EVENTS.RUN     : LiveStoppable}
     
     def run(self, dataModel):

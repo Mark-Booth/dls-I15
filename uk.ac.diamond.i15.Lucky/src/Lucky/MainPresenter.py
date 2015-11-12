@@ -17,14 +17,6 @@ class MainPresenter(object):
             self.dataModel = dM
         self.stateMach = StateMachine(self)
         
-    def getModeTransition(self):
-        if self.dataModel.mode == (1, 0):
-            return State.EVENTS.LIVE
-        elif self.dataModel.mode == (0, 1):
-            return State.EVENTS.OFFLINE
-        else:
-            raise BadModelStateException("Invalid mode setting detected")
-    
     def runTrigger(self):
         self.stateMach.changeState(State.EVENTS.RUN)
     
@@ -33,7 +25,27 @@ class MainPresenter(object):
     
     def dataValidTrigger(self):
         self.stateMach.changeState(State.EVENTS.DATAGOOD)
+    
+    def setModeTrigger(self, uiData):
+        self.stateMach.changeState(self.getModeTransition(uiData))
+    
+    def getModeTransition(self, inputMode=None):
+        if inputMode == None:
+            inputMode = self.dataModel.mode
         
+        if inputMode == (1, 0):
+            return State.EVENTS.LIVE
+        elif inputMode == (0, 1):
+            return State.EVENTS.OFFLINE
+        else:
+            raise BadModelStateException("Invalid mode setting detected")
+    
+    def getSMStateName(self):
+        return self.stateMach.getStateName()
+    
+    def getSMState(self):
+        return self.stateMach.currentState
+    
 
 class StateMachine(object):
     def __init__(self, mp):
@@ -54,5 +66,5 @@ class StateMachine(object):
             self.currentState = nextState()
             self.currentState.run(self.mainPres.dataModel)
     
-    def getState(self):
+    def getStateName(self):
         return self.currentState.name

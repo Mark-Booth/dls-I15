@@ -19,12 +19,23 @@ class MainPresenter(object):
         
     def runTrigger(self):
         self.stateMach.changeState(State.EVENTS.RUN)
+        #Start a new calculation thread and kick off the calcs
     
     def stopTrigger(self):
         self.stateMach.changeState(State.EVENTS.STOP)
+        #Kill the calculation thread
     
-    def dataValidTrigger(self):
-        self.stateMach.changeState(State.EVENTS.DATAGOOD)
+    def dataValidTrigger(self, noData=False):
+        if noData:
+            dataValid = not self.dataModel.allDataPresent
+        else:
+            pass
+        
+        if dataValid:
+            event = State.EVENTS.DATAGOOD
+        else:
+            event = State.EVENTS.DATABAD
+        self.stateMach.changeState(event)
     
     def setModeTrigger(self, uiData):
         self.stateMach.changeState(self.getModeTransition(uiData))

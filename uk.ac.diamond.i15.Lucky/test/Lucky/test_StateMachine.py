@@ -32,5 +32,44 @@ class GetStateTest(FSMTest):
 
 class StateChangesTest(FSMTest):
     def runTest(self):
-        pass
-
+        self.assertEqual(self.fsm.getState(), "LiveSetup")
+        
+        #Set state to LiveStartable
+        self.fsm.changeState(State.EVENTS.DATAGOOD)
+        self.assertEqual(self.fsm.getState(), "LiveStartable")
+        
+        #Set state to LiveStoppable
+        self.fsm.changeState(State.EVENTS.RUN)
+        self.assertEqual(self.fsm.getState(), "LiveStoppable")
+        
+        #Fail to set state to OfflineStoppable
+        self.fsm.changeState(State.EVENTS.OFFLINE)
+        self.assertEqual(self.fsm.getState(), "LiveStoppable")
+        
+        #Set state to LiveStartable
+        self.fsm.changeState(State.EVENTS.STOP)
+        self.assertEqual(self.fsm.getState(), "LiveStartable")
+        
+        #Set state to OfflineStartable
+        self.fsm.changeState(State.EVENTS.OFFLINE)
+        self.assertEqual(self.fsm.getState(), "OfflineStartable")
+        
+        #Set state to OfflineStoppable
+        self.fsm.changeState(State.EVENTS.RUN)
+        self.assertEqual(self.fsm.getState(), "OfflineStoppable")
+        0
+        
+        #Set state to OfflineStartable
+        self.fsm.changeState(State.EVENTS.STOP)
+        self.assertEqual(self.fsm.getState(), "OfflineStartable")
+        0
+        
+        #Set state to OfflineSetup
+        self.fsm.changeState(State.EVENTS.DATABAD)
+        self.assertEqual(self.fsm.getState(), "OfflineSetup")
+        0
+        
+        #Fail to set state to OfflineStoppable
+        self.fsm.changeState(State.EVENTS.RUN)
+        self.assertEqual(self.fsm.getState(), "OfflineSetup")
+    

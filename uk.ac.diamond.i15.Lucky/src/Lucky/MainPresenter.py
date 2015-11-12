@@ -16,7 +16,6 @@ class MainPresenter(object):
         else:
             self.dataModel = dM
         
-    
     def getModeTransition(self):
         if self.dataModel.mode == (1, 0):
             return State.EVENTS.LIVE
@@ -32,7 +31,9 @@ class StateMachine(object):
         #This is a slightly convoluted way to avoid importing StartState
         self.currentState = State().next(State.EVENTS.START)()
         self.currentState.run()
-        self.changeState(State.EVENTS.LIVE)
+        
+        #Set the StateMachine based on the dataModel of the mainPres
+        self.changeState(self.mainPres.getModeTransition())
         
     def changeState(self, event):
         while True:

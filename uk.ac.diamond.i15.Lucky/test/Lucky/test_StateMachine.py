@@ -7,6 +7,7 @@ import unittest
 
 from Lucky.MainPresenter import StateMachine
 from Lucky.DataModel import MainData
+from Lucky.MPStates import State
 
 class FSMTest(unittest.TestCase):
     def setUp(self):
@@ -21,6 +22,9 @@ class FSMTest(unittest.TestCase):
 class MockMainPresenter(object):
     def __init__(self, dM):
         self.dataModel = dM
+    
+    def getModeTransition(self):
+        return State.EVENTS.LIVE
 
 class GetStateTest(FSMTest):
     def runTest(self):

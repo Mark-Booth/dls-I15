@@ -41,8 +41,9 @@ class DataValidRunStopStateChangesTest(MainPresenterTest):
         self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled by default')
         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled by default')
          
-        #Check all data valid: Activate run by toggling
-        self.mp.dataValidTrigger()
+        #Data valid: Activate run by toggling
+        self.mp.dataValidTrigger(noData=True)
+        self.assertTrue(self.mp.dataModel.allDataPresent, 'All data valid: not valid.')
         self.assertTrue(self.mp.dataModel.runEnabled, 'All data valid: Run should be enabled')
         self.assertFalse(self.mp.dataModel.stopEnabled, 'All data valid: Stop should be disabled')
          
@@ -55,6 +56,12 @@ class DataValidRunStopStateChangesTest(MainPresenterTest):
         self.mp.stopTrigger()
         self.assertTrue(self.mp.dataModel.runEnabled, 'Stop triggered: Run should be disabled')
         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop triggered: Stop should be enabled')
+        
+        #Data invalid
+        self.mp.dataValidTrigger(noData=True)
+        self.assertFalse(self.mp.dataModel.allDataPresent, 'All data not valid: valid.')
+        self.assertFalse(self.mp.dataModel.runEnabled, 'All data not valid: Run should be enabled')
+        self.assertFalse(self.mp.dataModel.stopEnabled, 'All data not valid: Stop should be disabled')
         
         
 #         with self.assertRaises(BadModelStateException):

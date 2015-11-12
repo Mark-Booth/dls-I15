@@ -10,10 +10,12 @@ from LuckyExceptions import BadModelStateException
 
 class MainPresenter(object):
     def __init__(self, dM = None):
+        #Create the data model and the state machine
         if dM == None:
             self.dataModel = MainData()
         else:
             self.dataModel = dM
+        
     
     def getModeTransition(self):
         if self.dataModel.mode == (1, 0):
@@ -24,8 +26,8 @@ class MainPresenter(object):
             raise BadModelStateException("Invalid mode setting detected")
 
 class StateMachine(object):
-    def __init__(self, dM):
-        self.dataModel = dM
+    def __init__(self, mp):
+        self.mainPres = mp
         
         #This is a slightly convoluted way to avoid importing StartState
         self.currentState = State().next(State.EVENTS.START)()
@@ -38,7 +40,7 @@ class StateMachine(object):
             if nextState == self.currentState:
                 break
             self.currentState = nextState()
-            self.currentState.run(self.dataModel)
+            self.currentState.run(self.mainPres.dataModel)
     
     def getState(self):
         return self.currentState.name

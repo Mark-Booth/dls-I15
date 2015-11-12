@@ -37,12 +37,12 @@ class RunStopPressActiveChangesTest(MainPresenterTest):
         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled by default')
          
         #Activate run by toggling
-        self.mpSM.changeState(State.EVENTS.DATAGOOD)
+        self.mp.stateMach.changeState(State.EVENTS.DATAGOOD)
         self.assertTrue(self.mp.dataModel.runEnabled, 'Run should be enabled with all data present')
         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled with all data present')
          
         #Activate stop, deactivate run
-        self.mpSM.changeState(State.EVENTS.RUN)
+        self.mp.stateMach.changeState(State.EVENTS.RUN)
         self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled after starting')
         self.assertTrue(self.mp.dataModel.stopEnabled, 'Stop should be enabled after starting')
          

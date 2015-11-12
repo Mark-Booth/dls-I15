@@ -48,6 +48,7 @@ class LiveSetupTest(MPStateTest):
         self.assertFalse(self.dM.runEnabled, "LiveSetup: Run control enabled")
         self.assertFalse(self.dM.stopEnabled, "LiveSetup: Stop control enabled")
         self.assertTrue(self.dM.allUIControlsEnabled, "LiveSetup: UI controls disabled")
+        self.assertFalse(self.dM.allDataPresent, "LiveSetup: data should be invalid")
 
 
 class LiveStartableTest(MPStateTest):
@@ -72,6 +73,7 @@ class LiveStartableTest(MPStateTest):
         self.assertTrue(self.dM.runEnabled, "LiveStartable: Run control disabled")
         self.assertFalse(self.dM.stopEnabled, "LiveStartable: Stop control enabled")
         self.assertTrue(self.dM.allUIControlsEnabled, "LiveStartable: UI controls disabled")
+        self.assertTrue(self.dM.allDataPresent, "LiveStartable: data should be valid")
 
 class LiveStoppableTest(MPStateTest):
     def runTest(self):
@@ -95,6 +97,7 @@ class LiveStoppableTest(MPStateTest):
         self.assertFalse(self.dM.runEnabled, "LiveStoppable: Run control enabled")
         self.assertTrue(self.dM.stopEnabled, "LiveStoppable: Stop control disabled")
         self.assertFalse(self.dM.allUIControlsEnabled, "LiveStoppable: UI controls enabled")
+        self.assertTrue(self.dM.allDataPresent, "LiveStoppable: data should be valid")
 
 class OfflineSetupTest(MPStateTest):
     def runTest(self):
@@ -119,6 +122,7 @@ class OfflineSetupTest(MPStateTest):
         self.assertFalse(self.dM.runEnabled, "OfflineSetup: Run control enabled")
         self.assertFalse(self.dM.stopEnabled, "OfflineSetup: Stop control enabled")
         self.assertTrue(self.dM.allUIControlsEnabled, "OfflineSetup: UI controls disabled")
+        self.assertFalse(self.dM.allDataPresent, "OfflineSetup: data should be invalid")
 
 
 class OfflineStartableTest(MPStateTest):
@@ -143,6 +147,7 @@ class OfflineStartableTest(MPStateTest):
         self.assertTrue(self.dM.runEnabled, "OfflineStartable: Run control disabled")
         self.assertFalse(self.dM.stopEnabled, "OfflineStartable: Stop control enabled")
         self.assertTrue(self.dM.allUIControlsEnabled, "OfflineStartable: UI controls disabled")
+        self.assertTrue(self.dM.allDataPresent, "OfflineStartable: data should be valid")
 
 class OfflineStoppableTest(MPStateTest):
     def runTest(self):
@@ -166,3 +171,4 @@ class OfflineStoppableTest(MPStateTest):
         self.assertFalse(self.dM.runEnabled, "OfflineStoppable: Run control enabled")
         self.assertTrue(self.dM.stopEnabled, "OfflineStoppable: Stop control disabled")
         self.assertFalse(self.dM.allUIControlsEnabled, "OfflineStoppable: UI controls enabled")
+        self.assertTrue(self.dM.allDataPresent, "OfflineStoppable: data should be valid")

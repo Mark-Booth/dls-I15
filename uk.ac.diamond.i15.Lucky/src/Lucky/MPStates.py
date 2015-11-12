@@ -54,6 +54,7 @@ class LiveSetup(LiveState):
         dataModel.runEnabled = False
         dataModel.stopEnabled = False
         dataModel.allUIControlsEnabled = True
+        dataModel.allDataPresent = False
 
 class LiveStartable(LiveState):
     def __init__(self):
@@ -68,6 +69,7 @@ class LiveStartable(LiveState):
         dataModel.runEnabled = True
         dataModel.stopEnabled = False
         dataModel.allUIControlsEnabled = True
+        dataModel.allDataPresent = True
 
 class LiveStoppable(LiveState):
     def __init__(self):
@@ -80,6 +82,7 @@ class LiveStoppable(LiveState):
         dataModel.runEnabled = False
         dataModel.stopEnabled = True
         dataModel.allUIControlsEnabled = False
+        dataModel.allDataPresent = True
 
 
 #Offline state classes
@@ -104,6 +107,7 @@ class OfflineSetup(OfflineState):
         dataModel.runEnabled = False
         dataModel.stopEnabled = False
         dataModel.allUIControlsEnabled = True
+        dataModel.allDataPresent = False
 
 class OfflineStartable(OfflineState):
     def __init__(self):
@@ -118,6 +122,7 @@ class OfflineStartable(OfflineState):
         dataModel.runEnabled = True
         dataModel.stopEnabled = False
         dataModel.allUIControlsEnabled = True
+        dataModel.allDataPresent = True
 
 class OfflineStoppable(OfflineState):
     def __init__(self):
@@ -130,3 +135,5 @@ class OfflineStoppable(OfflineState):
         dataModel.runEnabled = False
         dataModel.stopEnabled = True
         dataModel.allUIControlsEnabled = False
+        dataModel.allDataPresent = True
+        

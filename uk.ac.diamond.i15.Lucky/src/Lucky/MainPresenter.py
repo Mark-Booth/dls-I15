@@ -45,12 +45,10 @@ class MainPresenter(object):
     def setCalibTypeTrigger(self, uiData):
         self.dataModel.calibType = uiData
     
-    def pathChangedTrigger(self, uiText, dirPath=False):
-        if not((dirPath and os.path.isdir(uiText)) 
-               or os.path.exists(uiText)):
-            raise InvalidPathException('Given path '+uiText+' could not be found')
+    def changeDataDirTrigger(self, uiText):
+        pass
     
-    def numberChangedTrigger(self, uiNumber):
+    def changeIntegrationSetupTrigger(self, uiNumbs):
         pass
     
     def calibConfigUpdateTrigger(self, calibConfig):
@@ -75,6 +73,12 @@ class MainPresenter(object):
     
     def getSMState(self):
         return self.stateMach.currentState
+    
+    def isValidPath(self, uiText, dirPath=False):
+        return (dirPath and os.path.isdir(uiText)) or (not dirPath and os.path.isfile(uiText))
+    
+    def isValidNumber(self, uiNum):
+        pass
     
     
 class StateMachine(object):

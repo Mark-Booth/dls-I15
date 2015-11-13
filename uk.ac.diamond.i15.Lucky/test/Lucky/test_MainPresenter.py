@@ -144,6 +144,9 @@ class USDSPairSelectionTest(MainPresenterTest):
         with self.assertRaises(IllegalArgumentException):
             self.mp.changeUSDSPairTrigger()
         
+        with self.assertRaises(IllegalArgumentException):
+            self.mp.changeUSDSPairTrigger(inc=True, pairNr=14)
+        
         self.assertTrue(self.mp.changeUSDSPairTrigger(pairNr=12), "Failed to change USDS pair to 12")
         self.assertEqual(self.mp.dataModel.usdsPair, 12, "US/DS pair has not updated")
         self.assertFalse(self.mp.changeUSDSPairTrigger(pairNr=-34), "Negative number for pair index accepted")
@@ -157,6 +160,8 @@ class USDSPairSelectionTest(MainPresenterTest):
         self.assertEqual(self.mp.dataModel.usdsPair, 1, "US/DS pair has not updated")
         self.assertTrue(self.mp.changeUSDSPairTrigger(dec=True), "US/DS pair has not decremented")
         self.assertEqual(self.mp.dataModel.usdsPair, 0, "US/DS pair has not updated")
+        
+        #Add tests for multiple inputs
 
 class ChangeIntegrationConfigTest(MainPresenterTest):
     def runTest(self):

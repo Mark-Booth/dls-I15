@@ -7,9 +7,9 @@ Created on 5 Nov 2015
 import os
 import numbers
 
-from MPStates import State
-from DataModel import (CalibrationConfigData, MainData)
-from LuckyExceptions import BadModelStateException
+from Lucky.MPStates import State
+from Lucky.DataModel import (CalibrationConfigData, MainData)
+from Lucky.LuckyExceptions import BadModelStateException, IllegalArgumentException
 
 class MainPresenter(object):
     def __init__(self, dM = None):
@@ -60,8 +60,42 @@ class MainPresenter(object):
     def calibConfigUpdateTrigger(self, calibConfig):
         pass
     
-    def changeUSDSPairTrigger(self, inc=False, dec=False, pairNr=-1):
-        pass
+    def changeUSDSPairTrigger(self, inc=False, dec=False, pairNr=False):
+        if pairNr is not False and not (inc or dec):
+            if pairNr >= 0:
+                self.dataModel.usdsPair = pairNr
+                return True
+            else:
+                return False
+        
+        if inc and not (dec or pairNr is not False):
+            usdsPair = self.dataModel.usdsPair + 1
+            return self.changeUSDSPairTrigger(pairNr=usdsPair)
+        
+        if dec and not (inc or pairNr is not False):
+            usdsPair = self.dataModel.usdsPair - 1
+            return self.changeUSDSPairTrigger(pairNr=usdsPair)
+        
+        raise IllegalArgumentException("Found none of inc, dec or a pairNr value")
+#         if not(inc or dec):
+#             if pairNr < 0:
+#                 return False
+#             else:
+#                 self.dataModel.usdsPair = pairNr
+#         
+#         if inc and not(dec and pairNr < 0):
+#             
+#             
+#             
+#             else:
+#                 raise IllegalArgumentException("Found none of inc, dec or a pairNr value")
+#         if 
+#         
+#         if pairNr >= 0:
+#             
+#             return True
+#         if inc:
+            
     
     def isDataValid(self):
         return None

@@ -7,7 +7,7 @@ import unittest
 import os
 
 import Lucky
-from Lucky.LuckyExceptions import BadModelStateException
+from Lucky.LuckyExceptions import BadModelStateException, IllegalArgumentException
 from Lucky.DataModel import (CalibrationConfigData, MainData)
 from Lucky.MainPresenter import MainPresenter
 from Lucky.MPStates import State
@@ -66,8 +66,6 @@ class DataValidRunStopStateChangesTest(MainPresenterTest):
         self.assertFalse(self.mp.dataModel.runEnabled, 'All data not valid: Run should be enabled')
         self.assertFalse(self.mp.dataModel.stopEnabled, 'All data not valid: Stop should be disabled')
         
-        
-
 class IsValidPathTest(MainPresenterTest):
     def runTest(self):
         dataDir = os.path.join(self.testPkgDir, "testData")
@@ -103,6 +101,10 @@ class ModeSettingTest(MainPresenterTest):
         self.mp.setModeTrigger(uiData)
         self.assertEqual(self.mp.getSMStateName(), "OfflineSetup")
         
+        with self.assertRaises(BadModelStateException):
+            uiData = (1, 1)
+            self.mp.setModeTrigger(uiData)
+            #Invalid mode setting accepted
         
 class CalibrationTypeSettingTest(MainPresenterTest):
     def runTest(self):
@@ -124,11 +126,52 @@ class CalibrationTypeSettingTest(MainPresenterTest):
         with self.assertRaises(BadModelStateException):
             uiData = (1, 1, 0)
             self.mp.setCalibTypeTrigger(uiData)
+            #Calibration selection should be invalid
+
+class ChangeDataDirTest(MainPresenterTest):
+    def runTest(self):
+        dataDir = os.path.join(self.testPkgDir, "testData")
+        self.assertTrue(self.mp.changeDataDirTrigger(dataDir), "Data dir should be valid")
+        self.assertEqual(self.mp.dataModel.dataDir, dataDir, "Data dir has not been updated")
+        
+#         currUSDSPairTab = self.mp.dataModel.usdsPairTable
+#         self.assertEqual(len(currUSDSPairTab), 1, "US/DS pair table not correctly updated")
+#         self.assertEqual(len(currUSDSPairTab[0]), 2, "US/DS pair table has wrong structure")
+#         self.assertEqual(currUSDSPairTab[0][0], "T_635_1.txt", "US/DS pair table incorrectly populated")
 
 class USDSPairSelectionTest(MainPresenterTest):
     def runTest(self):
-        #Needs to test incrementing, decrement; needs to test getting string directly from text box
-        pass
+        with self.assertRaises(IllegalArgumentException):
+            self.mp.changeUSDSPairTrigger()
+        
+        self.assertTrue(self.mp.changeUSDSPairTrigger(pairNr=12), "Failed to change USDS pair to 12")
+        self.assertEqual(self.mp.dataModel.usdsPair, 12, "US/DS pair has not updated")
+        self.assertFalse(self.mp.changeUSDSPairTrigger(pairNr=-34), "Negative number for pair index accepted")
+        self.assertEqual(self.mp.dataModel.usdsPair, 12, "US/DS pair has updated")
+        
+        self.mp.dataModel.usdsPair = 0
+        
+        self.assertFalse(self.mp.changeUSDSPairTrigger(dec=True), "US/DS pair decremented to negative number")
+        self.assertEqual(self.mp.dataModel.usdsPair, 0, "US/DS pair has updated")
+        self.assertTrue(self.mp.changeUSDSPairTrigger(inc=True), "US/DS pair has not incremented")
+        self.assertEqual(self.mp.dataModel.usdsPair, 1, "US/DS pair has not updated")
+        self.assertTrue(self.mp.changeUSDSPairTrigger(dec=True), "US/DS pair has not decremented")
+        self.assertEqual(self.mp.dataModel.usdsPair, 0, "US/DS pair has not updated")
+
+class ChangeIntegrationConfigTest(MainPresenterTest):
+    def runTest(self):
+        integSetup = [300, 800, 100]
+        uiData = integSetup
+        self.assertEqual(self.mp.changeIntegrationConfigTrigger(uiData), [True, True, True], "Integration config should be valid")
+        self.assertEqual(self.mp.dataModel.integrationConf, integSetup, "Integration config has not been updated")
+        
+        integSetup = [300, 100, 200]
+        self.mp.assertEqual(self.mp.changeIntegrationConfigTrigger(uiData), [True, False, True], "Integration config should not be valid")
+        self.assertNotEqual(self.mp.dataModel.integrationConf, integSetup, "Integration config has been updated")
+        
+        integSetup = [300, 800, -10]
+        self.mp.assertEqual(self.mp.changeIntegrationConfigTrigger(uiData), [True, True, False], "Integration config should not be valid")
+        self.assertEqual(self.mp.dataModel.integrationConf, integSetup, "Integration config has been updated")
 
 class CalibrationConfigUpdateTest(MainPresenterTest):
     def runTest(self):
@@ -139,7 +182,7 @@ class CalibrationConfigUpdateTest(MainPresenterTest):
     
     
     class RunPressedAllUIChangesTest(MainPresenterTest):
-    pass
+        pass
 #     def runTest(self):
 #         self.mp.dataModel.allDataPresent = True
 #         self.mp.toggleButtonStates()

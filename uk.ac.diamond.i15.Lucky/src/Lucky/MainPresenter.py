@@ -9,7 +9,7 @@ import numbers
 
 from MPStates import State
 from DataModel import (CalibrationConfigData, MainData)
-from LuckyExceptions import (BadModelStateException, InvalidPathException)
+from LuckyExceptions import BadModelStateException
 
 class MainPresenter(object):
     def __init__(self, dM = None):
@@ -42,20 +42,25 @@ class MainPresenter(object):
     
     def setModeTrigger(self, uiData):
         self.stateMach.changeState(self.getModeTransition(uiData))
+        #No return as this is a radio button option
     
     def setCalibTypeTrigger(self, uiData):
         if sum(uiData) != 1:
             raise BadModelStateException("Only one calibration option can be selected")
         self.dataModel.calibType = uiData
+        #No return as this is a radio button option
     
     def changeDataDirTrigger(self, uiText):
         #if self.isValidPath(uiText)
         pass
     
-    def changeIntegrationSetupTrigger(self, uiNumbs):
+    def changeIntegrationConfigTrigger(self, uiNumbs):
         pass
     
     def calibConfigUpdateTrigger(self, calibConfig):
+        pass
+    
+    def changeUSDSPairTrigger(self, inc=False, dec=False, pairNr=-1):
         pass
     
     def isDataValid(self):

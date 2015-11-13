@@ -110,17 +110,26 @@ class RunPressedAllUIChangesTest(MainPresenterTest):
 #         self.mp.doStop(test=True)
 #         self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled in live-mode')
         
-class UpdateTextFieldTest(MainPresenterTest):
+class IsValidPathTest(MainPresenterTest):
     def runTest(self):
         dataDir = os.path.join(self.testPkgDir, "testData")
         uiText = os.path.join(dataDir, "CalibF1.txt")
-        self.mp.textChangedTrigger(uiText, self.mp.dataModel, )
-        self.assertEqual(self.dataModel.dataDir, uiText, "Text field not updated")
+        
+        self.assertTrue(self.mp.isValidPath(uiText), "File "+uiText+" does not exist but should")
+        self.assertTrue(self.mp.isValidPath(dataDir, dirPath=True), "Directory "+dataDir+" does not exist but should")
+        self.assertFalse(self.mp.isValidPath(uiText+"badger"), "File "+uiText+"badger does exists but should not")
+        self.assertFalse(self.mp.isValidPath(dataDir), "Directory "+dataDir+" is a file")
         
     
-class UpdateNumberFieldTest(MainPresenterTest):
+class IsValidNumberTest(MainPresenterTest):
     def runTest(self):
-        pass
+        intTestValue = 900
+        floatTestValue = 15.5
+        notANumberValue = "Fish"
+        
+        self.assertTrue(self.mp.isValidNumber(intTestValue, intTestValue+" is not a number"))
+        self.assertTrue(self.mp.isValidNumber(floatTestValue), floatTestValue+" is not a number")
+        self.assertFalse(self.mp.isValidNumber(notANumberValue), notANumberValue+"is a number")
     
 class ModeSettingTest(MainPresenterTest):
     def runTest(self):

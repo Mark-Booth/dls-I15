@@ -67,49 +67,7 @@ class DataValidRunStopStateChangesTest(MainPresenterTest):
         self.assertFalse(self.mp.dataModel.stopEnabled, 'All data not valid: Stop should be disabled')
         
         
-#         with self.assertRaises(BadModelStateException):
-#             self.mp.dataModel.allDataPresent = False
-#             self.mp.toggleButtonStates()
-#          
-#         #Toggle again and unset allDataPresent
-#         self.mp.dataModel.allDataPresent = True
-#         self.mp.toggleButtonStates()
-#         self.mp.dataModel.allDataPresent = False
-#         self.mp.toggleButtonStates()
-#         self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled without data')
-#         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled without data')
 
-class RunPressedAllUIChangesTest(MainPresenterTest):
-    pass
-#     def runTest(self):
-#         self.mp.dataModel.allDataPresent = True
-#         self.mp.toggleButtonStates()
-#         
-#         #This is for offline-mode
-#         ####
-#         #Fake starting a run
-#         self.mp.doRun(test=True)
-#         self.assertFalse(self.mp.dataModel.allUIControlsEnabled, 'UI controls should be disabled after start')
-#         self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled after start')
-#         self.assertTrue(self.mp.dataModel.stopEnabled, 'Stop should be enabled after start')
-#         self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled during run')
-#         
-#         #Fake stopping a run
-#         self.mp.doStop(test=True)
-#         self.assertTrue(self.mp.dataModel.allUIControlsEnabled, 'UI controls should be enabled after stop')
-#         self.assertTrue(self.mp.dataModel.runEnabled, 'Run should be enabled after stop')
-#         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled after stop')
-#         self.assertTrue(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be enabled after stop')
-# 
-#         #This is for live-mode
-#         ####
-#         self.mp.setMode()#TODO This needs thought
-#         self.mp.doRun(test=True)
-#         self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled in live-mode')
-#         
-#         self.mp.doStop(test=True)
-#         self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled in live-mode')
-        
 class IsValidPathTest(MainPresenterTest):
     def runTest(self):
         dataDir = os.path.join(self.testPkgDir, "testData")
@@ -162,6 +120,10 @@ class CalibrationTypeSettingTest(MainPresenterTest):
         uiData = (1, 0, 0)
         self.mp.setCalibTypeTrigger(uiData)
         self.assertEqual(self.mp.dataModel.calibType, uiData, "Incorrect setting: expecting "+str(uiData))
+        
+        with self.assertRaises(BadModelStateException):
+            uiData = (1, 1, 0)
+            self.mp.setCalibTypeTrigger(uiData)
 
 class USDSPairSelectionTest(MainPresenterTest):
     def runTest(self):
@@ -172,3 +134,38 @@ class CalibrationConfigUpdateTest(MainPresenterTest):
     def runTest(self):
         #Create new CCData object; pass to method; check mp values are now updated
         pass
+    
+    
+    
+    
+    class RunPressedAllUIChangesTest(MainPresenterTest):
+    pass
+#     def runTest(self):
+#         self.mp.dataModel.allDataPresent = True
+#         self.mp.toggleButtonStates()
+#         
+#         #This is for offline-mode
+#         ####
+#         #Fake starting a run
+#         self.mp.doRun(test=True)
+#         self.assertFalse(self.mp.dataModel.allUIControlsEnabled, 'UI controls should be disabled after start')
+#         self.assertFalse(self.mp.dataModel.runEnabled, 'Run should be disabled after start')
+#         self.assertTrue(self.mp.dataModel.stopEnabled, 'Stop should be enabled after start')
+#         self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled during run')
+#         
+#         #Fake stopping a run
+#         self.mp.doStop(test=True)
+#         self.assertTrue(self.mp.dataModel.allUIControlsEnabled, 'UI controls should be enabled after stop')
+#         self.assertTrue(self.mp.dataModel.runEnabled, 'Run should be enabled after stop')
+#         self.assertFalse(self.mp.dataModel.stopEnabled, 'Stop should be disabled after stop')
+#         self.assertTrue(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be enabled after stop')
+# 
+#         #This is for live-mode
+#         ####
+#         self.mp.setMode()#TODO This needs thought
+#         self.mp.doRun(test=True)
+#         self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled in live-mode')
+#         
+#         self.mp.doStop(test=True)
+#         self.assertFalse(self.mp.dataModel.usdsControlsEnabled, 'US/DS pair selector should be disabled in live-mode')
+        

@@ -127,9 +127,9 @@ class IsValidNumberTest(MainPresenterTest):
         floatTestValue = 15.5
         notANumberValue = "Fish"
         
-        self.assertTrue(self.mp.isValidNumber(intTestValue, intTestValue+" is not a number"))
-        self.assertTrue(self.mp.isValidNumber(floatTestValue), floatTestValue+" is not a number")
-        self.assertFalse(self.mp.isValidNumber(notANumberValue), notANumberValue+"is a number")
+        self.assertTrue(self.mp.isValidNumber(intTestValue), str(intTestValue)+" is not a number")
+        self.assertTrue(self.mp.isValidNumber(floatTestValue), str(floatTestValue)+" is not a number")
+        self.assertFalse(self.mp.isValidNumber(notANumberValue), str(notANumberValue)+"is a number")
     
 class ModeSettingTest(MainPresenterTest):
     def runTest(self):

@@ -6,7 +6,7 @@ Created on 9 Nov 2015
 
 class MainData(object):
     def __init__(self, mode=(0,1), calibType=(1,0,0), dataDir=None,
-                 usdsPair=0, integStart=0, integEnd=0, integDelta=0):
+                 usdsPair=0, integStart=500, integEnd=900, integDelta=200):
         #These relate to the calculations
         self.mode = mode
         self.calibType = calibType
@@ -14,6 +14,7 @@ class MainData(object):
         self.usdsPair = usdsPair
         self.integrationConf = [integStart, integEnd, integDelta]
         self.calibConfigData = CalibrationConfigData()
+        self.usdsPairTable = []
         
         #These are specific UI variables
         self.runEnabled = False

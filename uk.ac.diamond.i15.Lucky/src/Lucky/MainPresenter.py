@@ -4,9 +4,11 @@ Created on 5 Nov 2015
 @author: wnm24546
 '''
 
+import os
+
 from MPStates import State
 from DataModel import (CalibrationConfigData, MainData)
-from LuckyExceptions import BadModelStateException
+from LuckyExceptions import (BadModelStateException, InvalidPathException)
 
 class MainPresenter(object):
     def __init__(self, dM = None):
@@ -29,7 +31,7 @@ class MainPresenter(object):
         if noData:
             dataValid = not self.dataModel.allDataPresent
         else:
-            pass
+            dataValid = self.isDataValid()
         
         if dataValid:
             event = State.EVENTS.DATAGOOD
@@ -39,6 +41,23 @@ class MainPresenter(object):
     
     def setModeTrigger(self, uiData):
         self.stateMach.changeState(self.getModeTransition(uiData))
+    
+    def setCalibTypeTrigger(self, uiData):
+        self.dataModel.calibType = uiData
+    
+    def pathChangedTrigger(self, uiText, dirPath=False):
+        if not((dirPath and os.path.isdir(uiText)) 
+               or os.path.exists(uiText)):
+            raise InvalidPathException('Given path '+uiText+' could not be found')
+    
+    def numberChangedTrigger(self, uiNumber):
+        pass
+    
+    def calibConfigUpdateTrigger(self, calibConfig):
+        pass
+    
+    def isDataValid(self):
+        return None
     
     def getModeTransition(self, inputMode=None):
         if inputMode == None:
@@ -57,7 +76,7 @@ class MainPresenter(object):
     def getSMState(self):
         return self.stateMach.currentState
     
-
+    
 class StateMachine(object):
     def __init__(self, mp):
         self.mainPres = mp

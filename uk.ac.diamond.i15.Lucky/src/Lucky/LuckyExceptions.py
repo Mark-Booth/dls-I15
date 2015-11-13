@@ -8,6 +8,6 @@ class BadModelStateException(Exception):
     def __init__(self, message):
         super(BadModelStateException, self).__init__(message)
 
-class InvalidPathException(Exception):
+class IllegalArgumentException(Exception):
     def __init__(self, message):
-        super(InvalidPathException, self).__init__(message)
+        super(IllegalArgumentException, self).__init__(message)

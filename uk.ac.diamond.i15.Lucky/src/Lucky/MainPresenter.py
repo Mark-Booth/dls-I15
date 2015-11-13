@@ -5,6 +5,7 @@ Created on 5 Nov 2015
 '''
 
 import os
+import numbers
 
 from MPStates import State
 from DataModel import (CalibrationConfigData, MainData)
@@ -43,9 +44,12 @@ class MainPresenter(object):
         self.stateMach.changeState(self.getModeTransition(uiData))
     
     def setCalibTypeTrigger(self, uiData):
+        if sum(uiData) != 1:
+            raise BadModelStateException("Only one calibration option can be selected")
         self.dataModel.calibType = uiData
     
     def changeDataDirTrigger(self, uiText):
+        #if self.isValidPath(uiText)
         pass
     
     def changeIntegrationSetupTrigger(self, uiNumbs):
@@ -78,7 +82,7 @@ class MainPresenter(object):
         return (dirPath and os.path.isdir(uiText)) or (not dirPath and os.path.isfile(uiText))
     
     def isValidNumber(self, uiNum):
-        pass
+        return isinstance(uiNum, numbers.Number)
     
     
 class StateMachine(object):

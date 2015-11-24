@@ -13,9 +13,9 @@ import numpy as np
 class LuckyCalculations(object):
     
     def __init__(self, data, calib, integConf, bulbTemp):
-        self.intConf = integConf
         self.dataSet = data
         self.calibSet = calib
+        self.intConf = integConf
         self.bulbTemp = bulbTemp
         
         self.planckPlotRange = [500, 1000]
@@ -28,7 +28,12 @@ class LuckyCalculations(object):
         #Create a plot object
         self.plots = LuckyPlots(self)
     
-    def update(self):
+    def update(self, data=None, calib=None, integConf=None, bulbTemp=None):
+        self.dataSet = data if (data != None) else self.dataSet
+        self.calibSet = calib if (calib != None) else self.calibSet
+        self.intConf = integConf if (integConf != None) else self.intConf
+        self.bulbTemp = bulbTemp if (bulbTemp != None) else self.bulbTemp
+        
         self.updateData()
         self.fitAll()
         self.plots.reDraw(self)

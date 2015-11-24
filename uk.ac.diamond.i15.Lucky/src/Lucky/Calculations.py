@@ -30,13 +30,14 @@ class LuckyCalculations(object):
 #         self.planckEmmis = None
 #         
         self.updateData()
-        self.doFits()
+#        self.doFits()
     
     
     def updateData(self):
         #Normalises collected data
-        planckIdeal = self.planck(self.dataSet[0], 1, self.bulbTemp)
-        self.dataSet = np.c_[self.dataSet, self.dataSet[1] / self.calibSet[1] * planckIdeal]
+        self.planckIdeal = self.planck(self.dataSet[0], 1, self.bulbTemp)
+        self.planckIdeal = np.reshape(self.planckIdeal, (1, len(self.planckIdeal)))
+        self.dataSet = np.concatenate((self.dataSet, self.dataSet[1] / self.calibSet[1] * self.planckIdeal), axis=0)
         self.invWL = 1e9 / self.dataSet[0]# For Wien function
         
         #Data sets for fitting, limited by integration range
@@ -49,7 +50,7 @@ class LuckyCalculations(object):
         self.twoColData = self.twoColour(self.dataSet[0], self.dataSet[2], self.intConf[2])
         self.twoColHistFreq, self.twoColHistValues = np.histogram(self.twoColData[self.intConf[0]:self.intConf[1]], bins=range(1000,3000), density=False)
         self.twoColHistValues = np.delete(self.twoColHistValues, len(self.twoColHistFreq), 0)
-        self.twoColDataLim = self.twoColDataLim[self.intConf[0]:self.intConf[1]]
+        self.twoColDataLim = self.twoColData[self.intConf[0]:self.intConf[1]]
         
     def doFits(self):
         #Do some fitting for Planck...
@@ -78,12 +79,12 @@ class LuckyCalculations(object):
     #Planck function
     def planck(self, wavelength, emiss, temp):
         wavelength = wavelength * 1e-9
-        return (emiss / np.power(wavelength, 5)) * (2 * pi * h * np.power(c, 2)) / np.expm1((h * c)/(k * wavelength * temp))
+        return emiss / np.power(wavelength, 5) * (2 * pi * h * np.power(c, 2)) / np.expm1((h * c)/(k * wavelength * temp))
     
     #Wien function
     def wien(self, wavelength, intens):
         wavelength = wavelength * 1e-9
-        return self.wienBase(np.power(wavelength, 5) * intens * 2 / (pi * h * np.power(c, 2)))
+        return self.wienBase(np.power(wavelength, 5) * intens / (2 * pi * h * np.power(c, 2)))
         
     #Linear Wien function
     def fWien(self, wavelength, emiss, temp):

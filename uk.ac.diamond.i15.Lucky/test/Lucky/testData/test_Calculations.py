@@ -5,6 +5,7 @@ Created on 24 Nov 2015
 '''
 import unittest
 import numpy as np
+from numpy.testing import assert_array_equal
 from scipy.optimize import curve_fit
 
 from Lucky.Calculations import LuckyCalculations
@@ -23,20 +24,21 @@ class CalculationsTest(unittest.TestCase):
         self.workingCalcs(data, calib, integConf)
     
     def workingCalcs(self, data, calib, integConf):
-        from math import pi
+        from scipy.constants import h, c, k, pi
         ##Constants:
-        h=6.626*10**(-34)
-        c=3*10**8
-        Kb=1.38*10**(-23)
+        Kb = k
         
         ##Session where I define all the function needed
         def Planck(x,e,T):
-            a=np.expm1(0.0144043/(x*10**(-9))/T)
-            P=e/(x*10**(-9))**5*3.74691*10**(-16)*1/(a-1)
+            x = x*10**(-9)
+            a=np.expm1((h*c)/(k*x*T))#Order changed!! (h*c/k)/(x)/T
+            P=e/(x)**5*(2*pi*h*c**2)*1/(a) ####NB Removed 
             return P
         #Defined Wien function
         def Wien(Int,x):
-            W=Kb/h/c*np.log((x*10**(-9))**5*Int/2/pi/h/c**2)
+            #Order changed!!
+            #W=Kb/h/c*np.log((x*10**(-9))**5*Int/2/pi/h/c**2)
+            W=Kb/(h*c)*np.log((x*10**(-9))**5*Int/(2*pi*h*c**2))
             return W
         #Defined two-colour function
         def TwoCol(Int,x):
@@ -75,6 +77,7 @@ class CalculationsTest(unittest.TestCase):
         delta = integConf[2]
         
         P=Planck(x,1,2436)##Ideal Planck
+        self.P = np.reshape(P, (1, len(P)))
         Norm=y/yC*P #Normalization file
         invX=1/x*10**9 #Inverse of wavelength for Wien function
         self.W=Wien(Norm,x)
@@ -111,10 +114,13 @@ class CalculationsTest(unittest.TestCase):
 
 class DataUpdateTest(CalculationsTest):
     def runTest(self):
-        self.assertEqual(self.W, self.luckCalc.wienData, "Wien datasets differ")
-        self.assertEqual(self.Two, self.luckCalc.twoColData, "Two-colour datasets differ")
-        self.assertEqual(self.freq, self.luckCalc.twoColHistFreq, "Two-colour histogram (freq.) datasets differ")
-        self.assertEqual(self.value, self.luckCalc.twoColHistValues, "Two-colour histogram (value) datasets differ")
+        assert_array_equal(self.P, self.luckCalc.planckIdeal, "Planck ideals differ")
+        
+        
+        assert_array_equal(self.W, self.luckCalc.wienData, "Wien datasets differ")
+        assert_array_equal(self.Two, self.luckCalc.twoColData, "Two-colour datasets differ")
+        assert_array_equal(self.freq, self.luckCalc.twoColHistFreq, "Two-colour histogram (freq.) datasets differ")
+        assert_array_equal(self.value, self.luckCalc.twoColHistValues, "Two-colour histogram (value) datasets differ")
 
 # class PlanckCalcsTest(CalculationsTest):
 #     def runTest(self):

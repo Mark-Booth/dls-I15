@@ -110,9 +110,11 @@ class CalculationsTest(unittest.TestCase):
         TW=round(self.bestW[1])
         
         #Gaussian fit to the histogram two-colours
-        popt,pcov = curve_fit(gaus,self.value,self.freq,p0=[1000,TP,100])
+        popt,pcov = curve_fit(gaus,self.value,self.freq,p0=[1000,self.TPNR,100])#Changed - was TP
         Thist=round(popt[1],2)#Save Histogram temperature
         errTot=round(popt[2])
+        self.Thist = popt[1]
+        self.errTot = popt[2]
 
 class DataUpdateTest(CalculationsTest):
     def runTest(self):
@@ -146,5 +148,8 @@ class WienCalcsTest(CalculationsTest):
         assert_array_equal(self.bestW, self.luckCalc.wienFit, "Wien fits differ")
         assert_array_equal(self.Residual, self.luckCalc.wienResidual, "Wien residual datasets differ")
         
-
+class HistogramCalcsTest(CalculationsTest):
+    def runTest(self):
+        self.assertEqual(self.Thist, self.luckCalc.histTemp, "Wrong temperature calculated from histogram fit")
+        self.assertEqual(self.errTot, self.luckCalc.histErr, "Wrong histogram fit error calculated")
         

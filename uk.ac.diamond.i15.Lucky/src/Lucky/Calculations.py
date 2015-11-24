@@ -232,3 +232,5 @@ class LuckyPlots(object):
             maxes.append(np.amax(dat))
         
         return max(maxes)*1.1
+    
+    

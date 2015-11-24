@@ -60,7 +60,7 @@ class CalculationsTest(unittest.TestCase):
         #Defined linear fit for Wien function
         def FWien(x,e,T):
             a=1/T
-            b=Kb/h/c*np.log(e)
+            b=Kb/(h*c)*np.log(e)
             W=b-a*x
             return W
         #Defined Gauss fit
@@ -104,10 +104,10 @@ class CalculationsTest(unittest.TestCase):
         self.invX1=self.invX[start:end]
         self.W1=self.W[start:end]
         #Fit Wien and control that there are no inf or nan arguments in the fit
-        bestW,covarW = curve_fit(FWien,self.invX1[(np.isfinite(self.W1))],self.W1[(np.isfinite(self.W1))],p0=[1,TP])
-        Residual=self.W1-FWien(self.invX1[(np.isfinite(self.W1))],*bestW)
+        self.bestW,covarW = curve_fit(FWien,self.invX1[(np.isfinite(self.W1))],self.W1[(np.isfinite(self.W1))],p0=[1,self.TPNR]) #Changed - was TP
+        self.Residual=self.W1-FWien(self.invX1[(np.isfinite(self.W1))],*self.bestW)
         #Save Wien temperature
-        TW=round(bestW[1])
+        TW=round(self.bestW[1])
         
         #Gaussian fit to the histogram two-colours
         popt,pcov = curve_fit(gaus,self.value,self.freq,p0=[1000,TP,100])
@@ -137,8 +137,14 @@ class DataUpdateTest(CalculationsTest):
 
 class PlanckCalcsTest(CalculationsTest):
     def runTest(self):
-        assert_array_equal(self.P, self.luckCalc.planckIdeal, "Planck ideals differ")
         self.assertEqual(self.TPNR, self.luckCalc.planckTemp, "Wrong Planck temperature calculated")
         self.assertEqual(self.eP, self.luckCalc.planckEmiss, "Wrong Planck emissivity calculated")
         assert_array_equal(self.FPNR, self.luckCalc.planckFitData, "Planck datasets from fitted values differ")
+
+class WienCalcsTest(CalculationsTest):
+    def runTest(self):
+        assert_array_equal(self.bestW, self.luckCalc.wienFit, "Wien fits differ")
+        assert_array_equal(self.Residual, self.luckCalc.wienResidual, "Wien residual datasets differ")
+        
+
         

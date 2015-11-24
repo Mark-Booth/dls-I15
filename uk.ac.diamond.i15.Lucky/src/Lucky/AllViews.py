@@ -8,7 +8,7 @@ from PyQt4.QtGui import (QDialog, QDialogButtonBox, QGridLayout, QGroupBox, QHBo
 from PyQt4 import QtCore
 
 #from Lucky import CalibrationConfigView
-
+from Lucky.MainPresenter import MainPresenter
 
 class MainView(QWidget):
     def __init__(self, parent=None):
@@ -16,7 +16,10 @@ class MainView(QWidget):
         self.setWindowTitle("Lucky")
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
         
+        self.presenter = MainPresenter()
+        
         self.setupUI()
+        self.updateWidgetStates(self.presenter.dataModel)
         
     def setupUI(self):
         ####
@@ -84,26 +87,26 @@ class MainView(QWidget):
         #Integration range
         integrationTextInputWidth = 40
         startLabel = QLabel("Beginning:")
-        self.startTextBox = QLineEdit()#Default needs to be set from the model!
-        self.startTextBox.setFixedWidth(integrationTextInputWidth)
+        self.integStartTextBox = QLineEdit()#Default needs to be set from the model!
+        self.integStartTextBox.setFixedWidth(integrationTextInputWidth)
         stopLabel = QLabel("End:")
-        self.stopTextBox = QLineEdit()#Default needs to be set from the model!
-        self.stopTextBox.setFixedWidth(integrationTextInputWidth)
+        self.integStopTextBox = QLineEdit()#Default needs to be set from the model!
+        self.integStopTextBox.setFixedWidth(integrationTextInputWidth)
         deltaLabel = QLabel("Window Size:")
-        self.deltaTextBox = QLineEdit()#Default needs to be set from the model!
-        self.deltaTextBox.setFixedWidth(integrationTextInputWidth)
+        self.integDeltaTextBox = QLineEdit()#Default needs to be set from the model!
+        self.integDeltaTextBox.setFixedWidth(integrationTextInputWidth)
         nmLabel1, nmLabel2, nmLabel3 = QLabel("nm"), QLabel("nm"), QLabel("nm")
         
         integRangeGrpBox = QGroupBox("Integration Range:")
         integRangeLayout = QGridLayout()
         integRangeLayout.addWidget(startLabel, 0, 0)
-        integRangeLayout.addWidget(self.startTextBox, 0, 1)
+        integRangeLayout.addWidget(self.integStartTextBox, 0, 1)
         integRangeLayout.addWidget(nmLabel1, 0, 2)
         integRangeLayout.addWidget(stopLabel, 0, 3)
-        integRangeLayout.addWidget(self.stopTextBox, 0, 4)
+        integRangeLayout.addWidget(self.integStopTextBox, 0, 4)
         integRangeLayout.addWidget(nmLabel2, 0, 5)
         integRangeLayout.addWidget(deltaLabel, 1, 0)
-        integRangeLayout.addWidget(self.deltaTextBox, 1, 1)
+        integRangeLayout.addWidget(self.integDeltaTextBox, 1, 1)
         integRangeLayout.addWidget(nmLabel3, 1, 2)
         integRangeGrpBox.setLayout(integRangeLayout)
         controlsLayout.addWidget(integRangeGrpBox, 2, 1, 2, 2)
@@ -157,6 +160,25 @@ class MainView(QWidget):
     def calibConfClick(self):
         self.calibConfInput = CalibrationConfigView(self)
         self.calibConfInput.exec_()
+        
+###
+    def updateWidgetStates(self, mainData):
+        #Mode radio buttons
+        for i in range(len(self.modeRadBtns)):
+            self.modeRadBtns[i].setChecked(mainData.mode[i])
+        
+        #Calibration type radio buttons
+        for i in range(len(self.calibRadBtns)):
+            self.calibRadBtns[i].setChecked(mainData.calibType[i])
+        
+        #Datadir
+        
+        #US/DS pair
+        
+        #Integration controls
+        self.integStartTextBox.setText(str(mainData.integrationConf[0]))
+        self.integStopTextBox.setText(str(mainData.integrationConf[1]))
+        self.integDeltaTextBox.setText(str(mainData.integrationConf[2]))
 
 
 #####################################

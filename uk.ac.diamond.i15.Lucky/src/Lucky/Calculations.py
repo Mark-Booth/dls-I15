@@ -14,10 +14,11 @@ import matplotlib.pyplot as plt
 
 class LuckyCalculations(object):
     
-    def __init__(self, integConf, data, calib):
+    def __init__(self, data, calib, integConf, bulbTemp):
         self.intConf = integConf
         self.dataSet = data
         self.calibSet = calib
+        self.bulbTempt = bulbTemp
         
         self.planckPlotRange = [500, 1000]
         self.wienPlotRange = [1e9 / self.planckPlotRange[1], 1e9/self.planckPlotRange[0]]

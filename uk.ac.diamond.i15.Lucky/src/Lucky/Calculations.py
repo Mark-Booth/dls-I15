@@ -30,7 +30,7 @@ class LuckyCalculations(object):
 #         self.planckEmmis = None
 #         
         self.updateData()
-        self.doFits()
+        self.fitAll()
     
     
     def updateData(self):
@@ -55,28 +55,36 @@ class LuckyCalculations(object):
         self.twoColHistValues = np.delete(self.twoColHistValues, len(self.twoColHistFreq), 0)
         
         
-    def doFits(self):
+    def fitAll(self):
+        self.fitPlanck()
+        self.fitWien()
+        self.fitHistogram()
+    
+    def fitPlanck(self):
         #Do some fitting for Planck...
         ###
         self.planckFit, planckCov = curve_fit(self.planck, self.wlIntegLim, self.normIntegLim, [1,2000])
         self.planckTemp = self.planckFit[1]
         self.planckEmiss = self.planckFit[0]
-        
         #Planck with fit params(??)
         self.planckFitData = self.planck(self.wlIntegLim, self.planckEmiss, self.planckTemp)
-#         
-#         #Do some fitting for Wien...
-#         ###
-#         self.wienFit, wienCov = curve_fit(self.fWien, self.invWLIntegLim[(np.isfinite(self.wienDataIntegLim))], self.wienDataIntegLim[(np.isfinite(self.wienDataIntegLim))], p0 = [1, self.planckTemp])
-#         self.wienResidual = self.wienDataIntegLim - self.fWien(self.invWLIntegLim[(np.isfinite(self.wienDataIntegLim))], *self.wienFit)
-#         self.wienTemp = self.wienFit[1]
-#         
+    
+    def fitWien(self):
+        #Do some fitting for Wien...
+        ###
+        self.wienFit, wienCov = curve_fit(self.fWien, self.invWLIntegLim[(np.isfinite(self.wienDataIntegLim))], self.wienDataIntegLim[(np.isfinite(self.wienDataIntegLim))], p0=[1, self.planckTemp])
+        self.wienResidual = self.wienDataIntegLim - self.fWien(self.invWLIntegLim[(np.isfinite(self.wienDataIntegLim))], *self.wienFit)
+        self.wienTemp = self.wienFit[1]
+
+        pass
+    
+    def fitHistogram(self):
 #         #Gaussian fit of two colour histogram
 #         ###
 #         self.histFit, histCov = curve_fit(self.gaus, self.twoColHistFreq, p0=[1000,self.planckTemp,100])
 #         self.histTemp = self.histFit[1]
 #         self.histErr = self.histFit[2]
-#     
+        pass
     
     #Planck function
     def planck(self, wavelength, emiss, temp):
@@ -90,9 +98,8 @@ class LuckyCalculations(object):
         
     #Linear Wien function
     def fWien(self, wavelength, emiss, temp):
-        wavelength = wavelength * 1e-9
-        wienVal = self.wienBase(emiss)
-        return wienVal - (1/temp) * wavelength
+#         wavelength = wavelength * 1e-9
+        return self.wienBase(emiss) - (1/temp) * wavelength
     
     #Wien support function (this is just recycling code)
     def wienBase(self, exponent):

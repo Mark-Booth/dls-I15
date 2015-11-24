@@ -19,6 +19,9 @@ class LuckyCalculations(object):
         self.dataSet = data
         self.calibSet = calib
         
+        self.planckPlotRange = [500, 1000]
+        self.wienPlotRange = [1e9 / self.planckPlotRange[1], 1e9/self.planckPlotRange[0]]
+        
         #Calculated values
 #         self.wienData = None
 #         self.twoColourData = None
@@ -33,7 +36,7 @@ class LuckyCalculations(object):
         #Normalises collected data
         planckIdeal = self.planck(self.dataSet[0], 1, self.bulbTemp)
         self.dataSet = np.c_[self.dataSet, self.dataSet[1] / self.calibSet[1] * planckIdeal]
-        self.invWL = 1 / self.dataSet[0] * 1e9 # For Wien function
+        self.invWL = 1e9 / self.dataSet[0]# For Wien function
         
         #Data sets for fitting, limited by integration range
         self.wlIntegLim = self.dataSet[0][self.intConf[0]:self.intConf[1]]
@@ -45,6 +48,7 @@ class LuckyCalculations(object):
         self.twoColData = self.twoColour(self.dataSet[0], self.dataSet[2], self.intConf[2])
         self.twoColHistFreq, self.twoColHistValues = np.histogram(self.twoColData[self.intConf[0]:self.intConf[1]], bins=range(1000,3000), density=False)
         self.twoColHistValues = np.delete(self.twoColHistValues, len(self.twoColHistFreq), 0)
+        self.twoColDataLim = self.twoColDataLim[self.intConf[0]:self.intConf[1]]
         
     def doFits(self):
         #Do some fitting for Planck...
@@ -59,15 +63,15 @@ class LuckyCalculations(object):
         #Do some fitting for Wien...
         ###
         wienIntegLim = self.wienData[self.intConf[0]:self.intConf[1]]
-        wienFit, wienCov = curve_fit(self.fWien, self.invWLIntegLim[(np.isfinite(wienIntegLim))], wienIntegLim[(np.isfinite(wienIntegLim))], p0 = [1, self.planckTemp])
-        self.wienResidual = wienIntegLim - self.fWien(self.invWLIntegLim[(np.isfinite(wienIntegLim))], *wienFit)
+        self.wienFit, wienCov = curve_fit(self.fWien, self.invWLIntegLim[(np.isfinite(wienIntegLim))], wienIntegLim[(np.isfinite(wienIntegLim))], p0 = [1, self.planckTemp])
+        self.wienResidual = wienIntegLim - self.fWien(self.invWLIntegLim[(np.isfinite(wienIntegLim))], *self.wienFit)
         self.wienTemp = self.wienFit[1]
         
         #Gaussian fit of two colour histogram
         ###
-        histFit, histCov = curve_fit(self.gaus, self.twoColHistFreq, p0=[1000,self.planckTemp,100])
-        self.histTemp = histFit[1]
-        self.histErr = histFit[2]
+        self.histFit, histCov = curve_fit(self.gaus, self.twoColHistFreq, p0=[1000,self.planckTemp,100])
+        self.histTemp = self.histFit[1]
+        self.histErr = self.histFit[2]
     
     
     #Planck function
@@ -116,112 +120,63 @@ class LuckyCalculations(object):
     def gaus(self, x, a, x0, sigma):
         return a*np.exp(-(x-x0)**2/(2*sigma**2))
     
-    def drawPlots(self, x,y,yC,Norm,xp,FP,PFrom,PTo,invX,W,invX1,bestW,Two2,value,freq,popt,TwoInt,Residual,TP):
+    def drawPlots(self):
         fig = plt.figure(figsize=(8,11))#Defines dimension of the figure 
 
-        #Adding subplots to show
-        ax1 = fig.add_subplot(3, 2, 1)
-        ax2 = fig.add_subplot(3, 2, 2)
-        ax3 = fig.add_subplot(3, 2, 3)
+        #Create set of subplots
+        ax1 = fig.add_subplot(3, 2, 1)#Data & Calib datasets
+        ax2 = fig.add_subplot(3, 2, 2)#Planck data
+        ax3 = fig.add_subplot(3, 2, 3)#Wien data
         ax4 = fig.add_subplot(3, 2, 4)
         ax5 = fig.add_subplot(3, 2, 5)
         plt.subplots_adjust(wspace=0.3,hspace=0.3)
  
         #Raw and calibration data subgraph 
-        ax1.plot(x, y, x, yC,'red')
-        ax1.set_title('Raw vs Calib data')
-        ax1.set_xlabel('wavelength (nm)')
-        ax1.set_ylim(0,50000)
-        ax1.grid(True)
-        ticklines = ax1.get_xticklines()
-        ticklines.extend( ax1.get_yticklines() )
-        gridlines = ax1.get_xgridlines()
-        gridlines.extend( ax1.get_ygridlines() )
-        ticklabels = ax1.get_xticklabels()
-        ticklabels.extend( ax1.get_yticklabels() )
+        ax1.plot(self.dataSet[0], self.dataSet[1], self.dataSet[0], self.calibSet[1],'red')
+        ax1.set_title('Raw & Calibration Data')
+        ax1.set_xlabel('Wavelength / nm')
+        ax1.set_ylim(0,50000) #TODO Get max fn.
+        ax1.grid(True, linestyle='-')
 
-        for line in ticklines:
-            line.set_linewidth(3)
-
-        for line in gridlines:
-            line.set_linestyle('-')
-
-        for label in ticklabels:
-            label.set_color('black')
-            label.set_fontsize('medium')
-
-
-        txt=plt.text(4500,33,TP)
-        txt1=plt.text(4200,33,'T=')
-        txt2=plt.text(2000,17,TW)
-        txt3=plt.text(1800,17,'T=')
-        txt.set_size(15)
-        txt1.set_size(15)
-        txt2.set_size(15)
-        txt3.set_size(15)
-        fig.canvas.draw()
+#Draws text label on plot
+#         txt=plt.text(4500,33,TP)
+#         txt1=plt.text(4200,33,'T=')
+#         txt2=plt.text(2000,17,TW)
+#         txt3=plt.text(1800,17,'T=')
+#         txt.set_size(15)
+#         txt1.set_size(15)
+#         txt2.set_size(15)
+#         txt3.set_size(15)
+#         fig.canvas.draw()
    
 
-        #Planck subgraph
-        ax2.plot(x, Norm, xp, FP,'red')
-        ax2.set_title('Planck')
-        ax2.set_xlabel('wavelength (nm)')
-        ax2.set_xlim(PFrom,PTo)
+        #Planck data subgraph
+        ax2.plot(self.dataSet[0], self.dataSet[2], self.wlIntegLim, self.planckFitData,'red')
+        ax2.set_title('Planck Function Data')
+        ax2.set_xlabel('Wavelength / nm')
+        ax2.set_xlim(*self.planckPlotRange)
         ax2.set_yticks([])
-        #ax2.grid(True)
-        def on_button_press(event):
-            #print dir(event)
-            #print "BADGER"
-            #print "Button:", event.button
-            #print "Figure coordinates:", event.x, event.y
-            print "Data coordinates:", event.xdata, event.ydata
-            #start=event.xdata
-            sys.stdout.flush()
-   
-        #Wien subgraph
-        ax3.plot(invX,W,invX1,self.FWien(invX1,*bestW),'red',invX1,Residual)
-        ax3.set_title('Wien')
-        ax3.set_xlabel('1/wavelength (1/m)')
-        ax3.set_ylabel("Wien function")
-        ax3.set_xlim(10**9/PTo,10**9/PFrom)
+  
+        #Wien data subgraph
+        ax3.plot(self.invWL, self.wienData, self.invWLIntegLim, self.FWien(self.invWLIntegLim,*self.wienFit), 'red', self.invWLIntegLim, self.wienResidual)
+        ax3.set_title('Wien Function Data')
+        ax3.set_xlabel('1/Wavelength / 1/m)')
+        ax3.set_ylabel("Wien Function")
+        ax3.set_xlim(*self.wienPlotRange)
         ax3.set_yticks([])
-        #ax3.grid(True)
-   
-    
-        #Two Colours subgraph
-        ax4.plot(x,Two2,x[start:end],TwoInt,'red')
-        ax4.set_title('Sliding Two-Colours')
-        ax4.set_xlabel('wavelength (nm)')
-        ax4.set_ylabel('T (K)')
-        ax4.set_xlim(PFrom,PTo)
-        ax4.grid(True)
-        ticklines4 = ax4.get_xticklines()
-        ticklines4.extend( ax4.get_yticklines() )
-        gridlines4 = ax4.get_xgridlines()
-        gridlines4.extend( ax4.get_ygridlines() )
-        ticklabels4 = ax4.get_xticklabels()
-        ticklabels4.extend( ax4.get_yticklabels() )
-
-        for line in ticklines4:
-            line.set_linewidth(3)
-
-        for line in gridlines4:
-            line.set_linestyle('-')
-
-        for label in ticklabels4:
-            label.set_color('black')
-            label.set_fontsize('medium')
-   
-    
+        
+        #Two Colour data subgraph
+        ax4.plot(self.dataSet[0], self.twoColData, self.wlIntegLim, self.twoColDataLim, 'red')
+        ax4.set_title('Sliding Two Colours')
+        ax4.set_xlabel('Wavelength  / nm')
+        ax4.set_ylabel('Temperature / K')
+        ax4.set_xlim(*self.planckPlotRange)
+        ax4.grid(True, linestyle='-')
 
         #Histogram subgraph
-        ax5.plot(value,freq,value,self.gaus(value,*popt),'red')
+        ax5.plot(self.twoColHistValues, self.twoColHistFreq, self.twoColHistValues, self.gaus(self.twoColHistValues, *self.histFit),'red')
         ax5.set_title('Histogram')
         ax5.set_xlabel('T(K)')
         ax5.set_ylabel('# Counts')
-    
 
-
-        #pylab.show() #it plots everything
-        fig.canvas.mpl_connect('button_press_event', on_button_press)
         plt.show()

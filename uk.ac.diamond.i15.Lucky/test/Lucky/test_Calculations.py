@@ -14,8 +14,8 @@ from Lucky.Calculations import LuckyCalculations
 class CalculationsTest(unittest.TestCase):
     
     def setUp(self):
-        data = np.loadtxt('./T_62_1.txt', unpack=True) ##Raw file
-        calib = np.loadtxt('./Calib.txt', unpack=True) ##Calib file
+        data = np.loadtxt('./testdata/T_62_1.txt', unpack=True) ##Raw file
+        calib = np.loadtxt('./testdata/Calib.txt', unpack=True) ##Calib file
         integConf = [315, 800, 200] #Values lifted out of PreLucky_Variant.py
         bulbTemp = 2436
         

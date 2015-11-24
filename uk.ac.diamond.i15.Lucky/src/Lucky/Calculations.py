@@ -79,12 +79,11 @@ class LuckyCalculations(object):
         pass
     
     def fitHistogram(self):
-#         #Gaussian fit of two colour histogram
-#         ###
-#         self.histFit, histCov = curve_fit(self.gaus, self.twoColHistFreq, p0=[1000,self.planckTemp,100])
-#         self.histTemp = self.histFit[1]
-#         self.histErr = self.histFit[2]
-        pass
+        #Gaussian fit of two colour histogram
+        ###
+        self.histFit, histCov = curve_fit(self.gaus, self.twoColHistValues, self.twoColHistFreq, p0=[1000,self.planckTemp,100])
+        self.histTemp = self.histFit[1]
+        self.histErr = self.histFit[2]
     
     #Planck function
     def planck(self, wavelength, emiss, temp):

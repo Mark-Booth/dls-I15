@@ -83,10 +83,10 @@ value=numpy.array(numpy.delete(hist[1],control,0))
 #xhist=numpy.histogram(x,density=False)
 
 #Session where we save in the same folder .txt files with the new data
-numpy.savetxt('TwoCol.txt',Two)
-numpy.savetxt('Norm.txt',Norm)
-numpy.savetxt('Wien.txt',W)
-numpy.savetxt('frequence.txt',hist[0])
+# numpy.savetxt('../../test/Lucky/testData/TwoCol.txt',Two)
+# numpy.savetxt('../../test/Lucky/testData/Norm.txt',Norm)
+# numpy.savetxt('../../test/Lucky/testData/Wien.txt',W)
+# numpy.savetxt('../../test/Lucky/testData/frequence.txt',hist[0])
 
 #Session dedicated to all the needed fits
 #Planck fit

@@ -18,7 +18,7 @@ class LuckyCalculations(object):
         self.intConf = integConf
         self.dataSet = data
         self.calibSet = calib
-        self.bulbTempt = bulbTemp
+        self.bulbTemp = bulbTemp
         
         self.planckPlotRange = [500, 1000]
         self.wienPlotRange = [1e9 / self.planckPlotRange[1], 1e9/self.planckPlotRange[0]]

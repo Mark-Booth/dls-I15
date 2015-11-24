@@ -79,7 +79,6 @@ hist=numpy.histogram(Two2,bins,density=False)
 freq=numpy.array(hist[0])
 control=len(hist[1])-1
 value=numpy.array(numpy.delete(hist[1],control,0))
-v2 = numpy.delete(hist,control,1)
 #del value[-1]
 #xhist=numpy.histogram(x,density=False)
 

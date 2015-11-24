@@ -7,7 +7,6 @@ Created on 24 Nov 2015
 from scipy.constants import c, h, k, pi
 from scipy.optimize import curve_fit
 import numpy as np
-#import sys
 
 #k is kb
 
@@ -22,14 +21,17 @@ class LuckyCalculations(object):
         self.planckPlotRange = [500, 1000]
         self.wienPlotRange = [1e9 / self.planckPlotRange[1], 1e9/self.planckPlotRange[0]]
         
-        #Calculated values
-#         self.wienData = None
-#         self.twoColourData = None
-#         self.planckTemp = None
-#         self.planckEmmis = None
-#         
+        #Prepare the data
         self.updateData()
         self.fitAll()
+                
+        #Create a plot object
+        self.plots = LuckyPlots(self)
+    
+    def update(self):
+        self.updateData()
+        self.fitAll()
+        self.plots.reDraw(self)
     
     
     def updateData(self):
@@ -135,7 +137,9 @@ class LuckyCalculations(object):
 import matplotlib.pyplot as plt
 
 class LuckyPlots(object):
-    def __init__(self):
+    def __init__(self, luckyCalcs):
+        self.calcs = luckyCalcs
+        
         self.ax1 = plt.subplot(3, 2, 1)#Raw+Calib
         self.ax2 = plt.subplot(3, 2, 3)#Planck
         self.ax2 = plt.subplot(3, 2, 4)#Wien
@@ -166,14 +170,13 @@ class LuckyPlots(object):
         self.ax5.set_xlabel('Temperature / K')
         self.ax5.set_ylabel('Counts / a.u.')
      
-        self.updatePlots(True)
-        
+        self.updatePlots(False)
         
         #All the plots are set up, so set interactive and show
         plt.ion()
         plt.show()
             
-    def updatePlots(self, update):
+    def updatePlots(self, redraw):
         #Raw and calibration data subgraph 
         self.ax1.plot(self.calcs.dataSet[0], self.calcs.dataSet[1], 
                  self.calcs.dataSet[0], self.calcs.calibSet[1],'red')
@@ -200,7 +203,7 @@ class LuckyPlots(object):
         self.ax5.plot(self.calcs.twoColHistValues, self.calcs.twoColHistFreq,
                  self.calcs.twoColHistValues, self.calcs.gaus(self.calcs.twoColHistValues, *self.calcs.histFit), 'red')
         
-        if not update:
+        if redraw:
             plt.draw()
             
         #Draws text label on plot
@@ -213,6 +216,11 @@ class LuckyPlots(object):
 #         txt2.set_size(15)
 #         txt3.set_size(15)
 #         fig.canvas.draw()
+
+    def reDraw(self, luckyCalcs):
+        self.calcs = luckyCalcs
+        self.updatePlots(True)
+        
     def getYMax(self, *data):
         maxes = []
         for dat in data:

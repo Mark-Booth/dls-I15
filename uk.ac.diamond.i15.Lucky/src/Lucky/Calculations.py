@@ -30,51 +30,53 @@ class LuckyCalculations(object):
 #         self.planckEmmis = None
 #         
         self.updateData()
-#        self.doFits()
+        self.doFits()
     
     
     def updateData(self):
         #Normalises collected data
         self.planckIdeal = self.planck(self.dataSet[0], 1, self.bulbTemp)
         self.planckIdeal = np.reshape(self.planckIdeal, (1, len(self.planckIdeal)))
+        #This step adds the normalised dataset back to the original data array
         self.dataSet = np.concatenate((self.dataSet, self.dataSet[1] / self.calibSet[1] * self.planckIdeal), axis=0)
-        self.invWL = 1e9 / self.dataSet[0]# For Wien function
         
-        #Data sets for fitting, limited by integration range
-        self.wlIntegLim = self.dataSet[0][self.intConf[0]:self.intConf[1]]
+        #Data sets for fitting or plotting, limited by integration range
+        self.invWL = 1e9 / self.dataSet[0]# For Wien function
         self.invWLIntegLim = self.invWL[self.intConf[0]:self.intConf[1]]
+        self.wlIntegLim = self.dataSet[0][self.intConf[0]:self.intConf[1]]
         self.normIntegLim = self.dataSet[2][self.intConf[0]:self.intConf[1]]
         
         #Calculate functions over the range of data
         self.wienData = self.wien(self.dataSet[0], self.dataSet[2])
+        self.wienDataIntegLim = self.wienData[self.intConf[0]:self.intConf[1]]
         self.twoColData = self.twoColour(self.dataSet[0], self.dataSet[2], self.intConf[2])
-        self.twoColHistFreq, self.twoColHistValues = np.histogram(self.twoColData[self.intConf[0]:self.intConf[1]], bins=range(1000,3000), density=False)
-        self.twoColHistValues = np.delete(self.twoColHistValues, len(self.twoColHistFreq), 0)
         self.twoColDataLim = self.twoColData[self.intConf[0]:self.intConf[1]]
+        self.twoColHistFreq, self.twoColHistValues = np.histogram(self.twoColDataLim, bins=range(1000,3000), density=False)
+        self.twoColHistValues = np.delete(self.twoColHistValues, len(self.twoColHistFreq), 0)
+        
         
     def doFits(self):
         #Do some fitting for Planck...
         ###
-        planckFit, planckCov = curve_fit(self.planck, self.wlIntegLim, self.normIntegLim, [1,2000])
-        self.planckTemp = planckFit[1]
-        self.planckEmmiss = planckFit[0]
+        self.planckFit, planckCov = curve_fit(self.planck, self.wlIntegLim, self.normIntegLim, [1,2000])
+        self.planckTemp = self.planckFit[1]
+        self.planckEmiss = self.planckFit[0]
         
         #Planck with fit params(??)
-        self.planckFitData = self.planck(self.wlIntegLim, self.planckEmmiss, self.planckTemp)
-        
-        #Do some fitting for Wien...
-        ###
-        wienIntegLim = self.wienData[self.intConf[0]:self.intConf[1]]
-        self.wienFit, wienCov = curve_fit(self.fWien, self.invWLIntegLim[(np.isfinite(wienIntegLim))], wienIntegLim[(np.isfinite(wienIntegLim))], p0 = [1, self.planckTemp])
-        self.wienResidual = wienIntegLim - self.fWien(self.invWLIntegLim[(np.isfinite(wienIntegLim))], *self.wienFit)
-        self.wienTemp = self.wienFit[1]
-        
-        #Gaussian fit of two colour histogram
-        ###
-        self.histFit, histCov = curve_fit(self.gaus, self.twoColHistFreq, p0=[1000,self.planckTemp,100])
-        self.histTemp = self.histFit[1]
-        self.histErr = self.histFit[2]
-    
+        self.planckFitData = self.planck(self.wlIntegLim, self.planckEmiss, self.planckTemp)
+#         
+#         #Do some fitting for Wien...
+#         ###
+#         self.wienFit, wienCov = curve_fit(self.fWien, self.invWLIntegLim[(np.isfinite(self.wienDataIntegLim))], self.wienDataIntegLim[(np.isfinite(self.wienDataIntegLim))], p0 = [1, self.planckTemp])
+#         self.wienResidual = self.wienDataIntegLim - self.fWien(self.invWLIntegLim[(np.isfinite(self.wienDataIntegLim))], *self.wienFit)
+#         self.wienTemp = self.wienFit[1]
+#         
+#         #Gaussian fit of two colour histogram
+#         ###
+#         self.histFit, histCov = curve_fit(self.gaus, self.twoColHistFreq, p0=[1000,self.planckTemp,100])
+#         self.histTemp = self.histFit[1]
+#         self.histErr = self.histFit[2]
+#     
     
     #Planck function
     def planck(self, wavelength, emiss, temp):
@@ -104,14 +106,14 @@ class LuckyCalculations(object):
         nWindows = nPoints - delta
         
         def twoColCalc(wavelength, intens):
-            return np.log(intens / (2 * pi * h * np.power(c, 2) * np.power(wavelength, 5))) * k * h *c
+            return np.log(intens / (2 * pi * h * np.power(c, 2) * np.power(wavelength, 5))) * (k / (h *c))
         
         for i in range(nWindows):
             f1 = 1 / wavelength[i]
             f2 = 1 / wavelength[i + delta]
             i1 = twoColCalc(f1, intens[i])
             i2 = twoColCalc(f2, intens[i+delta])
-            twoCol.append((f2 - f1) / (i2 - i1))
+            twoCol.append(abs((f2 - f1) / (i2 - i1)))
         
         for i in range(nWindows, nPoints):
             twoCol.append(float('nan'))

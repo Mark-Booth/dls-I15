@@ -48,11 +48,10 @@ class CalculationsTest(unittest.TestCase):
             TTwo=[]*count
             
             for i in range (0,k):#(0,count-1):
-                
                 f1=1/(x[i]*10**(-9))
                 f2=1/(x[i+delta]*10**(-9))
-                i1=np.log(Int[i]/2/pi/h/c**2/f1**5)*Kb/h/c
-                i2=np.log(Int[i+delta]/2/pi/h/c**2/f2**5)*Kb/h/c
+                i1=np.log(Int[i]/(2*pi*h*c**2*f1**5))*(Kb/(h*c))#Order changed!!
+                i2=np.log(Int[i+delta]/(2*pi*h*c**2*f2**5))*(Kb/(h*c))#i2=np.log(Int[i]/2/pi/h/c**2/f1**5)*Kb/h/c
                 TTwo.append(abs((f2-f1)/(i2-i1)))
             for i in range (k,count):
                 a = float('nan')
@@ -78,32 +77,35 @@ class CalculationsTest(unittest.TestCase):
         
         P=Planck(x,1,2436)##Ideal Planck
         self.P = np.reshape(P, (1, len(P)))
-        Norm=y/yC*P #Normalization file
-        invX=1/x*10**9 #Inverse of wavelength for Wien function
-        self.W=Wien(Norm,x)
-        self.Two=TwoCol(Norm,x)
+        self.Norm=y/yC*P #Normalization file
+        self.invX=1e9/x #Inverse of wavelength for Wien function (CHANGED 1/x*10**9)
+        self.W=Wien(self.Norm,x)
+        self.Two=TwoCol(self.Norm,x)
         Two2=np.array(self.Two,dtype='float')
-        TwoInt=Two2[start:end]
+        self.TwoInt=Two2[start:end]
         bins=range(1000,3000,1)
-        hist=np.histogram(TwoInt,bins,density=False)
+        hist=np.histogram(self.TwoInt,bins,density=False)
         self.freq=np.array(hist[0])
         control=len(hist[1])-1
         self.value=np.array(np.delete(hist[1],control,0))
         p0=[1,2000]
         #Fit Planck in the range [start:end]
-        bestP,covarP = curve_fit(Planck, x[start:end], Norm[start:end], p0)
+        self.xp=x[start:end]
+        self.Normp=self.Norm[start:end]
+        bestP,covarP = curve_fit(Planck, self.xp, self.Normp, p0)
         TP=round(bestP[1],2)
-        eP=bestP[0]#Save planck Emissivity
-        xp=x[start:end]
-        FP=Planck(xp,eP,TP)#Create the new Planck with the fit parameters
-        PRes=abs(Norm[start:end]-FP)#Planck Residual
+        self.TPNR = bestP[1]
+        self.eP=bestP[0]#Save planck Emissivity
+        FP=Planck(self.xp,self.eP,TP)#Create the new Planck with the fit parameters
+        self.FPNR = Planck(self.xp,self.eP,self.TPNR)
+        PRes=abs(self.Normp-FP)#Planck Residual
         
         #Wien fit 
-        invX1=invX[start:end]
-        W1=self.W[start:end]
+        self.invX1=self.invX[start:end]
+        self.W1=self.W[start:end]
         #Fit Wien and control that there are no inf or nan arguments in the fit
-        bestW,covarW = curve_fit(FWien,invX1[(np.isfinite(W1))],W1[(np.isfinite(W1))],p0=[1,TP])
-        Residual=W1-FWien(invX1[(np.isfinite(W1))],*bestW)
+        bestW,covarW = curve_fit(FWien,self.invX1[(np.isfinite(self.W1))],self.W1[(np.isfinite(self.W1))],p0=[1,TP])
+        Residual=self.W1-FWien(self.invX1[(np.isfinite(self.W1))],*bestW)
         #Save Wien temperature
         TW=round(bestW[1])
         
@@ -114,14 +116,29 @@ class CalculationsTest(unittest.TestCase):
 
 class DataUpdateTest(CalculationsTest):
     def runTest(self):
-        assert_array_equal(self.P, self.luckCalc.planckIdeal, "Planck ideals differ")
+        #Normalised data
+        assert_array_equal(self.P, self.luckCalc.planckIdeal, "Planck ideal datasets differ")
+        assert_array_equal(self.Norm, self.luckCalc.dataSet[2], "Normalised y datasets differ")
         
+        #Sliced datasets
+        assert_array_equal(self.invX, self.luckCalc.invWL, "Inverse wavelength datasets differ")
+        assert_array_equal(self.invX1, self.luckCalc.invWLIntegLim, "Integration limited inverse wavelength datasets differ")
+        assert_array_equal(self.xp, self.luckCalc.wlIntegLim, "Integration limited wavelength datasets differ")
+        assert_array_equal(self.Normp, self.luckCalc.normIntegLim, "Integration limited normalised y datasets differ")
         
+        #Functions calculated by defauls
         assert_array_equal(self.W, self.luckCalc.wienData, "Wien datasets differ")
+        assert_array_equal(self.W1, self.luckCalc.wienDataIntegLim, "Integration limited Wien datasets differ")
         assert_array_equal(self.Two, self.luckCalc.twoColData, "Two-colour datasets differ")
+        assert_array_equal(self.TwoInt, self.luckCalc.twoColDataLim, "Integration limited two-colour datasets differ")
         assert_array_equal(self.freq, self.luckCalc.twoColHistFreq, "Two-colour histogram (freq.) datasets differ")
         assert_array_equal(self.value, self.luckCalc.twoColHistValues, "Two-colour histogram (value) datasets differ")
+        assert_array_equal(self.value, self.luckCalc.twoColHistValues, "Two-colour histogram (value) datasets differ")
 
-# class PlanckCalcsTest(CalculationsTest):
-#     def runTest(self):
-#         self.assertEqual(self.P, self.luckCalc, msg)
+class PlanckCalcsTest(CalculationsTest):
+    def runTest(self):
+        assert_array_equal(self.P, self.luckCalc.planckIdeal, "Planck ideals differ")
+        self.assertEqual(self.TPNR, self.luckCalc.planckTemp, "Wrong Planck temperature calculated")
+        self.assertEqual(self.eP, self.luckCalc.planckEmiss, "Wrong Planck emissivity calculated")
+        assert_array_equal(self.FPNR, self.luckCalc.planckFitData, "Planck datasets from fitted values differ")
+        

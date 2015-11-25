@@ -5,6 +5,7 @@ Created on 24 Nov 2015
 '''
 import unittest
 import numpy as np
+import time
 from numpy.testing import assert_array_equal
 from scipy.optimize import curve_fit
 
@@ -24,7 +25,9 @@ class PlottingTest(LuckyCalculationsTest):
         LuckyCalculationsTest.setUp(self)
     
     def runTest(self):
-        self.luckCalc = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
+        self.luckCalcA = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
+        self.luckCalcB = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
+        time.sleep(20)
 
 class CalculationsTest(LuckyCalculationsTest):
     def setUp(self):

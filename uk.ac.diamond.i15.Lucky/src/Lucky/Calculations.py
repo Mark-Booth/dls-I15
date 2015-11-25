@@ -143,13 +143,16 @@ import matplotlib.pyplot as plt
 
 class LuckyPlots(object):
     def __init__(self, luckyCalcs, debug=False):
+        if debug:
+            return
         self.debug = debug
         
-        self.ax1 = plt.subplot(3, 2, 1)#Raw+Calib
-        self.ax2 = plt.subplot(3, 2, 3)#Planck
-        self.ax3 = plt.subplot(3, 2, 4)#Wien
-        self.ax4 = plt.subplot(3, 2, 5)#2Colour
-        self.ax5 = plt.subplot(3, 2, 6)#Histogram
+        self.fig = plt.figure()
+        self.ax1 = self.fig.add_subplot(3, 2, 1)#Raw+Calib
+        self.ax2 = self.fig.add_subplot(3, 2, 3)#Planck
+        self.ax3 = self.fig.add_subplot(3, 2, 4)#Wien
+        self.ax4 = self.fig.add_subplot(3, 2, 5)#2Colour
+        self.ax5 = self.fig.add_subplot(3, 2, 6)#Histogram
         plt.subplots_adjust(wspace=0.3, hspace=0.3)
         
         #One-time configuration of plots
@@ -179,7 +182,11 @@ class LuckyPlots(object):
         
         if not self.debug:
             #Draw the plots if we're not debugging
+            plt.ion()
             plt.show()
+            #Needed to make plt appear!
+            #   http://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
+            plt.pause(0.001)
             
     def updatePlots(self, calcs, redraw=True):
         #Raw and calibration data subgraph 
@@ -210,6 +217,9 @@ class LuckyPlots(object):
         
         if redraw and not self.debug:
             plt.draw()
+            #Needed to make plt appear!
+            #   http://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
+            plt.pause(0.001)
             
         #Draws text label on plot
 #         txt=plt.text(4500,33,TP)

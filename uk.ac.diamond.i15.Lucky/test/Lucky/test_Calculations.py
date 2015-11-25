@@ -10,18 +10,28 @@ from scipy.optimize import curve_fit
 
 from Lucky.Calculations import LuckyCalculations
 
-
-class CalculationsTest(unittest.TestCase):
-    
+class LuckyCalculationsTest(unittest.TestCase):
     def setUp(self):
-        data = np.loadtxt('./testData/T_62_1.txt', unpack=True) ##Raw file
-        calib = np.loadtxt('./testData/Calib.txt', unpack=True) ##Calib file
-        integConf = [315, 800, 200] #Values lifted out of PreLucky_Variant.py
-        bulbTemp = 2436
+        unittest.TestCase.setUp(self)
+        self.data = np.loadtxt('./testData/T_62_1.txt', unpack=True) ##Raw file
+        self.calib = np.loadtxt('./testData/Calib.txt', unpack=True) ##Calib file
+        self.integConf = [315, 800, 200] #Values lifted out of PreLucky_Variant.py
+        self.bulbTemp = 2436
+
+
+class PlottingTest(LuckyCalculationsTest):
+    def setUp(self):
+        LuckyCalculationsTest.setUp(self)
+    
+    def runTest(self):
+        self.luckCalc = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
+
+class CalculationsTest(LuckyCalculationsTest):
+    def setUp(self):
+        LuckyCalculationsTest.setUp(self)
         
-        self.luckCalc = LuckyCalculations(data, calib, integConf, bulbTemp, debug=True)
-        
-        self.workingCalcs(data, calib, integConf)
+        self.luckCalc = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=True)
+        self.workingCalcs(self.data, self.calib, self.integConf)
     
     def workingCalcs(self, data, calib, integConf):
         from scipy.constants import h, c, k, pi

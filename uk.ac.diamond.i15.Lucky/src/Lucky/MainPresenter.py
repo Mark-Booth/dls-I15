@@ -43,12 +43,16 @@ class MainPresenter(object):
     def setModeTrigger(self, uiData):
         self.stateMach.changeState(self.getModeTransition(uiData))
         #No return as this is a radio button option
+        
+        print str(self.stateMach.getStateName())
     
     def setCalibTypeTrigger(self, uiData):
         if sum(uiData) != 1:
             raise BadModelStateException("Only one calibration option can be selected")
         self.dataModel.calibType = uiData
         #No return as this is a radio button option
+        
+        print self.dataModel.calibType
     
     def changeDataDirTrigger(self, uiText):
         #if self.isValidPath(uiText)

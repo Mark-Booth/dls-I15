@@ -62,7 +62,9 @@ class MainView(QWidget):
         ####
         #Data location
         dataDirGrpBox = QGroupBox("Data directory:")
-        self.workDirTextBox = QLineEdit()#Default needs to be set from the model!
+        self.workDirTextBox = QLineEdit("None")#Default needs to be set from the model!
+        self.workDirTextBox.textChanged.connect(self.workDirChanged)
+        self.workDirTextBox.textChanged.emit(self.workDirTextBox.text())
         self.browseDataDirBtn = QPushButton("Browse...")
         
         dataDirLayout = QHBoxLayout()
@@ -173,7 +175,10 @@ class MainView(QWidget):
     def calibConfClick(self):
         self.calibConfInput = CalibrationConfigView(self)
         self.calibConfInput.exec_()
-        
+    
+#    @pyqtslot(QtCore.QString)
+    def workDirChanged(self, text):
+       print text
 ###
     def updateWidgetStates(self, extraData=None):
         mainData = self.presenter.dataModel if (extraData == None) else extraData
@@ -189,6 +194,7 @@ class MainView(QWidget):
             self.calibRadBtns[i].setChecked(mainData.calibType[i])
         
         #Datadir
+        
         
         #US/DS pair
         self.prevUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))

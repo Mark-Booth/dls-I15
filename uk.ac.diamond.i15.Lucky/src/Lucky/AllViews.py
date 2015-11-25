@@ -32,7 +32,8 @@ class MainView(QWidget):
         modeGrpBox = QGroupBox("Mode:")
         self.modeRadBtns = [QRadioButton("Live"),
                             QRadioButton("Offline")]
-
+        for radBtn in self.modeRadBtns:
+            radBtn.clicked.connect(self.modeRadBtnClick)
         modeLayout = QHBoxLayout()
         self.addWidgetListToLayout(self.modeRadBtns, modeLayout)
         modeGrpBox.setLayout(modeLayout)
@@ -45,7 +46,8 @@ class MainView(QWidget):
         self.calibRadBtns = [QRadioButton("Calibration"),
                              QRadioButton("Calibration F1"),
                              QRadioButton("Calibration F2")]
-      
+        for radBtn in self.calibRadBtns:
+            radBtn.clicked.connect(self.calibRadBtnClick)
         calibGrpLayout = QVBoxLayout()
         self.addWidgetListToLayout(self.calibRadBtns, calibGrpLayout)
         calibGrpBox.setLayout(calibGrpLayout)
@@ -156,29 +158,57 @@ class MainView(QWidget):
     def addWidgetListToLayout(self, widgetList, layout):
         for i in range(len(widgetList)):
             layout.addWidget(widgetList[i])
-    
+            
+    def getRadBtnStates(self, btnList):
+        return tuple([int(radBtn.isChecked()) for radBtn in btnList])
+            
+    def modeRadBtnClick(self):
+        self.presenter.setModeTrigger(self.getRadBtnStates(self.modeRadBtns))
+        self.updateWidgetStates()
+              
+    def calibRadBtnClick(self):
+        self.presenter.setCalibTypeTrigger(self.getRadBtnStates(self.calibRadBtns))
+        self.updateWidgetStates()
+        
     def calibConfClick(self):
         self.calibConfInput = CalibrationConfigView(self)
         self.calibConfInput.exec_()
         
 ###
-    def updateWidgetStates(self, mainData):
+    def updateWidgetStates(self, extraData=None):
+        mainData = self.presenter.dataModel if (extraData == None) else extraData
+        
         #Mode radio buttons
         for i in range(len(self.modeRadBtns)):
+            self.modeRadBtns[i].setEnabled(mainData.allUIControlsEnabled)
             self.modeRadBtns[i].setChecked(mainData.mode[i])
         
         #Calibration type radio buttons
         for i in range(len(self.calibRadBtns)):
+            self.calibRadBtns[i].setEnabled(mainData.allUIControlsEnabled)
             self.calibRadBtns[i].setChecked(mainData.calibType[i])
         
         #Datadir
         
         #US/DS pair
+        self.prevUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
+        self.nextUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
+        self.currUSDSPairTextBox.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
         
         #Integration controls
+        self.integStartTextBox.setEnabled(mainData.allUIControlsEnabled)
         self.integStartTextBox.setText(str(mainData.integrationConf[0]))
+        self.integStopTextBox.setEnabled(mainData.allUIControlsEnabled)
         self.integStopTextBox.setText(str(mainData.integrationConf[1]))
+        self.integDeltaTextBox.setEnabled(mainData.allUIControlsEnabled)
         self.integDeltaTextBox.setText(str(mainData.integrationConf[2]))
+        
+        ###
+        #Buttons
+        self.runBtn.setEnabled(mainData.runEnabled)
+        self.stopBtn.setEnabled(mainData.stopEnabled)
+        
+        
 
 
 #####################################

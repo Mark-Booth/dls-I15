@@ -12,7 +12,7 @@ import numpy as np
 
 class LuckyCalculations(object):
     
-    def __init__(self, data, calib, integConf, bulbTemp):
+    def __init__(self, data, calib, integConf, bulbTemp, debug=False):
         self.dataSet = data
         self.calibSet = calib
         self.intConf = integConf
@@ -26,7 +26,7 @@ class LuckyCalculations(object):
         self.fitAll()
                 
         #Create a plot object
-        self.plots = LuckyPlots(self)
+        self.plots = LuckyPlots(self, debug)
     
     def update(self, data=None, calib=None, integConf=None, bulbTemp=None):
         self.dataSet = data if (data != None) else self.dataSet
@@ -36,7 +36,7 @@ class LuckyCalculations(object):
         
         self.updateData()
         self.fitAll()
-        self.plots.reDraw(self)
+        self.plots.updatePlots(self, redraw=True)
     
     
     def updateData(self):
@@ -142,14 +142,14 @@ class LuckyCalculations(object):
 import matplotlib.pyplot as plt
 
 class LuckyPlots(object):
-    def __init__(self, luckyCalcs):
-        self.calcs = luckyCalcs
+    def __init__(self, luckyCalcs, debug=False):
+        self.debug = debug
         
         self.ax1 = plt.subplot(3, 2, 1)#Raw+Calib
         self.ax2 = plt.subplot(3, 2, 3)#Planck
-        self.ax2 = plt.subplot(3, 2, 4)#Wien
-        self.ax2 = plt.subplot(3, 2, 5)#2Colour
-        self.ax2 = plt.subplot(3, 2, 6)#Histogram
+        self.ax3 = plt.subplot(3, 2, 4)#Wien
+        self.ax4 = plt.subplot(3, 2, 5)#2Colour
+        self.ax5 = plt.subplot(3, 2, 6)#Histogram
         plt.subplots_adjust(wspace=0.3, hspace=0.3)
         
         #One-time configuration of plots
@@ -175,40 +175,40 @@ class LuckyPlots(object):
         self.ax5.set_xlabel('Temperature / K')
         self.ax5.set_ylabel('Counts / a.u.')
      
-        self.updatePlots(False)
+        self.updatePlots(luckyCalcs, redraw=False)
         
-        #All the plots are set up, so set interactive and show
-        plt.ion()
-        plt.show()
+        if not self.debug:
+            #Draw the plots if we're not debugging
+            plt.show()
             
-    def updatePlots(self, redraw):
+    def updatePlots(self, calcs, redraw=True):
         #Raw and calibration data subgraph 
-        self.ax1.plot(self.calcs.dataSet[0], self.calcs.dataSet[1], 
-                 self.calcs.dataSet[0], self.calcs.calibSet[1],'red')
-        self.ax1.set_ylim(0, self.getYMax(self.calcs.dataSet[1], self.calcs.calibSet[1]))
+        self.ax1.plot(calcs.dataSet[0], calcs.dataSet[1], 
+                 calcs.dataSet[0], calcs.calibSet[1],'red')
+        self.ax1.set_ylim(0, self.getYMax(calcs.dataSet[1], calcs.calibSet[1]))
 #        self.ax1.set_ylim(0,50000) #TODO Get max fn.
         
         #Planck data subgraph
-        self.ax2.plot(self.calcs.dataSet[0], self.calcs.dataSet[2], 
-                 self.calcs.wlIntegLim, self.calcs.planckFitData, 'red')
-        self.ax2.set_xlim(*self.calcs.planckPlotRange)
+        self.ax2.plot(calcs.dataSet[0], calcs.dataSet[2], 
+                 calcs.wlIntegLim, calcs.planckFitData, 'red')
+        self.ax2.set_xlim(*calcs.planckPlotRange)
           
         #Wien data subgraph
-        self.ax3.plot(self.calcs.invWL, self.calcs.wienData,
-                 self.calcs.invWLIntegLim, self.calcs.FWien(self.calcs.invWLIntegLim,*self.calcs.wienFit), 'red', 
-                 self.calcs.invWLIntegLim, self.calcs.wienResidual)
-        self.ax3.set_xlim(*self.calcs.wienPlotRange)
+        self.ax3.plot(calcs.invWL, calcs.wienData,
+                 calcs.invWLIntegLim, calcs.fWien(calcs.invWLIntegLim,*calcs.wienFit), 'red', 
+                 calcs.invWLIntegLim, calcs.wienResidual)
+        self.ax3.set_xlim(*calcs.wienPlotRange)
         
         #Two Colour data subgraph
-        self.ax4.plot(self.calcs.dataSet[0], self.calcs.twoColData, 
-                 self.calcs.wlIntegLim, self.calcs.twoColDataLim, 'red')
-        self.ax4.set_xlim(*self.calcs.planckPlotRange)
+        self.ax4.plot(calcs.dataSet[0], calcs.twoColData, 
+                 calcs.wlIntegLim, calcs.twoColDataLim, 'red')
+        self.ax4.set_xlim(*calcs.planckPlotRange)
         
         #Histogram subgraph
-        self.ax5.plot(self.calcs.twoColHistValues, self.calcs.twoColHistFreq,
-                 self.calcs.twoColHistValues, self.calcs.gaus(self.calcs.twoColHistValues, *self.calcs.histFit), 'red')
+        self.ax5.plot(calcs.twoColHistValues, calcs.twoColHistFreq,
+                 calcs.twoColHistValues, calcs.gaus(calcs.twoColHistValues, *calcs.histFit), 'red')
         
-        if redraw:
+        if redraw and not self.debug:
             plt.draw()
             
         #Draws text label on plot
@@ -221,10 +221,6 @@ class LuckyPlots(object):
 #         txt2.set_size(15)
 #         txt3.set_size(15)
 #         fig.canvas.draw()
-
-    def reDraw(self, luckyCalcs):
-        self.calcs = luckyCalcs
-        self.updatePlots(True)
         
     def getYMax(self, *data):
         maxes = []

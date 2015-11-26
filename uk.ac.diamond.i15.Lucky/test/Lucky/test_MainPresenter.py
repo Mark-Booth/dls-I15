@@ -6,6 +6,8 @@ Created on 5 Nov 2015
 import unittest
 import os
 
+#TODO: tests for changeDataDirTrigger, changeIntegrationConfigTrigger
+
 import Lucky
 from Lucky.LuckyExceptions import BadModelStateException, IllegalArgumentException
 from Lucky.DataModel import (CalibrationConfigData, MainData)

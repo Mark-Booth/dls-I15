@@ -92,15 +92,15 @@ class MainView(QWidget):
         startLabel = QLabel("Beginning:")
         self.integStartTextBox = QLineEdit()#Default needs to be set from the model!
         self.integStartTextBox.setFixedWidth(integrationTextInputWidth)
-        self.integStartTextBox.textChanged.connect(self.integTextChanged)
+        self.integStartTextBox.textChanged.connect(self.integConfigChanged)
         stopLabel = QLabel("End:")
         self.integStopTextBox = QLineEdit()#Default needs to be set from the model!
         self.integStopTextBox.setFixedWidth(integrationTextInputWidth)
-        self.integStopTextBox.textChanged.connect(self.integTextChanged)
+        self.integStopTextBox.textChanged.connect(self.integConfigChanged)
         deltaLabel = QLabel("Window Size:")
         self.integDeltaTextBox = QLineEdit()#Default needs to be set from the model!
         self.integDeltaTextBox.setFixedWidth(integrationTextInputWidth)
-        self.integDeltaTextBox.textChanged.connect(self.integTextChanged)
+        self.integDeltaTextBox.textChanged.connect(self.integConfigChanged)
         nmLabel1, nmLabel2, nmLabel3 = QLabel("nm"), QLabel("nm"), QLabel("nm")
         
         integRangeGrpBox = QGroupBox("Integration Range:")
@@ -185,10 +185,20 @@ class MainView(QWidget):
         else:
             textBox.setStyleSheet("color: rgb(255, 0, 0);")
     
-    def integValuesChanged(self):
+    def integConfigChanged(self):
         textBox = self.sender()
         if self.presenter.isValidInt(textBox.text()):
-            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+            integConfig = [self.integStartTextBox.text(),
+                           self.integStopTextBox.text(),
+                           self.integDeltaTextBox.text()] 
+            if self.presenter.changeIntegrationConfigTrigger(integConfig):
+                self.integStartTextBox.setStyleSheet("color: rgb(0, 0, 0);")
+                self.integStopTextBox.setStyleSheet("color: rgb(0, 0, 0);")
+                self.integDeltaTextBox.setStyleSheet("color: rgb(0, 0, 0);")
+            else:
+                self.integStartTextBox.setStyleSheet("color: rgb(255, 0, 0);")
+                self.integStopTextBox.setStyleSheet("color: rgb(255, 0, 0);")
+                self.integDeltaTextBox.setStyleSheet("color: rgb(255, 0, 0);")
         else:
             textBox.setStyleSheet("color: rgb(255, 0, 0);")
 ###

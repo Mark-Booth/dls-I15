@@ -62,9 +62,8 @@ class MainView(QWidget):
         ####
         #Data location
         dataDirGrpBox = QGroupBox("Data directory:")
-        self.workDirTextBox = QLineEdit("None")#Default needs to be set from the model!
-        self.workDirTextBox.textChanged.connect(self.workDirChanged)
-        self.workDirTextBox.textChanged.emit(self.workDirTextBox.text())
+        self.workDirTextBox = QLineEdit()#Default needs to be set from the model!
+        self.workDirTextBox.textChanged.connect(self.dataDirChanged)
         self.browseDataDirBtn = QPushButton("Browse...")
         
         dataDirLayout = QHBoxLayout()
@@ -93,12 +92,15 @@ class MainView(QWidget):
         startLabel = QLabel("Beginning:")
         self.integStartTextBox = QLineEdit()#Default needs to be set from the model!
         self.integStartTextBox.setFixedWidth(integrationTextInputWidth)
+        self.integStartTextBox.textChanged.connect(self.integTextChanged)
         stopLabel = QLabel("End:")
         self.integStopTextBox = QLineEdit()#Default needs to be set from the model!
         self.integStopTextBox.setFixedWidth(integrationTextInputWidth)
+        self.integStopTextBox.textChanged.connect(self.integTextChanged)
         deltaLabel = QLabel("Window Size:")
         self.integDeltaTextBox = QLineEdit()#Default needs to be set from the model!
         self.integDeltaTextBox.setFixedWidth(integrationTextInputWidth)
+        self.integDeltaTextBox.textChanged.connect(self.integTextChanged)
         nmLabel1, nmLabel2, nmLabel3 = QLabel("nm"), QLabel("nm"), QLabel("nm")
         
         integRangeGrpBox = QGroupBox("Integration Range:")
@@ -156,7 +158,7 @@ class MainView(QWidget):
         baseLayout.addLayout(buttonLayout)
         self.setLayout(baseLayout)
 
-        
+###        
     def addWidgetListToLayout(self, widgetList, layout):
         for i in range(len(widgetList)):
             layout.addWidget(widgetList[i])
@@ -176,9 +178,19 @@ class MainView(QWidget):
         self.calibConfInput = CalibrationConfigView(self)
         self.calibConfInput.exec_()
     
-#    @pyqtslot(QtCore.QString)
-    def workDirChanged(self, text):
-       print text
+    def dataDirChanged(self):
+        textBox = self.sender()
+        if self.presenter.changeDataDirTrigger(textBox.text):
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+        else:
+            textBox.setStyleSheet("color: rgb(255, 0, 0);")
+    
+    def integValuesChanged(self):
+        textBox = self.sender()
+        if self.presenter.isValidInt(textBox.text()):
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+        else:
+            textBox.setStyleSheet("color: rgb(255, 0, 0);")
 ###
     def updateWidgetStates(self, extraData=None):
         mainData = self.presenter.dataModel if (extraData == None) else extraData

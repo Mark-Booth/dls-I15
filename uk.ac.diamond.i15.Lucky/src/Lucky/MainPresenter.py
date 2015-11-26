@@ -5,7 +5,6 @@ Created on 5 Nov 2015
 '''
 
 import os
-import numbers
 
 from Lucky.MPStates import State
 from Lucky.DataModel import (CalibrationConfigData, MainData)
@@ -55,8 +54,11 @@ class MainPresenter(object):
         print self.dataModel.calibType
     
     def changeDataDirTrigger(self, uiText):
-        #if self.isValidPath(uiText)
-        pass
+        if self.isValidPath(uiText, dirPath=True):
+            self.dataModel.dataDir = uiText
+            return True
+        else:
+            return False
     
     def changeIntegrationConfigTrigger(self, uiNumbs):
         pass
@@ -124,8 +126,19 @@ class MainPresenter(object):
     def isValidPath(self, uiText, dirPath=False):
         return (dirPath and os.path.isdir(uiText)) or (not dirPath and os.path.isfile(uiText))
     
-    def isValidNumber(self, uiNum):
-        return isinstance(uiNum, numbers.Number)
+    def isValidInt(self, uiNum):
+        try:
+            int(uiNum)
+            return True
+        except ValueError:
+            return False
+    
+    def isValidFloat(self, uiNum):
+        try:
+            float(uiNum)
+            return True
+        except ValueError:
+            return False
     
     
 class StateMachine(object):

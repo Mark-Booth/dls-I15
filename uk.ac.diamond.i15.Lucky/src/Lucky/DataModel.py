@@ -23,7 +23,12 @@ class MainData(object):
         self.usdsControlsEnabled = True
         self.allUIControlsEnabled = True
         
-        
+        self.dataValid = {'mode':True,
+                          'calibType':True,
+                          'dataDir':False,
+                          'usdsPair':False,
+                          'integrationConf':True,
+                          'calibConfig':False}
         
 
 class CalibrationConfigData(object):

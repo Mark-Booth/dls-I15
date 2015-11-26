@@ -56,12 +56,26 @@ class MainPresenter(object):
     def changeDataDirTrigger(self, uiText):
         if self.isValidPath(uiText, dirPath=True):
             self.dataModel.dataDir = uiText
+            self.dataModel.dataValid['dataDir'] = True
             return True
         else:
+            self.dataModel.dataValid['dataDir'] = False
             return False
     
     def changeIntegrationConfigTrigger(self, uiNumbs):
-        pass
+        intUINumbs = []
+        for val in uiNumbs:
+            if not self.isValidInt(val):
+                return False
+            intUINumbs.append(int(val))
+        
+        if ((intUINumbs[0] < intUINumbs[1]) and (intUINumbs[2] < (intUINumbs[1] - intUINumbs[0]))):
+            self.dataModel.integrationConf = intUINumbs
+            self.dataModel.dataValid['integrationConf'] = True
+            return True
+        else:
+            self.dataModel.dataValid['integrationConf'] = False
+            return False
     
     def calibConfigUpdateTrigger(self, calibConfig):
         pass
@@ -111,8 +125,11 @@ class MainPresenter(object):
             inputMode = self.dataModel.mode
         
         if inputMode == (1, 0):
+            self.dataModel.dataValid['usdsPair'] = True #We won't have this to start, must be true
             return State.EVENTS.LIVE
         elif inputMode == (0, 1):
+            #TODO Need to check validity of current pair
+            self.dataModel.dataValid['usdsPair'] = False
             return State.EVENTS.OFFLINE
         else:
             raise BadModelStateException("Invalid mode setting detected")

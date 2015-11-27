@@ -4,8 +4,10 @@ Created on 4 Nov 2015
 @author: wnm24546
 '''
 
-from PyQt4.QtGui import (QDialog, QDialogButtonBox, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QPushButton, QRadioButton, QVBoxLayout, QWidget)
+from PyQt4.QtGui import (QDialog, QDialogButtonBox, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QRadioButton, QVBoxLayout, QWidget)
 from PyQt4 import QtCore
+
+import os
 
 #from Lucky import CalibrationConfigView
 from Lucky.MainPresenter import MainPresenter
@@ -62,12 +64,13 @@ class MainView(QWidget):
         ####
         #Data location
         dataDirGrpBox = QGroupBox("Data directory:")
-        self.workDirTextBox = QLineEdit()#Default needs to be set from the model!
-        self.workDirTextBox.textChanged.connect(self.dataDirChanged)
+        self.dataDirTextBox = QLineEdit()#Default needs to be set from the model!
+        self.dataDirTextBox.textChanged.connect(self.dataDirChanged)
         self.browseDataDirBtn = QPushButton("Browse...")
+        self.browseDataDirBtn.clicked.connect(self.dataDirBrowseBtnClick)
         
         dataDirLayout = QHBoxLayout()
-        dataDirLayout.addWidget(self.workDirTextBox)
+        dataDirLayout.addWidget(self.dataDirTextBox)
         dataDirLayout.addWidget(self.browseDataDirBtn)
         dataDirGrpBox.setLayout(dataDirLayout)
         controlsLayout.addWidget(dataDirGrpBox, 0, 1, 1, 2)
@@ -180,10 +183,17 @@ class MainView(QWidget):
     
     def dataDirChanged(self):
         textBox = self.sender()
-        if self.presenter.changeDataDirTrigger(textBox.text):
+        if self.presenter.changeDataDirTrigger(textBox.text()):
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:
             textBox.setStyleSheet("color: rgb(255, 0, 0);")
+    
+    def dataDirBrowseBtnClick(self):
+        currDir = self.presenter.dataModel.dataDir
+        newDir = str(self.showDirBrowserDialog(initDir=currDir, caption="Select a new data directory"))
+        self.dataDirTextBox.setText(newDir)
+        0
+        #self.dataDirChanged()
     
     def integConfigChanged(self):
         textBox = self.sender()
@@ -235,8 +245,14 @@ class MainView(QWidget):
         #Buttons
         self.runBtn.setEnabled(mainData.runEnabled)
         self.stopBtn.setEnabled(mainData.stopEnabled)
-        
-        
+    
+    ###
+    
+    def showDirBrowserDialog(self, initDir=None, caption="Choose a directory"):
+        if (initDir == None):
+            initDir = os.path.expanduser("~")
+        return QFileDialog.getExistingDirectory(self, directory=initDir, caption=caption)
+    
 
 
 #####################################

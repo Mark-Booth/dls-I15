@@ -36,9 +36,9 @@ class MainData(object):
 
 class CalibrationConfigData(object):
     def __init__(self, calibDir=os.path.expanduser("~"), bulbTemp=0,
-                 calibUS=None, calibDS=None, 
-                 calibF1US=None, calibF1DS=None,
-                 calibF2US=None, calibF2DS=None):
+                 calibUS='', calibDS='', 
+                 calibF1US='', calibF1DS='',
+                 calibF2US='', calibF2DS=''):
         self.calibDir = calibDir
         self.bulbTemp = bulbTemp
         self.calibFiles = OrderedDict([('(US)',calibUS),

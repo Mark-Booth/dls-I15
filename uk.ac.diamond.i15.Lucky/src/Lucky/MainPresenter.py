@@ -169,7 +169,7 @@ class CalibPresenter(AllPresenter):
         if cM == None:
             self.calibModel = CalibrationConfigData()
         else:
-            self.dataModel = cM
+            self.calibModel = cM
     
     def changeCalibFileTrigger(self, uiText, fileId):
         if self.isValidPath(uiText, dirPath=False):

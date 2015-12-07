@@ -190,7 +190,7 @@ class CalibPresenter(AllPresenter):
             return False
     
     def changeBulbTempTrigger(self, uiText):
-        if self.isValidFloat(uiText) and (uiText >= 0):
+        if self.isValidFloat(uiText) and (float(uiText) >= 0):
             self.calibModel.bulbTemp = float(uiText)
             self.calibMode.calibValid['bulbTemp'] = True
         else:

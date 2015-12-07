@@ -171,13 +171,13 @@ class CalibPresenter(AllPresenter):
         else:
             self.dataModel = cM
     
-    def changeCalibFileTrigger(self, uiText, fileIndices):
+    def changeCalibFileTrigger(self, uiText, fileId):
         if self.isValidPath(uiText, dirPath=False):
-            
-            self.dataModel.dataValid['dataDir'] = True
+            self.calibModel.calibFiles[fileId[0]][fileId[1]] = uiText
+            self.calibModel.calibValid[self.calibModel.calibFileLabels.get(fileId)] = True
             return True
         else:
-            self.dataModel.dataValid['dataDir'] = False
+            self.calibModel.calibValid[self.calibModel.calibFileLabels.get(fileId)] = False
             return False
 
 ####

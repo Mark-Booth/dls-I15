@@ -14,6 +14,14 @@ from Lucky.MainPresenter import (MainPresenter, CalibPresenter)
 
 class AllViews(object):
     
+    def dirPathChanged(self):
+        textBox = self.sender()
+        
+        if self.presenter.changeDataDirTrigger(textBox.text()):
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+        else:
+            textBox.setStyleSheet("color: rgb(255, 0, 0);")
+    
     def showFileBrowserDialog(self, initDir=None, caption="Choose a file"):
         if (initDir == None):
             initDir = os.path.expanduser("~")
@@ -78,7 +86,7 @@ class MainView(QWidget, AllViews):
         #Data location
         dataDirGrpBox = QGroupBox("Data directory:")
         self.dataDirTextBox = QLineEdit()#Default needs to be set from the model!
-        self.dataDirTextBox.textChanged.connect(self.dataDirChanged)
+        self.dataDirTextBox.textChanged.connect(self.dirPathChanged)
         self.browseDataDirBtn = QPushButton("Browse...")
         self.browseDataDirBtn.clicked.connect(self.dataDirBrowseBtnClick)
         
@@ -194,19 +202,10 @@ class MainView(QWidget, AllViews):
         self.calibConfInput = CalibrationConfigView(self, self.presenter.dataModel.calibConfigData)
         self.calibConfInput.exec_()
     
-    def dataDirChanged(self):
-        textBox = self.sender()
-        if self.presenter.changeDataDirTrigger(textBox.text()):
-            textBox.setStyleSheet("color: rgb(0, 0, 0);")
-        else:
-            textBox.setStyleSheet("color: rgb(255, 0, 0);")
-    
     def dataDirBrowseBtnClick(self):
         currDir = self.presenter.dataModel.dataDir
         newDir = self.showDirBrowserDialog(initDir=currDir, caption="Select a new data directory")
-        self.dataDirTextBox.setText(newDir)
-        0
-        #self.dataDirChanged()
+        self.dataDirTextBox.setText(newDir) #No need to fire an update as it happens automatically
     
     def integConfigChanged(self):
         textBox = self.sender()
@@ -353,11 +352,12 @@ class CalibrationConfigView(QDialog, AllViews):
         
     ####
     def calibFileBrowseBtnClick(self):
-        btnId = [uiElemName for uiElemName, btn in self.calibFileBrowseBtns.iteritems() if (btn == self.sender())]
+        calibId = [uiElemName for uiElemName, btn in self.calibFileBrowseBtns.iteritems() if (btn == self.sender())]
         
-        calibFile = self.showDirBrowserDialog(initDir=self.presenter.calibModel.calibDir)
-        
-        #self.newCalibConfig.calibFiles[btnId[0]][btnId[1]] = calibFile
+        calibFile = self.showFileBrowserDialog(initDir=self.presenter.calibModel.calibDir)
+        if (calibFile != None):
+            self.calibFileTextBoxes[calibId] = calibFile
+        return
         
     def okClick(self):
         print "OK!"

@@ -44,3 +44,19 @@ class CalibrationConfigData(object):
                            [calibF1US, calibF1DS],
                            [calibF2US, calibF2DS]]
         
+        self.calibFileLabels = {[0,0]:'calibUS',
+                                [0,1]:'calibDS',
+                                [1,0]:'calibF1US',
+                                [1,1]:'calibF1DS',
+                                [2,0]:'calibF2US',
+                                [2,1]:'calibF2DS',
+                                }
+        self.calibValid = {'bulbTemp':False,
+                           'calibDir':True,
+                           'calibUS':False,
+                           'calibDS':False,
+                           'calibF1US':False,
+                           'calibF1DS':False,
+                           'calibF2US':False,
+                           'calibF2DS':False}
+        

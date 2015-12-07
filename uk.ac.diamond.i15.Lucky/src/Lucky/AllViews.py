@@ -11,6 +11,7 @@ import os
 
 #from Lucky import CalibrationConfigView
 from Lucky.MainPresenter import MainPresenter
+from Lucky.DataModel import CalibrationConfigData
 
 class MainView(QWidget):
     def __init__(self, parent=None):
@@ -178,7 +179,7 @@ class MainView(QWidget):
         self.updateWidgetStates()
         
     def calibConfClick(self):
-        self.calibConfInput = CalibrationConfigView(self)
+        self.calibConfInput = CalibrationConfigView(self, self.presenter.dataModel.calibConfigData)
         self.calibConfInput.exec_()
     
     def dataDirChanged(self):
@@ -260,12 +261,16 @@ class MainView(QWidget):
 
 class CalibrationConfigView(QDialog):
 
-    def __init__(self, parent_widget):
+    def __init__(self, parent_widget, calibConfig):
         super(CalibrationConfigView, self).__init__(parent=parent_widget)
         self.setWindowTitle("Configure Calibration")
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
+        self.newCalibConfig = CalibrationConfigData(calibConfig)
         
+                
+        #This needs to run after we've read & set the original calibConfig
         self.setupUI()
+        
     
     def setupUI(self):
         ####
@@ -275,7 +280,7 @@ class CalibrationConfigView(QDialog):
         ####
         #Select the base directory to look for calibration files
         calibDirGrpBox = QGroupBox("Calibration Directory:")
-        self.calibDirTextBox = QLineEdit()#Default needs to be set from the model!
+        self.calibDirTextBox = QLineEdit(self.newCalibConfig.calibDir)
         self.browseCalibDirBtn = QPushButton("Browse...")
         calibDirLayout = QHBoxLayout()
         calibDirLayout.addWidget(self.calibDirTextBox)
@@ -289,18 +294,23 @@ class CalibrationConfigView(QDialog):
         calibFileLabels = [[QLabel("Calibration (US):"), QLabel("Calibration (DS):")],
                            [QLabel("Calibration F1 (US):"), QLabel("Calibration F1 (DS):")],
                            [QLabel("Calibration F2 (US):"), QLabel("Calibration F2 (DS):")]]
-        self.calibFileTextBoxes = [[QLineEdit(), QLineEdit()], 
-                                   [QLineEdit(), QLineEdit()],
-                                   [QLineEdit(), QLineEdit()]]#These will be relative names, populated from model
-        self.calibFileBrowseBtns = [[QPushButton("Browse..."), QPushButton("Browse...")],
-                                    [QPushButton("Browse..."), QPushButton("Browse...")],
-                                    [QPushButton("Browse..."), QPushButton("Browse...")]]
+#         self.calibFileTextBoxes = [[QLineEdit(), QLineEdit()], 
+#                                    [QLineEdit(), QLineEdit()],
+#                                    [QLineEdit(), QLineEdit()]]#These will be relative names, populated from model
+#         self.calibFileBrowseBtns = [[QPushButton("Browse..."), QPushButton("Browse...")],
+#                                     [QPushButton("Browse..."), QPushButton("Browse...")],
+#                                     [QPushButton("Browse..."), QPushButton("Browse...")]]
         calibFileLayout = QGridLayout()
         for i in range(len(calibFileLabels)):
             for j in range(len(calibFileLabels[i])):
+                self.calibFileTextBoxes[i][j] = QLineEdit(self.newCalibConfig.calibFiles[i][j])
+                self.calibFileBrowseBtns[i][j] = QPushButton("Browse...")
+                #Assign action to each button     
+                self.calibFileBrowseBtns[i][j].clicked.connect(self.calibFileBrowseBtnClick)
+                #Add the widget to the layout
                 calibFileLayout.addWidget(calibFileLabels[i][j], (2 * i), (2 * j), 1, 2)
                 calibFileLayout.addWidget(self.calibFileTextBoxes[i][j], ((2 * i) + 1), (2 * j))
-                calibFileLayout.addWidget(self.calibFileBrowseBtns[i][j], ((2 * i) + 1), ((2 * j) + 1))            
+                calibFileLayout.addWidget(self.calibFileBrowseBtns[i][j], ((2 * i) + 1), ((2 * j) + 1))  
         calibFileGrpBox.setLayout(calibFileLayout)
         baseLayout.addWidget(calibFileGrpBox)
         
@@ -328,8 +338,17 @@ class CalibrationConfigView(QDialog):
         #Set the base layout
         self.setLayout(baseLayout)
         
+    ####
+    def calibFileBrowseBtnClick(self):#, initDir, i, j):
+        print "clicked"
+#         if ()
+#         if (initDir == None):
+#             initDir = os.path.expanduser("~")
+#         return QFileDialog.getExistingDirectory(self, directory=initDir, caption=caption)
+        
     def okClick(self):
         print "OK!"
+        #Need to create & return a CalibConfig object here.
         self.accept()
          
      

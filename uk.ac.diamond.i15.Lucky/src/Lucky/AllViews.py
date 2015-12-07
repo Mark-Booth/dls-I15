@@ -337,6 +337,7 @@ class CalibrationConfigView(QDialog, AllViews):
         bulbTLabel = QLabel("Bulb Temperature:")
         self.calibTempTextBox = QLineEdit()#Populate from model
         self.calibTempTextBox.setFixedWidth(40)#Same as integrationTextInputWidth in MainView
+        self.calibTempTextBox.textChanged.connect(self.bulbTempChanged)
         kTempLabel = QLabel("K")
         calibTempLayout = QHBoxLayout()
         calibTempLayout.addWidget(bulbTLabel)
@@ -384,6 +385,13 @@ class CalibrationConfigView(QDialog, AllViews):
         calibFile = self.showFileBrowserDialog(initDir=self.presenter.calibModel.calibDir)
         if (calibFile != None):
             self.calibFileTextBoxes[calibId].setText(calibFile)
+            
+    def bulbTempChanged(self):
+        textBox = self.sender()
+        if self.presenter.changeBulbTempTrigger(textBox.text()):
+                self.calibTempTextBox.setStyleSheet("color: rgb(0, 0, 0);")
+        else:
+            self.calibTempTextBox.setStyleSheet("color: rgb(255, 0, 0);")
     
     def updateWidgetStates(self, extraData=None):
         mainData = self.presenter.calibModel if (extraData == None) else extraData

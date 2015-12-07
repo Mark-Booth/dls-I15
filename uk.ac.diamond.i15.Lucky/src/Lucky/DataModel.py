@@ -5,6 +5,7 @@ Created on 9 Nov 2015
 '''
 
 import os
+from collections import OrderedDict
 
 class MainData(object):
     def __init__(self, mode=(0,1), calibType=(1,0,0), dataDir=os.path.expanduser("~"),
@@ -40,23 +41,18 @@ class CalibrationConfigData(object):
                  calibF2US=None, calibF2DS=None):
         self.calibDir = calibDir
         self.bulbTemp = bulbTemp
-        self.calibFiles = [[calibUS, calibDS],
-                           [calibF1US, calibF1DS],
-                           [calibF2US, calibF2DS]]
-        
-        self.calibFileLabels = {[0,0]:'calibUS',
-                                [0,1]:'calibDS',
-                                [1,0]:'calibF1US',
-                                [1,1]:'calibF1DS',
-                                [2,0]:'calibF2US',
-                                [2,1]:'calibF2DS',
-                                }
+        self.calibFiles = OrderedDict([('(US)',calibUS),
+                                       ('(DS)',calibDS),
+                                       ('F1 (US)',calibF1US),
+                                       ('F1 (DS)',calibF1DS),
+                                       ('F2 (US)',calibF2US),
+                                       ('F2 (DS)',calibF2DS)])
         self.calibValid = {'bulbTemp':False,
                            'calibDir':True,
-                           'calibUS':False,
-                           'calibDS':False,
-                           'calibF1US':False,
-                           'calibF1DS':False,
-                           'calibF2US':False,
-                           'calibF2DS':False}
+                           '(US)':False,
+                           '(DS)':False,
+                           'F1 (US)':False,
+                           'F1 (DS)':False,
+                           'F2 (US)':False,
+                           'F2 (DS)':False}
         

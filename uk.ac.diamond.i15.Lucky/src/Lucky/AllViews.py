@@ -14,14 +14,6 @@ from Lucky.MainPresenter import (MainPresenter, CalibPresenter)
 
 class AllViews(object):
     
-    def dirPathChanged(self):
-        textBox = self.sender()
-        
-        if self.presenter.changeDataDirTrigger(textBox.text()):
-            textBox.setStyleSheet("color: rgb(0, 0, 0);")
-        else:
-            textBox.setStyleSheet("color: rgb(255, 0, 0);")
-    
     def showFileBrowserDialog(self, initDir=None, caption="Choose a file"):
         if (initDir == None):
             initDir = os.path.expanduser("~")
@@ -32,6 +24,7 @@ class AllViews(object):
             initDir = os.path.expanduser("~")
         return str(QFileDialog.getExistingDirectory(self, directory=initDir, caption=caption))
 
+####
 
 class MainView(QWidget, AllViews):
     def __init__(self, parent=None):
@@ -86,7 +79,7 @@ class MainView(QWidget, AllViews):
         #Data location
         dataDirGrpBox = QGroupBox("Data directory:")
         self.dataDirTextBox = QLineEdit()#Default needs to be set from the model!
-        self.dataDirTextBox.textChanged.connect(self.dirPathChanged)
+        self.dataDirTextBox.textChanged.connect(self.dataDirPathChanged)
         self.browseDataDirBtn = QPushButton("Browse...")
         self.browseDataDirBtn.clicked.connect(self.dataDirBrowseBtnClick)
         
@@ -201,6 +194,13 @@ class MainView(QWidget, AllViews):
     def calibConfClick(self):
         self.calibConfInput = CalibrationConfigView(self, self.presenter.dataModel.calibConfigData)
         self.calibConfInput.exec_()
+    
+    def dataDirPathChanged(self):
+        textBox = self.sender()
+        if self.presenter.changeDataDirTrigger(textBox.text()):
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+        else:
+            textBox.setStyleSheet("color: rgb(255, 0, 0);")
     
     def dataDirBrowseBtnClick(self):
         currDir = self.presenter.dataModel.dataDir

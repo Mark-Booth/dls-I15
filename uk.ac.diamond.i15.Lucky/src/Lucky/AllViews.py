@@ -270,6 +270,7 @@ class CalibrationConfigView(QDialog, AllViews):
 
     def __init__(self, parent_widget, calibConfig):
         super(CalibrationConfigView, self).__init__(parent=parent_widget)
+
         self.setWindowTitle("Configure Calibration")
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
         self.presenter = CalibPresenter(calibConfig)
@@ -389,7 +390,7 @@ class CalibrationConfigView(QDialog, AllViews):
     def bulbTempChanged(self):
         textBox = self.sender()
         if self.presenter.changeBulbTempTrigger(textBox.text()):
-                self.calibTempTextBox.setStyleSheet("color: rgb(0, 0, 0);")
+            self.calibTempTextBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:
             self.calibTempTextBox.setStyleSheet("color: rgb(255, 0, 0);")
     

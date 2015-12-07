@@ -48,7 +48,6 @@ class CalibrationConfigData(object):
                                        ('F2 (US)',calibF2US),
                                        ('F2 (DS)',calibF2DS)])
         self.calibValid = {'bulbTemp':False,
-                           'calibDir':True,
                            '(US)':False,
                            '(DS)':False,
                            'F1 (US)':False,

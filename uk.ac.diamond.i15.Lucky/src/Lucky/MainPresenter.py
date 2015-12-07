@@ -10,7 +10,28 @@ from Lucky.MPStates import State
 from Lucky.DataModel import (CalibrationConfigData, MainData)
 from Lucky.LuckyExceptions import BadModelStateException, IllegalArgumentException
 
-class MainPresenter(object):
+class AllPresenter(object):
+    def __init__(self, dM = None):
+        super(AllPresenter, self).__init__()
+        
+    def isValidPath(self, uiText, dirPath=False):
+        return (dirPath and os.path.isdir(uiText)) or (not dirPath and os.path.isfile(uiText))
+    
+    def isValidInt(self, uiNum):
+        try:
+            int(uiNum)
+            return True
+        except ValueError:
+            return False
+    
+    def isValidFloat(self, uiNum):
+        try:
+            float(uiNum)
+            return True
+        except ValueError:
+            return False
+
+class MainPresenter(AllPresenter):
     def __init__(self, dM = None):
         #Create the data model and the state machine
         if dM == None:
@@ -139,25 +160,28 @@ class MainPresenter(object):
     
     def getSMState(self):
         return self.stateMach.currentState
+
+####
+
+class CalibPresenter(AllPresenter):
+    def __init__(self, cM = None):
+        #Create the data model and the state machine
+        if cM == None:
+            self.calibModel = CalibrationConfigData()
+        else:
+            self.dataModel = cM
     
-    def isValidPath(self, uiText, dirPath=False):
-        return (dirPath and os.path.isdir(uiText)) or (not dirPath and os.path.isfile(uiText))
-    
-    def isValidInt(self, uiNum):
-        try:
-            int(uiNum)
+    def changeCalibFileTrigger(self, uiText, fileIndices):
+        if self.isValidPath(uiText, dirPath=False):
+            
+            self.dataModel.dataValid['dataDir'] = True
             return True
-        except ValueError:
+        else:
+            self.dataModel.dataValid['dataDir'] = False
             return False
-    
-    def isValidFloat(self, uiNum):
-        try:
-            float(uiNum)
-            return True
-        except ValueError:
-            return False
-    
-    
+
+####
+
 class StateMachine(object):
     def __init__(self, mp):
         self.mainPres = mp
@@ -179,3 +203,5 @@ class StateMachine(object):
     
     def getStateName(self):
         return self.currentState.name
+
+

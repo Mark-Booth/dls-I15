@@ -170,6 +170,15 @@ class CalibPresenter(AllPresenter):
             self.calibModel = CalibrationConfigData()
         else:
             self.calibModel = cM
+            
+    def changeCalibDirTrigger(self, uiText):
+        if self.isValidPath(uiText, dirPath=True):
+            self.calibModel.calibDir = uiText
+            self.calibModel.calibValid['calibDir'] = True
+            return True
+        else:
+            self.calibModel.calibValid['calibDir'] = False
+            return False
     
     def changeCalibFileTrigger(self, uiText, calibId):
         if self.isValidPath(uiText, dirPath=False):

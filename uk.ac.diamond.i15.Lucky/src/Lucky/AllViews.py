@@ -270,7 +270,6 @@ class CalibrationConfigView(QDialog, AllViews):
 
     def __init__(self, parent_widget, calibConfig):
         super(CalibrationConfigView, self).__init__(parent=parent_widget)
-
         self.setWindowTitle("Configure Calibration")
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
         self.presenter = CalibPresenter(calibConfig)
@@ -403,11 +402,10 @@ class CalibrationConfigView(QDialog, AllViews):
         self.calibTempTextBox.setText(str(mainData.bulbTemp))
         
     def okClick(self):
-        print "OK!"
-        #Need to create & return a CalibConfig object here.
+        validity = self.presenter.isValidConfig()
+        self.parent().presenter.setCalibConfig(self.presenter.calibModel, validity)
         self.accept()
          
      
     def cancelClick(self):
-        print "Cancel"
         self.reject()

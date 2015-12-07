@@ -23,7 +23,7 @@ class LuckyCalculationsTest(unittest.TestCase):
 class PlottingTest(LuckyCalculationsTest):
     def setUp(self):
         LuckyCalculationsTest.setUp(self)
-    
+     
     def runTest(self):
         self.luckCalcA = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
         self.luckCalcB = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
@@ -61,11 +61,11 @@ class CalculationsTest(LuckyCalculationsTest):
             TTwo=[]*count
             
             for i in range (0,k):#(0,count-1):
-                f1=1/(x[i]*10**(-9))
-                f2=1/(x[i+delta]*10**(-9))
-                i1=np.log(Int[i]/(2*pi*h*c**2*f1**5))*(Kb/(h*c))#Order changed!!
-                i2=np.log(Int[i+delta]/(2*pi*h*c**2*f2**5))*(Kb/(h*c))#i2=np.log(Int[i]/2/pi/h/c**2/f1**5)*Kb/h/c
-                TTwo.append(abs((f2-f1)/(i2-i1)))
+                f1=(h*c)/(x[i]*10**(-9)*Kb)
+                f2=(h*c)/(x[i+delta]*10**(-9)*Kb)
+                i1=np.log(Int[i]*(x[i]*10**(-9))**5/(2*pi*h*c**2))*(Kb/(h*c))#Order changed!!
+                i2=np.log(Int[i+delta]*(x[i+delta]*10**(-9))**5/(2*pi*h*c**2))*(Kb/(h*c))#i2=np.log(Int[i]/2/pi/h/c**2/f1**5)*Kb/h/c
+                TTwo.append((f1-f2)/(i2-i1))
             for i in range (k,count):
                 a = float('nan')
                 TTwo.append(a)

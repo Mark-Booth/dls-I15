@@ -118,14 +118,14 @@ class LuckyCalculations(object):
         nWindows = nPoints - delta
         
         def twoColCalc(wavelength, intens):
-            return np.log(intens / (2 * pi * h * np.power(c, 2) * np.power(wavelength, 5))) * (k / (h *c))
+            return np.log(intens * np.power(wavelength, 5) / (2 * pi * h * np.power(c, 2))) * (k / (h *c))
         
         for i in range(nWindows):
-            f1 = 1 / wavelength[i]
-            f2 = 1 / wavelength[i + delta]
-            i1 = twoColCalc(f1, intens[i])
-            i2 = twoColCalc(f2, intens[i+delta])
-            twoCol.append(abs((f2 - f1) / (i2 - i1)))
+            f1 = (h * c) / (wavelength[i] * k)
+            f2 = (h * c) / (wavelength[i + delta] * k)
+            i1 = twoColCalc(wavelength[i], intens[i])
+            i2 = twoColCalc(wavelength[i + delta], intens[i+delta])
+            twoCol.append((f1 - f2) / (i2 - i1))
         
         for i in range(nWindows, nPoints):
             twoCol.append(float('nan'))

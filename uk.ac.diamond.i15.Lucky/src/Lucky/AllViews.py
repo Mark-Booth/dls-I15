@@ -276,6 +276,7 @@ class CalibrationConfigView(QDialog, AllViews):
         
         #This needs to run after we've read & set the original calibConfig
         self.setupUI()
+        self.updateWidgetStates()
         
     
     def setupUI(self):
@@ -316,7 +317,7 @@ class CalibrationConfigView(QDialog, AllViews):
             
             self.calibFileLabels[uiElemName] = QLabel("Calibration "+uiElemName+":")
             self.calibFileTextBoxes[uiElemName] = QLineEdit(self.presenter.calibModel.calibFiles[uiElemName])
-            
+            self.calibFileTextBoxes[uiElemName].textChanged.connect(self.calibFilePathChanged)
             
             self.calibFileBrowseBtns[uiElemName] = QPushButton("Browse...")
             self.calibFileBrowseBtns[uiElemName].clicked.connect(self.calibFileBrowseBtnClick)
@@ -369,7 +370,13 @@ class CalibrationConfigView(QDialog, AllViews):
         if newDir != None:
             self.calibDirTextBox.setText(newDir) #No need to fire an update as it happens automatically
     
-    
+    def calibFilePathChanged(self):
+        textBox = self.sender()
+        calibId = [uiElemName for uiElemName, btn in self.calibFileTextBoxes.iteritems() if (btn == textBox)][0]
+        if self.presenter.changeCalibFileTrigger(textBox.text(), calibId):
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+        else:
+            textBox.setStyleSheet("color: rgb(255, 0, 0);")
     
     def calibFileBrowseBtnClick(self):
         calibId = [uiElemName for uiElemName, btn in self.calibFileBrowseBtns.iteritems() if (btn == self.sender())][0]
@@ -377,6 +384,14 @@ class CalibrationConfigView(QDialog, AllViews):
         calibFile = self.showFileBrowserDialog(initDir=self.presenter.calibModel.calibDir)
         if (calibFile != None):
             self.calibFileTextBoxes[calibId].setText(calibFile)
+    
+    def updateWidgetStates(self, extraData=None):
+        mainData = self.presenter.calibModel if (extraData == None) else extraData
+        
+        self.calibDirTextBox.setText(mainData.calibDir)
+        for name in mainData.calibFiles.keys():
+            self.calibFileTextBoxes[name].setText(mainData.calibFiles[name])
+        self.calibTempTextBox.setText(str(mainData.bulbTemp))
         
     def okClick(self):
         print "OK!"

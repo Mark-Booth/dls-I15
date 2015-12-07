@@ -4,8 +4,10 @@ Created on 9 Nov 2015
 @author: wnm24546
 '''
 
+import os
+
 class MainData(object):
-    def __init__(self, mode=(0,1), calibType=(1,0,0), dataDir=None,
+    def __init__(self, mode=(0,1), calibType=(1,0,0), dataDir=os.path.expanduser("~"),
                  usdsPair=0, integStart=500, integEnd=900, integDelta=200):
         #These relate to the calculations
         self.mode = mode
@@ -32,7 +34,7 @@ class MainData(object):
         
 
 class CalibrationConfigData(object):
-    def __init__(self, calibDir=None, bulbTemp=0,
+    def __init__(self, calibDir=os.path.expanduser("~"), bulbTemp=0,
                  calibUS=None, calibDS=None, 
                  calibF1US=None, calibF1DS=None,
                  calibF2US=None, calibF2DS=None):

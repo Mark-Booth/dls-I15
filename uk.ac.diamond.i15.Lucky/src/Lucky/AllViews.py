@@ -7,7 +7,7 @@ Created on 4 Nov 2015
 from PyQt4.QtGui import (QDialog, QDialogButtonBox, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QRadioButton, QVBoxLayout, QWidget)
 from PyQt4 import QtCore
 
-import os
+import os, copy
 
 #from Lucky import CalibrationConfigView
 from Lucky.MainPresenter import MainPresenter
@@ -265,7 +265,7 @@ class CalibrationConfigView(QDialog):
         super(CalibrationConfigView, self).__init__(parent=parent_widget)
         self.setWindowTitle("Configure Calibration")
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
-        self.newCalibConfig = CalibrationConfigData(calibConfig)
+        self.newCalibConfig = copy.copy(calibConfig)
         
                 
         #This needs to run after we've read & set the original calibConfig
@@ -290,21 +290,20 @@ class CalibrationConfigView(QDialog):
         
         ####
         #Select specific calibration file names to use
+        calibFileLayout = QGridLayout()
         calibFileGrpBox = QGroupBox("Calibration Files:")
         calibFileLabels = [[QLabel("Calibration (US):"), QLabel("Calibration (DS):")],
                            [QLabel("Calibration F1 (US):"), QLabel("Calibration F1 (DS):")],
                            [QLabel("Calibration F2 (US):"), QLabel("Calibration F2 (DS):")]]
-#         self.calibFileTextBoxes = [[QLineEdit(), QLineEdit()], 
-#                                    [QLineEdit(), QLineEdit()],
-#                                    [QLineEdit(), QLineEdit()]]#These will be relative names, populated from model
-#         self.calibFileBrowseBtns = [[QPushButton("Browse..."), QPushButton("Browse...")],
-#                                     [QPushButton("Browse..."), QPushButton("Browse...")],
-#                                     [QPushButton("Browse..."), QPushButton("Browse...")]]
-        calibFileLayout = QGridLayout()
+        self.calibFileTextBoxes=[]
+        self.calibFileBrowseBtns = []
+
         for i in range(len(calibFileLabels)):
+            self.calibFileTextBoxes.append([])
+            self.calibFileBrowseBtns.append([])
             for j in range(len(calibFileLabels[i])):
-                self.calibFileTextBoxes[i][j] = QLineEdit(self.newCalibConfig.calibFiles[i][j])
-                self.calibFileBrowseBtns[i][j] = QPushButton("Browse...")
+                self.calibFileTextBoxes[i].append(QLineEdit(self.newCalibConfig.calibFiles[i][j]))
+                self.calibFileBrowseBtns[i].append(QPushButton("Browse..."))
                 #Assign action to each button     
                 self.calibFileBrowseBtns[i][j].clicked.connect(self.calibFileBrowseBtnClick)
                 #Add the widget to the layout

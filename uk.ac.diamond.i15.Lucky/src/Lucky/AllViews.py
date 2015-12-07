@@ -13,7 +13,20 @@ import os, copy
 from Lucky.MainPresenter import MainPresenter
 from Lucky.DataModel import CalibrationConfigData
 
-class MainView(QWidget):
+class AllViews(object):
+    
+    def showFileBrowserDialog(self, initDir=None, caption="Choose a file"):
+        if (initDir == None):
+            initDir = os.path.expanduser("~")
+        return str(QFileDialog.getOpenFileName(self, directory=initDir, caption=caption))
+        
+    def showDirBrowserDialog(self, initDir=None, caption="Choose a directory"):
+        if (initDir == None):
+            initDir = os.path.expanduser("~")
+        return str(QFileDialog.getExistingDirectory(self, directory=initDir, caption=caption))
+
+
+class MainView(QWidget, AllViews):
     def __init__(self, parent=None):
         super(MainView, self).__init__(parent)
         self.setWindowTitle("Lucky")
@@ -191,7 +204,7 @@ class MainView(QWidget):
     
     def dataDirBrowseBtnClick(self):
         currDir = self.presenter.dataModel.dataDir
-        newDir = str(self.showDirBrowserDialog(initDir=currDir, caption="Select a new data directory"))
+        newDir = self.showDirBrowserDialog(initDir=currDir, caption="Select a new data directory")
         self.dataDirTextBox.setText(newDir)
         0
         #self.dataDirChanged()
@@ -246,20 +259,13 @@ class MainView(QWidget):
         #Buttons
         self.runBtn.setEnabled(mainData.runEnabled)
         self.stopBtn.setEnabled(mainData.stopEnabled)
-    
-    ###
-    
-    def showDirBrowserDialog(self, initDir=None, caption="Choose a directory"):
-        if (initDir == None):
-            initDir = os.path.expanduser("~")
-        return QFileDialog.getExistingDirectory(self, directory=initDir, caption=caption)
-    
+
 
 
 #####################################
 
 
-class CalibrationConfigView(QDialog):
+class CalibrationConfigView(QDialog, AllViews):
 
     def __init__(self, parent_widget, calibConfig):
         super(CalibrationConfigView, self).__init__(parent=parent_widget)
@@ -297,6 +303,7 @@ class CalibrationConfigView(QDialog):
                            [QLabel("Calibration F2 (US):"), QLabel("Calibration F2 (DS):")]]
         self.calibFileTextBoxes=[]
         self.calibFileBrowseBtns = []
+        self.browseBtnRegister = {}
 
         for i in range(len(calibFileLabels)):
             self.calibFileTextBoxes.append([])
@@ -306,6 +313,7 @@ class CalibrationConfigView(QDialog):
                 self.calibFileBrowseBtns[i].append(QPushButton("Browse..."))
                 #Assign action to each button     
                 self.calibFileBrowseBtns[i][j].clicked.connect(self.calibFileBrowseBtnClick)
+                self.browseBtnRegister[self.calibFileBrowseBtns[i][j]] = [i, j]
                 #Add the widget to the layout
                 calibFileLayout.addWidget(calibFileLabels[i][j], (2 * i), (2 * j), 1, 2)
                 calibFileLayout.addWidget(self.calibFileTextBoxes[i][j], ((2 * i) + 1), (2 * j))
@@ -338,12 +346,11 @@ class CalibrationConfigView(QDialog):
         self.setLayout(baseLayout)
         
     ####
-    def calibFileBrowseBtnClick(self):#, initDir, i, j):
-        print "clicked"
-#         if ()
-#         if (initDir == None):
-#             initDir = os.path.expanduser("~")
-#         return QFileDialog.getExistingDirectory(self, directory=initDir, caption=caption)
+    def calibFileBrowseBtnClick(self):
+        btnId = self.browseBtnRegister.get(self.sender())
+        
+        calibFile = self.showDirBrowserDialog(initDir=self.newCalibConfig.calibDir)
+        self.newCalibConfig.calibFiles[btnId[0]][btnId[1]] = calibFile
         
     def okClick(self):
         print "OK!"

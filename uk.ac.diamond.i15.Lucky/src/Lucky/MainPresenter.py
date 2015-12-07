@@ -139,7 +139,22 @@ class MainPresenter(AllPresenter):
             
     
     def isDataValid(self):
-        return None
+        if (all(val == True for val in self.dataModel.dataValid.values())):
+            return True
+        elif self.dataModel.calibType == (1,0,0):
+            if (self.dataModel.calibConfigData.calibValid['(US)'] and self.dataModel.calibConfigData.calibValid['(DS)']):
+                return True
+        elif self.dataModel.calibType == (0,1,0):
+            if (self.dataModel.calibConfigData.calibValid['F1 (US)'] and self.dataModel.calibConfigData.calibValid['F1 (DS)']):
+                return True
+        elif self.dataModel.calibType == (0,0,1):
+            if (self.dataModel.calibConfigData.calibValid['F2 (US)'] and self.dataModel.calibConfigData.calibValid['F2 (DS)']):
+                return True
+        return False
+    
+    def setCalibConfig(self, calibConfig, validity):
+        self.dataModel.calibConfigData = calibConfig
+        self.dataModel.dataValid['calibConfig'] = validity
     
     def getModeTransition(self, inputMode=None):
         if inputMode == None:

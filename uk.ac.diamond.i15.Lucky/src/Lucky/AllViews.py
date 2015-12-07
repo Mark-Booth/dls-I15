@@ -205,7 +205,8 @@ class MainView(QWidget, AllViews):
     def dataDirBrowseBtnClick(self):
         currDir = self.presenter.dataModel.dataDir
         newDir = self.showDirBrowserDialog(initDir=currDir, caption="Select a new data directory")
-        self.dataDirTextBox.setText(newDir) #No need to fire an update as it happens automatically
+        if newDir != None:
+            self.dataDirTextBox.setText(newDir) #No need to fire an update as it happens automatically
     
     def integConfigChanged(self):
         textBox = self.sender()
@@ -238,7 +239,9 @@ class MainView(QWidget, AllViews):
             self.calibRadBtns[i].setChecked(mainData.calibType[i])
         
         #Datadir
-        
+        self.browseDataDirBtn.setEnabled(mainData.allUIControlsEnabled)
+        self.dataDirTextBox.setEnabled(mainData.allUIControlsEnabled)
+        self.dataDirTextBox.setText(str(mainData.dataDir))
         
         #US/DS pair
         self.prevUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
@@ -283,8 +286,10 @@ class CalibrationConfigView(QDialog, AllViews):
         ####
         #Select the base directory to look for calibration files
         calibDirGrpBox = QGroupBox("Calibration Directory:")
-        self.calibDirTextBox = QLineEdit(self.presenter.calibModel.calibDir)
+        self.calibDirTextBox = QLineEdit()
+        self.calibDirTextBox.textChanged.connect(self.calibDirPathChanged)
         self.browseCalibDirBtn = QPushButton("Browse...")
+        self.browseCalibDirBtn.clicked.connect(self.calibDirBrowseBtnClick)
         calibDirLayout = QHBoxLayout()
         calibDirLayout.addWidget(self.calibDirTextBox)
         calibDirLayout.addWidget(self.browseCalibDirBtn)
@@ -351,13 +356,27 @@ class CalibrationConfigView(QDialog, AllViews):
         self.setLayout(baseLayout)
         
     ####
+    def calibDirPathChanged(self):
+        textBox = self.sender()
+        if self.presenter.changeCalibDirTrigger(textBox.text()):
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+        else:
+            textBox.setStyleSheet("color: rgb(255, 0, 0);")
+    
+    def calibDirBrowseBtnClick(self):
+        currDir = self.presenter.calibModel.calibDir
+        newDir = self.showDirBrowserDialog(initDir=currDir, caption="Select a new calibration directory")
+        if newDir != None:
+            self.calibDirTextBox.setText(newDir) #No need to fire an update as it happens automatically
+    
+    
+    
     def calibFileBrowseBtnClick(self):
-        calibId = [uiElemName for uiElemName, btn in self.calibFileBrowseBtns.iteritems() if (btn == self.sender())]
+        calibId = [uiElemName for uiElemName, btn in self.calibFileBrowseBtns.iteritems() if (btn == self.sender())][0]
         
         calibFile = self.showFileBrowserDialog(initDir=self.presenter.calibModel.calibDir)
         if (calibFile != None):
-            self.calibFileTextBoxes[calibId] = calibFile
-        return
+            self.calibFileTextBoxes[calibId].setText(calibFile)
         
     def okClick(self):
         print "OK!"

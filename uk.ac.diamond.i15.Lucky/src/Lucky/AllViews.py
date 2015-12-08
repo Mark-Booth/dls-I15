@@ -208,6 +208,9 @@ class MainView(QWidget, AllViews):
     
     def dataDirPathChanged(self):
         textBox = self.sender()
+        if textBox.text() == '':
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+            return
         if self.presenter.changeDataDirTrigger(textBox.text()):
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:
@@ -232,6 +235,9 @@ class MainView(QWidget, AllViews):
     
     def usdsPairTextChanged(self):
         textBox = self.sender()
+        if textBox.text() == '':
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+            return
         if textBox == self.currDSTextBox:
             if self.presenter.changeUSDSPairTrigger(dsFile=textBox.text()):
                 textBox.setStyleSheet("color: rgb(0, 0, 0);")
@@ -247,6 +253,9 @@ class MainView(QWidget, AllViews):
     
     def integConfigChanged(self):
         textBox = self.sender()
+        if textBox.text() == '':
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+            return
         if self.presenter.isValidInt(textBox.text()):
             integConfig = [self.integStartTextBox.text(),
                            self.integStopTextBox.text(),
@@ -400,6 +409,9 @@ class CalibrationConfigView(QDialog, AllViews):
     ####
     def calibDirPathChanged(self):
         textBox = self.sender()
+        if textBox.text() == '':
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+            return
         if self.presenter.changeCalibDirTrigger(textBox.text()):
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:
@@ -413,6 +425,9 @@ class CalibrationConfigView(QDialog, AllViews):
     
     def calibFilePathChanged(self):
         textBox = self.sender()
+        if textBox.text() == '':
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+            return
         calibId = [uiElemName for uiElemName, btn in self.calibFileTextBoxes.iteritems() if (btn == textBox)][0]
         if self.presenter.changeCalibFileTrigger(textBox.text(), calibId):
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
@@ -428,6 +443,9 @@ class CalibrationConfigView(QDialog, AllViews):
             
     def bulbTempChanged(self):
         textBox = self.sender()
+        if textBox.text() == '':
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+            return
         if self.presenter.changeBulbTempTrigger(textBox.text()):
             self.calibTempTextBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:

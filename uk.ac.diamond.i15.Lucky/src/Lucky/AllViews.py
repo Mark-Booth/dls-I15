@@ -228,6 +228,7 @@ class MainView(QWidget, AllViews):
         else:
             raise IllegalArgumentException(str(btn)+" unknown in this context")
         
+        self.updateWidgetStates()
     
     def usdsPairTextChanged(self):
         textBox = self.sender()
@@ -282,8 +283,10 @@ class MainView(QWidget, AllViews):
         #US/DS pair
         self.prevUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
         self.nextUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
-        self.currUSTextBox.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
         self.currDSTextBox.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
+        self.currUSTextBox.setText(mainData.usdsPair[0])
+        self.currUSTextBox.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
+        self.currUSTextBox.setText(mainData.usdsPair[1])
         
         #Integration controls
         self.integStartTextBox.setEnabled(mainData.allUIControlsEnabled)

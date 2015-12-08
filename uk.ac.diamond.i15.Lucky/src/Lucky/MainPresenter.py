@@ -4,7 +4,7 @@ Created on 5 Nov 2015
 @author: wnm24546
 '''
 
-import os
+import os, re
 
 from Lucky.MPStates import State
 from Lucky.DataModel import (CalibrationConfigData, MainData)
@@ -101,42 +101,47 @@ class MainPresenter(AllPresenter):
     def calibConfigUpdateTrigger(self, calibConfig):
         pass
     
-    def changeUSDSPairTrigger(self, inc=False, dec=False, pairNr=False):
-        if pairNr is not False and not (inc or dec):
-            if pairNr >= 0:
-                self.dataModel.usdsPair = pairNr
+    def changeUSDSPairTrigger(self, inc=False, dec=False, dsFile=None, usFile=None):
+        #Catch malformed args
+        if (inc and dec) or ((inc or dec) and (dsFile != False or usFile != False)):
+            raise IllegalArgumentException("Cannot inc/decrement together and/or change filenames")
+        
+        if dsFile != None:
+            dsNewPath = os.path.join(self.dataModel.dataDir, dsFile)
+            if self.isValidPath(dsNewPath, False):
+                self.dataModel.usdsPair[0] = dsNewPath
+                return True
+            else:
+                return False
+        if usFile != None:
+            usNewPath = os.path.join(self.dataModel.dataDir, usFile)
+            if self.isValidPath(usNewPath, False):
+                self.dataModel.usdsPair[1] = usNewPath
                 return True
             else:
                 return False
         
-        if inc and not (dec or pairNr is not False):
-            usdsPair = self.dataModel.usdsPair + 1
-            return self.changeUSDSPairTrigger(pairNr=usdsPair)
-        
-        if dec and not (inc or pairNr is not False):
-            usdsPair = self.dataModel.usdsPair - 1
-            return self.changeUSDSPairTrigger(pairNr=usdsPair)
-        
-        raise IllegalArgumentException("Found none of inc, dec or a pairNr value")
-#         if not(inc or dec):
-#             if pairNr < 0:
-#                 return False
-#             else:
-#                 self.dataModel.usdsPair = pairNr
-#         
-#         if inc and not(dec and pairNr < 0):
-#             
-#             
-#             
-#             else:
-#                 raise IllegalArgumentException("Found none of inc, dec or a pairNr value")
-#         if 
-#         
-#         if pairNr >= 0:
-#             
-#             return True
-#         if inc:
+        if inc or dec:
+            def shiftFileName(usdsIndex, shiftVal):
+                #Regular expression to match file name of the format:
+                #    A_#_#.txt
+                rePatt = re.compile("([a-zA-Z]+)(_+)([0-9]+)(_+)([0-9]+)(\.txt$)")
+                filePath = os.path.basename(self.dataModel.usdsPair[usdsIndex])
+                filePathParts = rePatt.match(filePath).groups()
+                fileNr = int(filePathParts[2])
+                filePathParts[2] = str(fileNr + shiftVal)
+                return ''.join(filePathParts)
             
+            newUSDSPair = ['', '']
+            for i in range(2):
+                if dec:
+                    newUSDSPair[i] = shiftFileName(i, -1)
+                if dec:
+                    newUSDSPair[i] = shiftFileName(i, 1)
+                    
+            self.dataModel.usdsPair = newUSDSPair
+            
+            return True #This should just be ignored...
     
     def isDataValid(self):
         if (all(val == True for val in self.dataModel.dataValid.values())):

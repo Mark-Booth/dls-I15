@@ -93,12 +93,22 @@ class MainView(QWidget, AllViews):
         #US/DS selector
         fileGrpBox = QGroupBox("Measurement Number (US/DS pair):")
         self.prevUSDSPairBtn = QPushButton("<")
+        self.prevUSDSPairBtn.setFixedWidth(40)
+        self.prevUSDSPairBtn.clicked.connect(self.changeUSDSPairBtnClick)
         self.nextUSDSPairBtn = QPushButton(">")
-        self.currUSDSPairTextBox = QLineEdit()#Default needs to be set from the model!
+        self.nextUSDSPairBtn.clicked.connect(self.changeUSDSPairBtnClick)
+        self.nextUSDSPairBtn.setFixedWidth(40)
+        self.currUSTextBox = QLineEdit()
+        self.currUSTextBox.textChanged.connect(self.usdsPairTextChanged)
+        self.currUSTextBox.setFixedWidth(100)
+        self.currDSTextBox = QLineEdit()
+        self.currDSTextBox.textChanged.connect(self.usdsPairTextChanged)
+        self.currDSTextBox.setFixedWidth(100)
         
         fileLayout = QHBoxLayout()
         fileLayout.addWidget(self.prevUSDSPairBtn)
-        fileLayout.addWidget(self.currUSDSPairTextBox)
+        fileLayout.addWidget(self.currUSTextBox)
+        fileLayout.addWidget(self.currDSTextBox)
         fileLayout.addWidget(self.nextUSDSPairBtn)
         fileGrpBox.setLayout(fileLayout)
         controlsLayout.addWidget(fileGrpBox, 1, 1, 1, 2)
@@ -208,6 +218,12 @@ class MainView(QWidget, AllViews):
         if newDir != None:
             self.dataDirTextBox.setText(newDir) #No need to fire an update as it happens automatically
     
+    def changeUSDSPairBtnClick(self):
+        pass
+    
+    def usdsPairTextChanged(self):
+        pass
+    
     def integConfigChanged(self):
         textBox = self.sender()
         if self.presenter.isValidInt(textBox.text()):
@@ -246,7 +262,8 @@ class MainView(QWidget, AllViews):
         #US/DS pair
         self.prevUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
         self.nextUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
-        self.currUSDSPairTextBox.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
+        self.currUSTextBox.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
+        self.currDSTextBox.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
         
         #Integration controls
         self.integStartTextBox.setEnabled(mainData.allUIControlsEnabled)

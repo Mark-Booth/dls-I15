@@ -11,6 +11,7 @@ import os
 
 #from Lucky import CalibrationConfigView
 from Lucky.MainPresenter import (MainPresenter, CalibPresenter)
+from Lucky.LuckyExceptions import IllegalArgumentException
 
 class AllViews(object):
     
@@ -107,8 +108,8 @@ class MainView(QWidget, AllViews):
         
         fileLayout = QHBoxLayout()
         fileLayout.addWidget(self.prevUSDSPairBtn)
-        fileLayout.addWidget(self.currUSTextBox)
         fileLayout.addWidget(self.currDSTextBox)
+        fileLayout.addWidget(self.currUSTextBox)
         fileLayout.addWidget(self.nextUSDSPairBtn)
         fileGrpBox.setLayout(fileLayout)
         controlsLayout.addWidget(fileGrpBox, 1, 1, 1, 2)
@@ -219,10 +220,29 @@ class MainView(QWidget, AllViews):
             self.dataDirTextBox.setText(newDir) #No need to fire an update as it happens automatically
     
     def changeUSDSPairBtnClick(self):
-        pass
+        btn = self.sender()
+        if btn == self.prevUSDSPairBtn:
+            self.presenter.changeUSDSPairTrigger(decrement=True)
+        elif btn == self.nextUSDSPairBtn:
+            self.presenter.changeUSDSPairTrigger(increment=True)
+        else:
+            raise IllegalArgumentException(str(btn)+" unknown in this context")
+        
     
     def usdsPairTextChanged(self):
-        pass
+        textBox = self.sender()
+        if textBox == self.currDSTextBox:
+            if self.presenter.changeUSDSPairTrigger(dsFile=textBox.text()):
+                textBox.setStyleSheet("color: rgb(0, 0, 0);")
+            else:
+                textBox.setStyleSheet("color: rgb(255, 0, 0);")
+        elif textBox == self.currUSTextBox:
+            if self.presenter.changeUSDSPairTrigger(usFile=textBox.text()):
+                textBox.setStyleSheet("color: rgb(0, 0, 0);")
+            else:
+                textBox.setStyleSheet("color: rgb(255, 0, 0);")
+        else:
+            raise IllegalArgumentException(str(textBox)+" unknown in this context")
     
     def integConfigChanged(self):
         textBox = self.sender()

@@ -76,7 +76,7 @@ class MainPresenter(AllPresenter):
     
     def changeDataDirTrigger(self, uiText):
         if self.isValidPath(uiText, dirPath=True):
-            self.dataModel.dataDir = uiText
+            self.dataModel.dataDir = str(uiText)
             self.dataModel.dataValid['dataDir'] = True
             return True
         else:
@@ -107,14 +107,22 @@ class MainPresenter(AllPresenter):
             raise IllegalArgumentException("Cannot inc/decrement together and/or change filenames")
         
         if dsFile != None:
-            dsNewPath = os.path.join(self.dataModel.dataDir, dsFile)
+            dsFile = str(dsFile)
+            try:
+                dsNewPath = os.path.join(self.dataModel.dataDir, dsFile)
+            except:
+                return False
             if self.isValidPath(dsNewPath, False):
                 self.dataModel.usdsPair[0] = dsNewPath
                 return True
             else:
                 return False
         if usFile != None:
-            usNewPath = os.path.join(self.dataModel.dataDir, usFile)
+            usFile = str(usFile)
+            try:
+                usNewPath = os.path.join(self.dataModel.dataDir, usFile)
+            except:
+                return False
             if self.isValidPath(usNewPath, False):
                 self.dataModel.usdsPair[1] = usNewPath
                 return True

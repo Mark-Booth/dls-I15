@@ -204,6 +204,9 @@ class MainView(QWidget, AllViews):
     def calibConfClick(self):
         self.calibConfInput = CalibrationConfigView(self, self.presenter.dataModel.calibConfigData)
         self.calibConfInput.exec_()
+        
+        self.presenter.dataChangeTrigger()
+        self.updateWidgetStates()
     
     def dataDirPathChanged(self):
         textBox = self.sender()
@@ -219,6 +222,9 @@ class MainView(QWidget, AllViews):
         for i in range(2):
             updatedPath = os.path.join(str(textBox.text()), os.path.basename(self.presenter.dataModel.usdsPair[i]))
             self.usdsPairTextBoxes[i].textChanged.emit(updatedPath)
+        
+        self.presenter.dataChangeTrigger()
+        self.updateWidgetStates()
     
     def dataDirBrowseBtnClick(self):
         currDir = self.presenter.dataModel.dataDir
@@ -261,7 +267,9 @@ class MainView(QWidget, AllViews):
         elif not prevState == self.presenter.dataModel.usdsPairGTE:
             for i in range(2):
                 self.usdsPairTextBoxes[i].textChanged.emit(self.presenter.dataModel.usdsPair[i])
-        return
+        
+        self.presenter.dataChangeTrigger()
+        self.updateWidgetStates()
     
     def integConfigChanged(self):
         textBox = self.sender()
@@ -282,6 +290,9 @@ class MainView(QWidget, AllViews):
                 self.integDeltaTextBox.setStyleSheet("color: rgb(255, 0, 0);")
         else:
             textBox.setStyleSheet("color: rgb(255, 0, 0);")
+        
+        self.presenter.dataChangeTrigger()
+        self.updateWidgetStates()
 ###
     def updateWidgetStates(self, extraData=None):
         mainData = self.presenter.dataModel if (extraData == None) else extraData

@@ -48,7 +48,7 @@ class MainPresenter(AllPresenter):
         self.stateMach.changeState(State.EVENTS.STOP)
         #Kill the calculation thread
     
-    def dataValidTrigger(self, noData=False):
+    def dataChangeTrigger(self, noData=False):
         if noData:
             dataValid = not self.dataModel.allDataPresent
         else:

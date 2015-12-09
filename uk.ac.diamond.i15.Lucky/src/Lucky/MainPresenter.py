@@ -75,9 +75,11 @@ class MainPresenter(AllPresenter):
         print self.dataModel.calibType
     
     def changeDataDirTrigger(self, uiText):
+        self.dataModel.dataDir = str(uiText)
+        self.dataModel.calibConfigData.calibDir = str(uiText)
         if self.isValidPath(uiText, dirPath=True):
-            self.dataModel.dataDir = str(uiText)
             self.dataModel.dataValid['dataDir'] = True
+            self.dataModel.calibConfigData.calibValid['calibDir'] = True
             return True
         else:
             self.dataModel.dataValid['dataDir'] = False
@@ -90,8 +92,8 @@ class MainPresenter(AllPresenter):
                 return False
             intUINumbs.append(int(val))
         
+        self.dataModel.integrationConf = intUINumbs
         if ((intUINumbs[0] < intUINumbs[1]) and (intUINumbs[2] < (intUINumbs[1] - intUINumbs[0]))):
-            self.dataModel.integrationConf = intUINumbs
             self.dataModel.dataValid['integrationConf'] = True
             return True
         else:

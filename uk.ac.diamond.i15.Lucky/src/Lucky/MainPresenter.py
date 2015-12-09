@@ -103,7 +103,7 @@ class MainPresenter(AllPresenter):
     
     def changeUSDSPairTrigger(self, inc=False, dec=False, dsFile=None, usFile=None):
         #Catch malformed args
-        if (inc and dec) or ((inc or dec) and (dsFile != False or usFile != False)):
+        if (inc and dec) or ((inc or dec) and (dsFile != None or usFile != None)):
             raise IllegalArgumentException("Cannot inc/decrement together and/or change filenames")
         
         if dsFile != None:
@@ -114,8 +114,10 @@ class MainPresenter(AllPresenter):
                 return False
             if self.isValidPath(dsNewPath, False):
                 self.dataModel.usdsPair[0] = dsNewPath
+                self.dataModel.dataValid['dsFile'] = True
                 return True
             else:
+                self.dataModel.dataValid['dsFile'] = False
                 return False
         if usFile != None:
             usFile = str(usFile)
@@ -125,8 +127,10 @@ class MainPresenter(AllPresenter):
                 return False
             if self.isValidPath(usNewPath, False):
                 self.dataModel.usdsPair[1] = usNewPath
+                self.dataModel.dataValid['usFile'] = True
                 return True
             else:
+                self.dataModel.dataValid['usFile'] = False
                 return False
         
         if inc or dec:
@@ -135,7 +139,7 @@ class MainPresenter(AllPresenter):
                 #    A_#_#.txt
                 rePatt = re.compile("([a-zA-Z]+)(_+)([0-9]+)(_+)([0-9]+)(\.txt$)")
                 filePath = os.path.basename(self.dataModel.usdsPair[usdsIndex])
-                filePathParts = rePatt.match(filePath).groups()
+                filePathParts = list(rePatt.match(filePath).groups())
                 fileNr = int(filePathParts[2])
                 filePathParts[2] = str(fileNr + shiftVal)
                 return ''.join(filePathParts)
@@ -144,9 +148,10 @@ class MainPresenter(AllPresenter):
             for i in range(2):
                 if dec:
                     newUSDSPair[i] = shiftFileName(i, -1)
-                if dec:
+                if inc:
                     newUSDSPair[i] = shiftFileName(i, 1)
-                    
+                
+                newUSDSPair[i] = os.path.join(self.dataModel.dataDir, newUSDSPair[i])
             self.dataModel.usdsPair = newUSDSPair
             
             return True #This should just be ignored...

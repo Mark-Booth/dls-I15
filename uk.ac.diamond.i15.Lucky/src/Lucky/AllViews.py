@@ -254,11 +254,11 @@ class MainView(QWidget, AllViews):
         else:
             raise IllegalArgumentException(str(textBox)+" unknown in this context")
         
-        prevState = self.presenter.dataModel.usdsPairEqual
-        if self.presenter.usdsPairEqual():
+        prevState = self.presenter.dataModel.usdsPairGTE
+        if self.presenter.dsLTEqualusFile():
             for i in range(2):
                 self.usdsPairTextBoxes[i].setStyleSheet("color: rgb(255, 0, 0);")
-        elif not prevState == self.presenter.dataModel.usdsPairEqual:
+        elif not prevState == self.presenter.dataModel.usdsPairGTE:
             for i in range(2):
                 self.usdsPairTextBoxes[i].textChanged.emit(self.presenter.dataModel.usdsPair[i])
         return

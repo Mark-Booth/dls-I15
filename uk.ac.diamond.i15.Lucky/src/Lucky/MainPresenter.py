@@ -103,6 +103,14 @@ class MainPresenter(AllPresenter):
     def calibConfigUpdateTrigger(self, calibConfig, validity):
         self.dataModel.calibConfigData = calibConfig
         self.dataModel.dataValid['calibConfig'] = validity
+        
+    def getUSDSFileParts(self, usdsIndex):
+        #Regular expression to match file name of the format:
+        #    A_#_#.txt
+        rePatt = re.compile("([a-zA-Z]+)(_+)([0-9]+)(_+)([0-9]+)(\.txt$)")
+        filePath = os.path.basename(self.dataModel.usdsPair[usdsIndex])
+        filePathParts = list(rePatt.match(filePath).groups())
+        return filePathParts
     
     def changeUSDSPairTrigger(self, inc=False, dec=False, dsFile=None, usFile=None):
         #Catch malformed args
@@ -115,8 +123,8 @@ class MainPresenter(AllPresenter):
                 dsNewPath = os.path.join(self.dataModel.dataDir, dsFile)
             except:
                 return False
+            self.dataModel.usdsPair[0] = dsNewPath
             if self.isValidPath(dsNewPath, False):
-                self.dataModel.usdsPair[0] = dsNewPath
                 self.dataModel.dataValid['dsFile'] = True
                 return True
             else:
@@ -128,8 +136,8 @@ class MainPresenter(AllPresenter):
                 usNewPath = os.path.join(self.dataModel.dataDir, usFile)
             except:
                 return False
+            self.dataModel.usdsPair[1] = usNewPath
             if self.isValidPath(usNewPath, False):
-                self.dataModel.usdsPair[1] = usNewPath
                 self.dataModel.dataValid['usFile'] = True
                 return True
             else:
@@ -138,11 +146,7 @@ class MainPresenter(AllPresenter):
         
         if inc or dec:
             def shiftFileName(usdsIndex, shiftVal):
-                #Regular expression to match file name of the format:
-                #    A_#_#.txt
-                rePatt = re.compile("([a-zA-Z]+)(_+)([0-9]+)(_+)([0-9]+)(\.txt$)")
-                filePath = os.path.basename(self.dataModel.usdsPair[usdsIndex])
-                filePathParts = list(rePatt.match(filePath).groups())
+                filePathParts = self.getUSDSFileParts(usdsIndex)
                 fileNr = int(filePathParts[2])
                 filePathParts[2] = str(fileNr + shiftVal)
                 return ''.join(filePathParts)
@@ -159,17 +163,20 @@ class MainPresenter(AllPresenter):
             
             return True #This should just be ignored...
     
-    def usdsPairEqual(self):
-        if all('' == usdsFile for usdsFile in self.dataModel.usdsPair):
+    def dsLTEqualusFile(self):
+        if '' in  self.dataModel.usdsPair:
             return False
-        if self.dataModel.usdsPair[0] == self.dataModel.usdsPair[1]:
-            self.dataModel.usdsPairEqual = True
+        
+        dsFileParts = self.getUSDSFileParts(0)
+        usFileParts = self.getUSDSFileParts(1)
+        if (dsFileParts == usFileParts) or (int(dsFileParts[2]) >= int(usFileParts[2])):
+            self.dataModel.usdsPairGTE = True
             self.dataModel.dataValid['dsFile'] = False
             self.dataModel.dataValid['usFile'] = False
             return True
         else:
-            if self.dataModel.usdsPairEqual:
-                self.dataModel.usdsPairEqual = False
+            if self.dataModel.usdsPairGTE:
+                self.dataModel.usdsPairGTE = False
             return False
     
     def isDataValid(self):

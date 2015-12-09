@@ -28,7 +28,8 @@ class MainData(object):
         self.dataValid = {'mode':True,
                           'calibType':True,
                           'dataDir':False,
-                          'usdsPair':False,
+                          'usFile':False,
+                          'dsFile':False,
                           'integrationConf':True,
                           'calibConfig':False}
         

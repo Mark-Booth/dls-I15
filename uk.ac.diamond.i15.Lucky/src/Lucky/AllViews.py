@@ -214,6 +214,11 @@ class MainView(QWidget, AllViews):
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:
             textBox.setStyleSheet("color: rgb(255, 0, 0);")
+        
+        #If dataDir changes, US/DS files change too:
+        for i in range(2):
+            updatedPath = os.path.join(str(textBox.text()), os.path.basename(self.presenter.dataModel.usdsPair[i]))
+            self.usdsPairTextBoxes[i].textChanged.emit(updatedPath)
     
     def dataDirBrowseBtnClick(self):
         currDir = self.presenter.dataModel.dataDir
@@ -417,6 +422,7 @@ class CalibrationConfigView(QDialog, AllViews):
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:
             textBox.setStyleSheet("color: rgb(255, 0, 0);")
+        
     
     def calibDirBrowseBtnClick(self):
         currDir = self.presenter.calibModel.calibDir

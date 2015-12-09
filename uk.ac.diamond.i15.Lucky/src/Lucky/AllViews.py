@@ -170,7 +170,9 @@ class MainView(QWidget, AllViews):
         ####
         #Control buttons
         self.runBtn = QPushButton('Run')
+        self.runBtn.clicked.connect(self.runBtnClicked)
         self.stopBtn = QPushButton('Stop')
+        self.runBtn.clicked.connect(self.stopBtnClicked)
         quitBtn = QPushButton('Quit')
         quitBtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         
@@ -189,16 +191,28 @@ class MainView(QWidget, AllViews):
     def addWidgetListToLayout(self, widgetList, layout):
         for i in range(len(widgetList)):
             layout.addWidget(widgetList[i])
-            
+    
+    def runBtnClicked(self):
+        self.presenter.runTrigger()
+        self.updateWidgetStates()
+    
+    def stopBtnClicked(self):
+        self.presenter.stopTrigger()
+        self.updateWidgetStates()
+    
     def getRadBtnStates(self, btnList):
         return tuple([int(radBtn.isChecked()) for radBtn in btnList])
             
     def modeRadBtnClick(self):
         self.presenter.setModeTrigger(self.getRadBtnStates(self.modeRadBtns))
+        
+        self.presenter.dataChangeTrigger()
         self.updateWidgetStates()
               
     def calibRadBtnClick(self):
         self.presenter.setCalibTypeTrigger(self.getRadBtnStates(self.calibRadBtns))
+        
+        self.presenter.dataChangeTrigger()
         self.updateWidgetStates()
         
     def calibConfClick(self):
@@ -210,9 +224,6 @@ class MainView(QWidget, AllViews):
     
     def dataDirPathChanged(self):
         textBox = self.sender()
-        if textBox.text() == '':
-            textBox.setStyleSheet("color: rgb(0, 0, 0);")
-            return
         if self.presenter.changeDataDirTrigger(textBox.text()):
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:
@@ -245,9 +256,7 @@ class MainView(QWidget, AllViews):
     
     def usdsPairTextChanged(self):
         textBox = self.sender()
-        if textBox.text() == '':
-            textBox.setStyleSheet("color: rgb(0, 0, 0);")
-        elif textBox == self.usdsPairTextBoxes[0]:
+        if textBox == self.usdsPairTextBoxes[0]:
             if self.presenter.changeUSDSPairTrigger(dsFile=textBox.text()):
                 textBox.setStyleSheet("color: rgb(0, 0, 0);")
             else:
@@ -273,13 +282,16 @@ class MainView(QWidget, AllViews):
     
     def integConfigChanged(self):
         textBox = self.sender()
-        if textBox.text() == '':
-            textBox.setStyleSheet("color: rgb(0, 0, 0);")
-            return
-        if self.presenter.isValidInt(textBox.text()):
+        #TODO Restructure integration UI as an array
+        changeResult = self.presenter.changeIntegrationValueTrigger(textBox.text())
+        
+        if changeResult == (True, True):
             integConfig = [self.integStartTextBox.text(),
                            self.integStopTextBox.text(),
-                           self.integDeltaTextBox.text()] 
+                           self.integDeltaTextBox.text()]
+            if any('' in integ for integ in integConfig):
+                #TODO THIS IS A FUDGE
+                return
             if self.presenter.changeIntegrationConfigTrigger(integConfig):
                 self.integStartTextBox.setStyleSheet("color: rgb(0, 0, 0);")
                 self.integStopTextBox.setStyleSheet("color: rgb(0, 0, 0);")
@@ -288,7 +300,11 @@ class MainView(QWidget, AllViews):
                 self.integStartTextBox.setStyleSheet("color: rgb(255, 0, 0);")
                 self.integStopTextBox.setStyleSheet("color: rgb(255, 0, 0);")
                 self.integDeltaTextBox.setStyleSheet("color: rgb(255, 0, 0);")
+        elif changeResult == (False, True):
+            self.presenter.invalidateIntegration()#TODO THIS IS NOT UPDATING THE VALUES
+            textBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:
+            self.presenter.invalidateIntegration()
             textBox.setStyleSheet("color: rgb(255, 0, 0);")
         
         self.presenter.dataChangeTrigger()
@@ -434,9 +450,6 @@ class CalibrationConfigView(QDialog, AllViews):
     ####
     def calibDirPathChanged(self):
         textBox = self.sender()
-        if textBox.text() == '':
-            textBox.setStyleSheet("color: rgb(0, 0, 0);")
-            return
         if self.presenter.changeCalibDirTrigger(textBox.text()):
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:
@@ -451,9 +464,6 @@ class CalibrationConfigView(QDialog, AllViews):
     
     def calibFilePathChanged(self):
         textBox = self.sender()
-        if textBox.text() == '':
-            textBox.setStyleSheet("color: rgb(0, 0, 0);")
-            return
         calibId = [uiElemName for uiElemName, btn in self.calibFileTextBoxes.iteritems() if (btn == textBox)][0]
         if self.presenter.changeCalibFileTrigger(textBox.text(), calibId):
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
@@ -469,9 +479,6 @@ class CalibrationConfigView(QDialog, AllViews):
             
     def bulbTempChanged(self):
         textBox = self.sender()
-        if textBox.text() == '':
-            textBox.setStyleSheet("color: rgb(0, 0, 0);")
-            return
         if self.presenter.changeBulbTempTrigger(textBox.text()):
             self.calibTempTextBox.setStyleSheet("color: rgb(0, 0, 0);")
         else:

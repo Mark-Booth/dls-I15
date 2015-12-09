@@ -99,17 +99,16 @@ class MainView(QWidget, AllViews):
         self.nextUSDSPairBtn = QPushButton(">")
         self.nextUSDSPairBtn.clicked.connect(self.changeUSDSPairBtnClick)
         self.nextUSDSPairBtn.setFixedWidth(40)
-        self.currUSTextBox = QLineEdit()
-        self.currUSTextBox.textChanged.connect(self.usdsPairTextChanged)
-        self.currUSTextBox.setFixedWidth(100)
-        self.currDSTextBox = QLineEdit()
-        self.currDSTextBox.textChanged.connect(self.usdsPairTextChanged)
-        self.currDSTextBox.setFixedWidth(100)
+        self.usdsPairTextBoxes = []
+        for i in range(2):
+            self.usdsPairTextBoxes.append(QLineEdit())
+            self.usdsPairTextBoxes[i].textChanged.connect(self.usdsPairTextChanged)
+            self.usdsPairTextBoxes[i].setFixedWidth(100)
         
         fileLayout = QHBoxLayout()
         fileLayout.addWidget(self.prevUSDSPairBtn)
-        fileLayout.addWidget(self.currDSTextBox)
-        fileLayout.addWidget(self.currUSTextBox)
+        fileLayout.addWidget(self.usdsPairTextBoxes[0])
+        fileLayout.addWidget(self.usdsPairTextBoxes[1])
         fileLayout.addWidget(self.nextUSDSPairBtn)
         fileGrpBox.setLayout(fileLayout)
         controlsLayout.addWidget(fileGrpBox, 1, 1, 1, 2)
@@ -225,9 +224,9 @@ class MainView(QWidget, AllViews):
     def changeUSDSPairBtnClick(self):
         btn = self.sender()
         if btn == self.prevUSDSPairBtn:
-            self.presenter.changeUSDSPairTrigger(decrement=True)
+            self.presenter.changeUSDSPairTrigger(dec=True)
         elif btn == self.nextUSDSPairBtn:
-            self.presenter.changeUSDSPairTrigger(increment=True)
+            self.presenter.changeUSDSPairTrigger(inc=True)
         else:
             raise IllegalArgumentException(str(btn)+" unknown in this context")
         
@@ -238,12 +237,12 @@ class MainView(QWidget, AllViews):
         if textBox.text() == '':
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
             return
-        if textBox == self.currDSTextBox:
+        if textBox == self.usdsPairTextBoxes[0]:
             if self.presenter.changeUSDSPairTrigger(dsFile=textBox.text()):
                 textBox.setStyleSheet("color: rgb(0, 0, 0);")
             else:
                 textBox.setStyleSheet("color: rgb(255, 0, 0);")
-        elif textBox == self.currUSTextBox:
+        elif textBox == self.usdsPairTextBoxes[1]:
             if self.presenter.changeUSDSPairTrigger(usFile=textBox.text()):
                 textBox.setStyleSheet("color: rgb(0, 0, 0);")
             else:
@@ -292,10 +291,12 @@ class MainView(QWidget, AllViews):
         #US/DS pair
         self.prevUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
         self.nextUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
-        self.currDSTextBox.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
-        self.currUSTextBox.setText(mainData.usdsPair[0])
-        self.currUSTextBox.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
-        self.currUSTextBox.setText(mainData.usdsPair[1])
+        for i in range(2):
+            self.usdsPairTextBoxes[i].setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
+            if mainData.usdsPair[i] == '':
+                self.usdsPairTextBoxes[i].setText(mainData.usdsPair[i])
+            else:
+                self.usdsPairTextBoxes[i].setText(os.path.basename(mainData.usdsPair[i])) 
         
         #Integration controls
         self.integStartTextBox.setEnabled(mainData.allUIControlsEnabled)

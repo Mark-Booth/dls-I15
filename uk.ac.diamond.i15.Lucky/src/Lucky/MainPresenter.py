@@ -4,7 +4,7 @@ Created on 5 Nov 2015
 @author: wnm24546
 '''
 
-import os, re
+import copy, os, re
 
 from Lucky.MPStates import State
 from Lucky.DataModel import (CalibrationConfigData, MainData)
@@ -71,25 +71,34 @@ class MainPresenter(AllPresenter):
             raise BadModelStateException("Only one calibration option can be selected")
         self.dataModel.calibType = uiData
         #No return as this is a radio button option
-        
-        print self.dataModel.calibType
     
     def changeDataDirTrigger(self, uiText):
         self.dataModel.dataDir = str(uiText)
         self.dataModel.calibConfigData.calibDir = str(uiText)
-        if self.isValidPath(uiText, dirPath=True):
+        if uiText == '':
+            self.dataModel.dataValid['dataDir'] = False
+            return True
+        elif self.isValidPath(uiText, dirPath=True):
             self.dataModel.dataValid['dataDir'] = True
-            self.dataModel.calibConfigData.calibValid['calibDir'] = True
             return True
         else:
             self.dataModel.dataValid['dataDir'] = False
             return False
     
+    def changeIntegrationValueTrigger(self, uiText):
+        if uiText == '':
+            return False, True
+        elif self.isValidInt(uiText):
+            return True, True
+        else:
+            return False, False
+    
+    def invalidateIntegration(self):
+        self.dataModel.dataValid['integrationConf'] = False
+    
     def changeIntegrationConfigTrigger(self, uiNumbs):
         intUINumbs = []
         for val in uiNumbs:
-            if not self.isValidInt(val):
-                return False
             intUINumbs.append(int(val))
         
         self.dataModel.integrationConf = intUINumbs
@@ -124,7 +133,10 @@ class MainPresenter(AllPresenter):
             except:
                 return False
             self.dataModel.usdsPair[0] = dsNewPath
-            if self.isValidPath(dsNewPath, False):
+            if dsFile == '':
+                self.dataModel.dataValid['dsFile'] = False
+                return True
+            elif self.isValidPath(dsNewPath, False):
                 self.dataModel.dataValid['dsFile'] = True
                 return True
             else:
@@ -137,7 +149,10 @@ class MainPresenter(AllPresenter):
             except:
                 return False
             self.dataModel.usdsPair[1] = usNewPath
-            if self.isValidPath(usNewPath, False):
+            if usFile == '':
+                self.dataModel.dataValid['usFile'] = False
+                return True
+            elif self.isValidPath(usNewPath, False):
                 self.dataModel.dataValid['usFile'] = True
                 return True
             else:
@@ -164,7 +179,8 @@ class MainPresenter(AllPresenter):
             return True #This should just be ignored...
     
     def dsLTEqualusFile(self):
-        if '' in  self.dataModel.usdsPair:
+        
+        if any('' in usds for usds in self.dataModel.usdsPair):
             return False
         
         dsFileParts = self.getUSDSFileParts(0)
@@ -180,18 +196,47 @@ class MainPresenter(AllPresenter):
             return False
     
     def isDataValid(self):
-        if (all(val == True for val in self.dataModel.dataValid.values())):
-            return True
-        elif self.dataModel.calibType == (1,0,0):
-            if (self.dataModel.calibConfigData.calibValid['(US)'] and self.dataModel.calibConfigData.calibValid['(DS)']):
-                return True
-        elif self.dataModel.calibType == (0,1,0):
-            if (self.dataModel.calibConfigData.calibValid['F1 (US)'] and self.dataModel.calibConfigData.calibValid['F1 (DS)']):
-                return True
-        elif self.dataModel.calibType == (0,0,1):
-            if (self.dataModel.calibConfigData.calibValid['F2 (US)'] and self.dataModel.calibConfigData.calibValid['F2 (DS)']):
-                return True
-        return False
+        if not (all(val == True for val in self.dataModel.dataValid.values())):
+            test = True
+            for data, val in self.dataModel.dataValid.items():
+                if not data == 'calibConfig':
+                    test = val and test
+                if not test:
+                    return False
+            
+            if test:
+                if self.dataModel.calibType == (1,0,0):
+                    if (self.dataModel.calibConfigData.calibValid['(US)'] and self.dataModel.calibConfigData.calibValid['(DS)']):
+                        return True
+                elif self.dataModel.calibType == (0,1,0):
+                    if (self.dataModel.calibConfigData.calibValid['F1 (US)'] and self.dataModel.calibConfigData.calibValid['F1 (DS)']):
+                        return True
+                elif self.dataModel.calibType == (0,0,1):
+                    if (self.dataModel.calibConfigData.calibValid['F2 (US)'] and self.dataModel.calibConfigData.calibValid['F2 (DS)']):
+                        return True
+            return False
+        return True
+#         
+#         
+#         
+#         
+#         
+#         
+#         
+#         
+#         if not (all(val == True for val in self.dataModel.dataValid.values())):
+#             if isDataValidWOCalib():
+#                 if self.dataModel.calibType == (1,0,0):
+#                     if (self.dataModel.calibConfigData.calibValid['(US)'] and self.dataModel.calibConfigData.calibValid['(DS)']):
+#                         return True
+#                 elif self.dataModel.calibType == (0,1,0):
+#                     if (self.dataModel.calibConfigData.calibValid['F1 (US)'] and self.dataModel.calibConfigData.calibValid['F1 (DS)']):
+#                         return True
+#                 elif self.dataModel.calibType == (0,0,1):
+#                     if (self.dataModel.calibConfigData.calibValid['F2 (US)'] and self.dataModel.calibConfigData.calibValid['F2 (DS)']):
+#                         return True
+#             return False
+#         return True
     
     def getModeTransition(self, inputMode=None):
         if inputMode == None:
@@ -230,17 +275,18 @@ class CalibPresenter(AllPresenter):
             self.calibModel = cM
             
     def changeCalibDirTrigger(self, uiText):
-        if self.isValidPath(uiText, dirPath=True):
-            self.calibModel.calibDir = uiText
-            self.calibModel.calibValid['calibDir'] = True
+        self.calibModel.calibDir = uiText
+        if self.isValidPath(uiText, dirPath=True) or uiText == '':
             return True
         else:
-            self.calibModel.calibValid['calibDir'] = False
             return False
     
     def changeCalibFileTrigger(self, uiText, calibId):
-        if self.isValidPath(uiText, dirPath=False):
-            self.calibModel.calibFiles[calibId] = uiText
+        self.calibModel.calibFiles[calibId] = uiText
+        if uiText == '':
+            self.calibModel.calibValid[calibId] = False
+            return True
+        elif self.isValidPath(uiText, dirPath=False):
             self.calibModel.calibValid[calibId] = True
             return True
         else:
@@ -248,8 +294,11 @@ class CalibPresenter(AllPresenter):
             return False
     
     def changeBulbTempTrigger(self, uiText):
-        if (self.isValidInt(uiText) or self.isValidFloat(uiText)) and (float(uiText) >= 0):
-            self.calibModel.bulbTemp = float(uiText)
+        self.calibModel.bulbTemp = float(uiText)
+        if uiText == '':
+            self.calibModel.calibValid['bulbTemp'] = False
+            return True
+        elif (self.isValidInt(uiText) or self.isValidFloat(uiText)) and (float(uiText) >= 0):
             self.calibModel.calibValid['bulbTemp'] = True
             return True
         else:

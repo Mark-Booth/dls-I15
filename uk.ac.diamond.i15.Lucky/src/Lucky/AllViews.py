@@ -241,8 +241,7 @@ class MainView(QWidget, AllViews):
         textBox = self.sender()
         if textBox.text() == '':
             textBox.setStyleSheet("color: rgb(0, 0, 0);")
-            return
-        if textBox == self.usdsPairTextBoxes[0]:
+        elif textBox == self.usdsPairTextBoxes[0]:
             if self.presenter.changeUSDSPairTrigger(dsFile=textBox.text()):
                 textBox.setStyleSheet("color: rgb(0, 0, 0);")
             else:
@@ -254,6 +253,15 @@ class MainView(QWidget, AllViews):
                 textBox.setStyleSheet("color: rgb(255, 0, 0);")
         else:
             raise IllegalArgumentException(str(textBox)+" unknown in this context")
+        
+        prevState = self.presenter.dataModel.usdsPairEqual
+        if self.presenter.usdsPairEqual():
+            for i in range(2):
+                self.usdsPairTextBoxes[i].setStyleSheet("color: rgb(255, 0, 0);")
+        elif not prevState == self.presenter.dataModel.usdsPairEqual:
+            for i in range(2):
+                self.usdsPairTextBoxes[i].textChanged.emit(self.presenter.dataModel.usdsPair[i])
+        return
     
     def integConfigChanged(self):
         textBox = self.sender()

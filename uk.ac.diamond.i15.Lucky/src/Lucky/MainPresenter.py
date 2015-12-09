@@ -159,6 +159,19 @@ class MainPresenter(AllPresenter):
             
             return True #This should just be ignored...
     
+    def usdsPairEqual(self):
+        if all('' == usdsFile for usdsFile in self.dataModel.usdsPair):
+            return False
+        if self.dataModel.usdsPair[0] == self.dataModel.usdsPair[1]:
+            self.dataModel.usdsPairEqual = True
+            self.dataModel.dataValid['dsFile'] = False
+            self.dataModel.dataValid['usFile'] = False
+            return True
+        else:
+            if self.dataModel.usdsPairEqual:
+                self.dataModel.usdsPairEqual = False
+            return False
+    
     def isDataValid(self):
         if (all(val == True for val in self.dataModel.dataValid.values())):
             return True

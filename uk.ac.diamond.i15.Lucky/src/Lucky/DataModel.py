@@ -32,6 +32,7 @@ class MainData(object):
                           'dsFile':False,
                           'integrationConf':True,
                           'calibConfig':False}
+        self.usdsPairEqual = False
         
 
 class CalibrationConfigData(object):

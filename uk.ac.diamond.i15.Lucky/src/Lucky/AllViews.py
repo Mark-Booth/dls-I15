@@ -462,7 +462,7 @@ class CalibrationConfigView(QDialog, AllViews):
         
     def okClick(self):
         validity = self.presenter.isValidConfig()
-        self.parent().presenter.setCalibConfig(self.presenter.calibModel, validity)
+        self.parent().presenter.calibConfigUpdateTrigger(self.presenter.calibModel, validity)
         self.accept()
          
      

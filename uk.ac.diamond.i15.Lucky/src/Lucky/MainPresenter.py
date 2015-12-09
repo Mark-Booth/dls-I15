@@ -98,8 +98,9 @@ class MainPresenter(AllPresenter):
             self.dataModel.dataValid['integrationConf'] = False
             return False
     
-    def calibConfigUpdateTrigger(self, calibConfig):
-        pass
+    def calibConfigUpdateTrigger(self, calibConfig, validity):
+        self.dataModel.calibConfigData = calibConfig
+        self.dataModel.dataValid['calibConfig'] = validity
     
     def changeUSDSPairTrigger(self, inc=False, dec=False, dsFile=None, usFile=None):
         #Catch malformed args
@@ -170,20 +171,22 @@ class MainPresenter(AllPresenter):
                 return True
         return False
     
-    def setCalibConfig(self, calibConfig, validity):
-        self.dataModel.calibConfigData = calibConfig
-        self.dataModel.dataValid['calibConfig'] = validity
-    
     def getModeTransition(self, inputMode=None):
         if inputMode == None:
             inputMode = self.dataModel.mode
         
         if inputMode == (1, 0):
-            self.dataModel.dataValid['usdsPair'] = True #We won't have this to start, must be true
+            self.dataModel.dataValid['dsFile'] = True
+            self.dataModel.dataValid['usFile'] = True #We won't have this to start, must be true
             return State.EVENTS.LIVE
         elif inputMode == (0, 1):
-            #TODO Need to check validity of current pair
-            self.dataModel.dataValid['usdsPair'] = False
+            #Check validity of current US/DS pair
+            for i in range(2):
+                usdsLabel = 'dsFile' if i == 0 else 'usFile'
+                if self.isValidPath(self.dataModel.usdsPair[0], False):
+                    self.dataModel.dataValid[usdsLabel] = True
+                else:
+                    self.dataModel.dataValid[usdsLabel] = False
             return State.EVENTS.OFFLINE
         else:
             raise BadModelStateException("Invalid mode setting detected")

@@ -5,11 +5,12 @@ Created on 24 Nov 2015
 '''
 import unittest
 import numpy as np
-import time
+import os, time
 from numpy.testing import assert_array_equal
 from scipy.optimize import curve_fit
 
-from Lucky.Calculations import LuckyCalculations
+from Lucky.Calculations import LuckyCalculations, CalculationService
+from Lucky.DataModel import MainData, CalibrationConfigData
 
 class LuckyCalculationsTest(unittest.TestCase):
     def setUp(self):
@@ -20,14 +21,55 @@ class LuckyCalculationsTest(unittest.TestCase):
         self.bulbTemp = 2436
 
 
-class PlottingTest(LuckyCalculationsTest):
+# class PlottingTest(LuckyCalculationsTest):
+#     def setUp(self):
+#         LuckyCalculationsTest.setUp(self)
+#      
+#     def runTest(self):
+#         self.luckCalcA = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
+#         self.luckCalcB = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
+#         print "Test sleeping for 20s"
+#         time.sleep(20)
+ 
+###
+       
+class ServiceTest(unittest.TestCase):
     def setUp(self):
-        LuckyCalculationsTest.setUp(self)
-     
+        unittest.TestCase.setUp(self)
+        self.wdir = os.path.join('.','testData')
+        self.dsData = os.path.join(self.wdir, 'T_635.txt')
+        self.usData = os.path.join(self.wdir, 'T_636.txt')
+        self.dsCalib = os.path.join(self.wdir, 'Calib.txt')
+        self.usCalib = os.path.join(self.wdir, 'CalibF2MTW.txt')
+        
+        cc = CalibrationConfigData(calibDir=self.wdir, calibDS=self.dsCalib, calibUS=self.usCalib)
+        dm = MainData(dataDir=self.wdir, usdsPair=[self.dsData, self.usData])
+        dm.calibConfigData = cc
+        
+        self.calcServ = CalculationService(dm)
+        
     def runTest(self):
-        self.luckCalcA = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
-        self.luckCalcB = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
-        time.sleep(20)
+        assert_array_equal(self.calcServ.dsData, np.loadtxt(self.dsData), 'dsData ndarrays differ')
+        assert_array_equal(self.calcServ.usData, np.loadtxt(self.usData), 'usData ndarrays differ')
+        
+        assert_array_equal(self.calcServ.dsCalib, np.loadtxt(self.dsCalib), 'dsCalib ndarrays differ')
+        assert_array_equal(self.calcServ.usCalib, np.loadtxt(self.usCalib), 'usCalib ndarrays differ')
+        try:
+            assert_array_equal(self.calcServ.dsCalib, self.calcServ.usCalib)
+            self.fail('DS & US calibration ndarrays should differ')
+        except:
+            pass
+        
+        
+        self.usCalib = os.path.join(self.wdir, 'Calib.txt')
+        cc = CalibrationConfigData(calibDir=self.wdir, calibDS=self.dsCalib, calibUS=self.usCalib)
+        dm = MainData(dataDir=self.wdir, usdsPair=[self.dsData, self.usData])
+        dm.calibConfigData = cc
+        
+        self.calcServ.updateModel(dm)
+        assert_array_equal(self.calcServ.dsCalib, self.calcServ.usCalib)
+
+###
 
 class CalculationsTest(LuckyCalculationsTest):
     def setUp(self):

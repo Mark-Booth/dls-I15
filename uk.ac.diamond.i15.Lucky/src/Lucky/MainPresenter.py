@@ -169,9 +169,9 @@ class MainPresenter(AllPresenter):
             newUSDSPair = ['', '']
             for i in range(2):
                 if dec:
-                    newUSDSPair[i] = shiftFileName(i, -1)
+                    newUSDSPair[i] = shiftFileName(i, -2)
                 if inc:
-                    newUSDSPair[i] = shiftFileName(i, 1)
+                    newUSDSPair[i] = shiftFileName(i, 2)
                 
                 newUSDSPair[i] = os.path.join(self.dataModel.dataDir, newUSDSPair[i])
             self.dataModel.usdsPair = newUSDSPair

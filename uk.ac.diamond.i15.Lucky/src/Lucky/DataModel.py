@@ -36,7 +36,7 @@ class MainData(object):
         
 
 class CalibrationConfigData(object):
-    def __init__(self, calibDir=os.path.expanduser("~"), bulbTemp=3200,
+    def __init__(self, calibDir=os.path.expanduser("~"), bulbTemp=3200, #ID24 = 2436
                  calibUS='', calibDS='', 
                  calibF1US='', calibF1DS='',
                  calibF2US='', calibF2DS=''):

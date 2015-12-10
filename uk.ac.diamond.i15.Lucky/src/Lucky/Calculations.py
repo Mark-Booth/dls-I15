@@ -7,8 +7,69 @@ Created on 24 Nov 2015
 from scipy.constants import c, h, k, pi
 from scipy.optimize import curve_fit
 import numpy as np
+from Lucky.LuckyExceptions import BadModelStateException
 
 #k is kb
+
+class CalculationService(object):
+    
+    def __init__(self, dM, mV=False):
+        self.modelValidity = False
+        self.dsCalcs = None
+        self.usCalcs = None
+        
+        self.updateModel(dM)
+        
+    def openCalib(self, calibType, calibConfig):
+        calibFileLabels = calibConfig.calibFiles.keys()
+        for i in range(len(calibType)):
+            if calibType[i] == 1:
+                dsCalib = calibConfig.calibFiles[calibFileLabels[2*i]]
+                usCalib = calibConfig.calibFiles[calibFileLabels[2*i+1]]
+        return np.loadtxt(dsCalib), np.loadtxt(usCalib)
+    
+    def openData(self, dM):
+        return np.loadtxt(dM.usdsPair[0]), np.loadtxt(dM.usdsPair[1])
+    
+    def updateModel(self, dM):        
+        self.dsData, self.usData = self.openData(dM)
+        self.dsCalib, self.usCalib = self.openCalib(dM.calibType, dM.calibConfigData)
+        
+        self.integConf = dM.integrationConf
+        self.bulbTemp = dM.calibConfigData.bulbTemp
+    
+    def updateData(self, usData=None, dsData=None):
+        if (usData == None) and (dsData == None):
+            raise BadModelStateException("No data given for data update")
+        
+        if dsData != None:
+            newData = np.loadtxt(usData)
+            self.dsCalcs.update(data=newData)
+
+        if usData != None:
+            newData = np.loadtxt(usData)
+            self.usCalcs.update(data=usData)
+    
+    def updateCalibration(self, calibType, calibConf):
+        self.dsCalib, self.usCalib = self.openCalib(calibType, calibConf)
+        self.bulbTemp = calibConf.bulbTemp
+        
+        self.dsCalcs.update(calib=self.dsCalib, bulbTemp=self.bulbTemp)
+        self.usCalcs.update(calib=self.usCalib, bulbTemp=self.bulbTemp)
+    
+    def updateIntegration(self, integConf):
+        self.dsCalcs.update(integConf=integConf)
+        self.usCalcs.update(integConf=integConf)
+    
+    def runCalcs(self, debug=False):
+        if self.modelValidity:
+            self.dsCalcs = LuckyCalculations(self.dsData, self.dsCalib,
+                                             self.integConf, self.bulbTemp)
+            self.usCalcs = LuckyCalculations(self.usData, self.usCalib,
+                                             self.integConf, self.bulbTemp)
+        else:
+            raise BadModelStateException("Current model is not valid for calculations")
+
 
 class LuckyCalculations(object):
     

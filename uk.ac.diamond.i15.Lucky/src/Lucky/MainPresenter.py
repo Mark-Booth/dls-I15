@@ -115,8 +115,8 @@ class MainPresenter(AllPresenter):
         
     def getUSDSFileParts(self, usdsIndex):
         #Regular expression to match file name of the format:
-        #    A_#_#.txt
-        rePatt = re.compile("([a-zA-Z]+)(_+)([0-9]+)(_+)([0-9]+)(\.txt$)")
+        #    A_#.txt
+        rePatt = re.compile("([a-zA-Z]+)(_+)([0-9]+)(\.txt$)")
         filePath = os.path.basename(self.dataModel.usdsPair[usdsIndex])
         filePathParts = list(rePatt.match(filePath).groups())
         return filePathParts
@@ -167,13 +167,16 @@ class MainPresenter(AllPresenter):
                 return ''.join(filePathParts)
             
             newUSDSPair = ['', '']
-            for i in range(2):
-                if dec:
-                    newUSDSPair[i] = shiftFileName(i, -2)
-                if inc:
-                    newUSDSPair[i] = shiftFileName(i, 2)
-                
+            try:
+                for i in range(2):
+                    if dec:
+                        newUSDSPair[i] = shiftFileName(i, -2)
+                    if inc:
+                        newUSDSPair[i] = shiftFileName(i, 2)                
                 newUSDSPair[i] = os.path.join(self.dataModel.dataDir, newUSDSPair[i])
+            except:
+                return False
+
             self.dataModel.usdsPair = newUSDSPair
             
             return True #This should just be ignored...
@@ -183,8 +186,11 @@ class MainPresenter(AllPresenter):
         if any('' in usds for usds in self.dataModel.usdsPair):
             return False
         
-        dsFileParts = self.getUSDSFileParts(0)
-        usFileParts = self.getUSDSFileParts(1)
+        try:
+            dsFileParts = self.getUSDSFileParts(0)
+            usFileParts = self.getUSDSFileParts(1)
+        except:
+            return False
         if (dsFileParts == usFileParts) or (int(dsFileParts[2]) >= int(usFileParts[2])):
             self.dataModel.usdsPairGTE = True
             self.dataModel.dataValid['dsFile'] = False

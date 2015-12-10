@@ -92,7 +92,7 @@ class MainView(QWidget, AllViews):
         
         ####
         #US/DS selector
-        fileGrpBox = QGroupBox("Measurement Number (US/DS pair):")
+        fileGrpBox = QGroupBox("Spectrum data files (DS/US) :")
         self.prevUSDSPairBtn = QPushButton("<")
         self.prevUSDSPairBtn.setFixedWidth(40)
         self.prevUSDSPairBtn.clicked.connect(self.changeUSDSPairBtnClick)
@@ -195,6 +195,7 @@ class MainView(QWidget, AllViews):
     def runBtnClicked(self):
         self.presenter.runTrigger()
         self.updateWidgetStates()
+        0
     
     def stopBtnClicked(self):
         self.presenter.stopTrigger()
@@ -350,7 +351,7 @@ class MainView(QWidget, AllViews):
         #Buttons
         self.runBtn.setEnabled(mainData.runEnabled)
         self.stopBtn.setEnabled(mainData.stopEnabled)
-
+        0
 
 
 #####################################

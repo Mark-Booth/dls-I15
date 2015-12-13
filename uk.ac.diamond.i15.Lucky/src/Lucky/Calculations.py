@@ -88,10 +88,10 @@ class LuckyCalculations(object):
         #Create a plot object
         self.plots = LuckyPlots(self, debug)
     
-    def update(self, data=None, calib=None, integConf=None, bulbTemp=None):
+    def update(self, data=None, integConf=None, calib=None, bulbTemp=None):
         self.dataSet = data if (data != None) else self.dataSet
-        self.calibSet = calib if (calib != None) else self.calibSet
         self.intConf = integConf if (integConf != None) else self.intConf
+        self.calibSet = calib if (calib != None) else self.calibSet
         self.bulbTemp = bulbTemp if (bulbTemp != None) else self.bulbTemp
         
         if (data != None) or (calib != None) or (bulbTemp != None):

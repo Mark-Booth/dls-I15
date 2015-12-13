@@ -15,7 +15,16 @@ from Lucky.DataModel import MainData, CalibrationConfigData
 class LuckyCalculationsTest(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
-        self.data = np.loadtxt('./testData/T_62_1.txt', unpack=True) ##Raw file
+        
+        self.wdir = os.path.join('.','testData')
+        self.dsDataFile = os.path.join(self.wdir, 'T_635.txt')
+        self.usDataFile = os.path.join(self.wdir, 'T_636.txt')
+        self.dsCalibFile = os.path.join(self.wdir, 'Calib.txt')
+        self.usCalibFile = os.path.join(self.wdir, 'CalibF2MTW.txt')
+        
+        
+        self.dsData = np.loadtxt(self.dsDataFile, unpack=True) ##Raw file
+        self.usData = np.loadtxt(self.usDataFile, unpack=True)
         self.calib = np.loadtxt('./testData/Calib.txt', unpack=True) ##Calib file
         self.integConf = [315, 800, 200] #Values lifted out of PreLucky_Variant.py
         self.bulbTemp = 2436
@@ -24,50 +33,44 @@ class LuckyCalculationsTest(unittest.TestCase):
 # class PlottingTest(LuckyCalculationsTest):
 #     def setUp(self):
 #         LuckyCalculationsTest.setUp(self)
-#      
+#       
 #     def runTest(self):
-#         self.luckCalcA = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
-#         self.luckCalcB = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=False)
+#         self.luckCalcA = LuckyCalculations(self.dsData, self.calib, self.integConf, self.bulbTemp, debug=False)
+#         self.luckCalcB = LuckyCalculations(self.dsData, self.calib, self.integConf, self.bulbTemp, debug=False)
 #         print "Test sleeping for 20s"
 #         time.sleep(20)
  
 ###
        
-class ServiceTest(unittest.TestCase):
+class ServiceTest(LuckyCalculationsTest):
     def setUp(self):
-        unittest.TestCase.setUp(self)
-        self.wdir = os.path.join('.','testData')
-        self.dsData = os.path.join(self.wdir, 'T_635.txt')
-        self.usData = os.path.join(self.wdir, 'T_636.txt')
-        self.dsCalib = os.path.join(self.wdir, 'Calib.txt')
-        self.usCalib = os.path.join(self.wdir, 'CalibF2MTW.txt')
+        LuckyCalculationsTest.setUp(self)
         
-        cc = CalibrationConfigData(calibDir=self.wdir, calibDS=self.dsCalib, calibUS=self.usCalib)
-        dm = MainData(dataDir=self.wdir, usdsPair=[self.dsData, self.usData])
+        cc = CalibrationConfigData(calibDir=self.wdir, calibDS=self.dsCalibFile, calibUS=self.usCalibFile)
+        dm = MainData(dataDir=self.wdir, usdsPair=[self.dsDataFile, self.usDataFile])
         dm.calibConfigData = cc
         
         self.calcServ = CalculationService(dm)
         
     def runTest(self):
-        assert_array_equal(self.calcServ.dsData, np.loadtxt(self.dsData), 'dsData ndarrays differ')
-        assert_array_equal(self.calcServ.usData, np.loadtxt(self.usData), 'usData ndarrays differ')
+        assert_array_equal(self.calcServ.dsDataFile, np.loadtxt(self.dsDataFile), 'dsData ndarrays differ')
+        assert_array_equal(self.calcServ.usDataFile, np.loadtxt(self.usDataFile), 'usData ndarrays differ')
         
-        assert_array_equal(self.calcServ.dsCalib, np.loadtxt(self.dsCalib), 'dsCalib ndarrays differ')
-        assert_array_equal(self.calcServ.usCalib, np.loadtxt(self.usCalib), 'usCalib ndarrays differ')
+        assert_array_equal(self.calcServ.dsCalibFile, np.loadtxt(self.dsCalibFile), 'dsCalibFile ndarrays differ')
+        assert_array_equal(self.calcServ.usCalibFile, np.loadtxt(self.usCalibFile), 'usCalibFile ndarrays differ')
         try:
-            assert_array_equal(self.calcServ.dsCalib, self.calcServ.usCalib)
+            assert_array_equal(self.calcServ.dsCalibFile, self.calcServ.usCalibFile)
             self.fail('DS & US calibration ndarrays should differ')
         except:
             pass
         
-        
-        self.usCalib = os.path.join(self.wdir, 'Calib.txt')
-        cc = CalibrationConfigData(calibDir=self.wdir, calibDS=self.dsCalib, calibUS=self.usCalib)
-        dm = MainData(dataDir=self.wdir, usdsPair=[self.dsData, self.usData])
+        self.usCalibFile = os.path.join(self.wdir, 'Calib.txt')
+        cc = CalibrationConfigData(calibDir=self.wdir, calibDS=self.dsCalibFile, calibUS=self.usCalibFile)
+        dm = MainData(dataDir=self.wdir, usdsPair=[self.dsDataFile, self.usDataFile])
         dm.calibConfigData = cc
         
         self.calcServ.updateModel(dm)
-        assert_array_equal(self.calcServ.dsCalib, self.calcServ.usCalib)
+        assert_array_equal(self.calcServ.dsCalibFile, self.calcServ.usCalibFile)
 
 ###
 
@@ -75,8 +78,8 @@ class CalculationsTest(LuckyCalculationsTest):
     def setUp(self):
         LuckyCalculationsTest.setUp(self)
         
-        self.luckCalc = LuckyCalculations(self.data, self.calib, self.integConf, self.bulbTemp, debug=True)
-        self.workingCalcs(self.data, self.calib, self.integConf)
+        self.luckCalc = LuckyCalculations(self.dsData, self.calib, self.integConf, self.bulbTemp, debug=True)
+        self.workingCalcs(self.dsData, self.calib, self.integConf)
     
     def workingCalcs(self, data, calib, integConf):
         from scipy.constants import h, c, k, pi
@@ -173,7 +176,7 @@ class CalculationsTest(LuckyCalculationsTest):
 
 class DataUpdateTest(CalculationsTest):
     def runTest(self):
-        #Normalised data
+        #Normalised dsData
         assert_array_equal(self.P, self.luckCalc.planckIdeal, "Planck ideal datasets differ")
         assert_array_equal(self.Norm, self.luckCalc.dataSet[2], "Normalised y datasets differ")
         

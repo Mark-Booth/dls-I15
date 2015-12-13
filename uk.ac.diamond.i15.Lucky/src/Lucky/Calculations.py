@@ -31,28 +31,14 @@ class CalculationService(object):
     def openData(self, dM):
         return np.loadtxt(dM.usdsPair[0], unpack=True), np.loadtxt(dM.usdsPair[1], unpack=True)
     
-    def updateData(self, dM):
-        pass
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     def updateModel(self, dM):
-        self.dsDataFile, self.usDataFile = self.openData(dM)
-        self.dsCalibFile, self.usCalibFile = self.openCalib(dM.calibType, dM.calibConfigData)
+        self.dsData, self.usData = self.openData(dM)
+        self.dsCalib, self.usCalib = self.openCalib(dM.calibType, dM.calibConfigData)
         
         self.integConf = dM.integrationConf
         self.bulbTemp = dM.calibConfigData.bulbTemp
     
-    def updateData2(self, usData=None, dsData=None):
+    def updateData(self, usData=None, dsData=None):
         if (usData == None) and (dsData == None):
             raise BadModelStateException("No data given for data update")
         
@@ -64,16 +50,16 @@ class CalculationService(object):
             newData = np.loadtxt(usData)
             self.usCalcs.update(data=usData)
     
+    def updateIntegration(self, integConf):
+        self.dsCalcs.update(integConf=integConf)
+        self.usCalcs.update(integConf=integConf)
+    
     def updateCalibration(self, calibType, calibConf):
         self.dsCalib, self.usCalib = self.openCalib(calibType, calibConf)
         self.bulbTemp = calibConf.bulbTemp
         
         self.dsCalcs.update(calib=self.dsCalib, bulbTemp=self.bulbTemp)
         self.usCalcs.update(calib=self.usCalib, bulbTemp=self.bulbTemp)
-    
-    def updateIntegration(self, integConf):
-        self.dsCalcs.update(integConf=integConf)
-        self.usCalcs.update(integConf=integConf)
     
     def runCalcs(self, debug=False):
         if self.modelValidity:
@@ -108,7 +94,7 @@ class LuckyCalculations(object):
         self.intConf = integConf if (integConf != None) else self.intConf
         self.bulbTemp = bulbTemp if (bulbTemp != None) else self.bulbTemp
         
-        if (data != None) or (bulbTemp != None) or (calib != None):
+        if (data != None) or (calib != None) or (bulbTemp != None):
             self.normaliseData()
         if integConf != None:
             self.calculateRanges()

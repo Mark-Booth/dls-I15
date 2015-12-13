@@ -53,11 +53,11 @@ class ServiceTest(LuckyCalculationsTest):
         self.calcServ = CalculationService(dm)
         
     def runTest(self):
-        assert_array_equal(self.calcServ.dsDataFile, np.loadtxt(self.dsDataFile), 'dsData ndarrays differ')
-        assert_array_equal(self.calcServ.usDataFile, np.loadtxt(self.usDataFile), 'usData ndarrays differ')
+        assert_array_equal(self.calcServ.dsData, np.loadtxt(self.dsDataFile, unpack=True), 'dsData ndarrays differ')
+        assert_array_equal(self.calcServ.usData, np.loadtxt(self.usDataFile, unpack=True), 'usData ndarrays differ')
         
-        assert_array_equal(self.calcServ.dsCalibFile, np.loadtxt(self.dsCalibFile), 'dsCalibFile ndarrays differ')
-        assert_array_equal(self.calcServ.usCalibFile, np.loadtxt(self.usCalibFile), 'usCalibFile ndarrays differ')
+        assert_array_equal(self.calcServ.dsCalib, np.loadtxt(self.dsCalibFile, unpack=True), 'dsCalibFile ndarrays differ')
+        assert_array_equal(self.calcServ.usCalib, np.loadtxt(self.usCalibFile, unpack=True), 'usCalibFile ndarrays differ')
         try:
             assert_array_equal(self.calcServ.dsCalibFile, self.calcServ.usCalibFile)
             self.fail('DS & US calibration ndarrays should differ')
@@ -70,7 +70,7 @@ class ServiceTest(LuckyCalculationsTest):
         dm.calibConfigData = cc
         
         self.calcServ.updateModel(dm)
-        assert_array_equal(self.calcServ.dsCalibFile, self.calcServ.usCalibFile)
+        assert_array_equal(self.calcServ.dsCalib, self.calcServ.usCalib)
 
 ###
 
@@ -79,6 +79,8 @@ class CalculationsTest(LuckyCalculationsTest):
         LuckyCalculationsTest.setUp(self)
         
         self.luckCalc = LuckyCalculations(self.dsData, self.calib, self.integConf, self.bulbTemp, debug=True)
+        self.luckCalc.runCalculations()
+        
         self.workingCalcs(self.dsData, self.calib, self.integConf)
     
     def workingCalcs(self, data, calib, integConf):
@@ -125,7 +127,7 @@ class CalculationsTest(LuckyCalculationsTest):
         def gaus(x, a, x0, sigma):
             return np.real(a*np.exp(-(x-x0)**2/(2*sigma**2)))
         
-        x = data[0]
+        self.x = data[0]
         y = data[1]
         xC = calib[0]
         yC = calib[1]
@@ -133,12 +135,12 @@ class CalculationsTest(LuckyCalculationsTest):
         end = integConf[1]
         delta = integConf[2]
         
-        P=Planck(x,1,2436)##Ideal Planck
+        P=Planck(self.x,1,2436)##Ideal Planck
         self.P = np.reshape(P, (1, len(P)))
         self.Norm=y/yC*P #Normalization file
-        self.invX=1e9/x #Inverse of wavelength for Wien function (CHANGED 1/x*10**9)
-        self.W=Wien(self.Norm,x)
-        self.Two=TwoCol(self.Norm,x)
+        self.invX=1e9/self.x #Inverse of wavelength for Wien function (CHANGED 1/x*10**9)
+        self.W=Wien(self.Norm,self.x)
+        self.Two=TwoCol(self.Norm,self.x)
         Two2=np.array(self.Two,dtype='float')
         self.TwoInt=Two2[start:end]
         bins=range(1000,3000,1)
@@ -148,7 +150,7 @@ class CalculationsTest(LuckyCalculationsTest):
         self.value=np.array(np.delete(hist[1],control,0))
         p0=[1,2000]
         #Fit Planck in the range [start:end]
-        self.xp=x[start:end]
+        self.xp=self.x[start:end]
         self.Normp=self.Norm[start:end]
         bestP,covarP = curve_fit(Planck, self.xp, self.Normp, p0)
         TP=round(bestP[1],2)
@@ -173,8 +175,8 @@ class CalculationsTest(LuckyCalculationsTest):
         errTot=round(popt[2])
         self.Thist = popt[1]
         self.errTot = popt[2]
-
-class DataUpdateTest(CalculationsTest):
+        
+class CalculationStateTest(CalculationsTest):
     def runTest(self):
         #Normalised dsData
         assert_array_equal(self.P, self.luckCalc.planckIdeal, "Planck ideal datasets differ")
@@ -186,7 +188,7 @@ class DataUpdateTest(CalculationsTest):
         assert_array_equal(self.xp, self.luckCalc.wlIntegLim, "Integration limited wavelength datasets differ")
         assert_array_equal(self.Normp, self.luckCalc.normIntegLim, "Integration limited normalised y datasets differ")
         
-        #Functions calculated by defauls
+        #Functions calculated by defaults
         assert_array_equal(self.W, self.luckCalc.wienData, "Wien datasets differ")
         assert_array_equal(self.W1, self.luckCalc.wienDataIntegLim, "Integration limited Wien datasets differ")
         assert_array_equal(self.Two, self.luckCalc.twoColData, "Two-colour datasets differ")
@@ -194,7 +196,7 @@ class DataUpdateTest(CalculationsTest):
         assert_array_equal(self.freq, self.luckCalc.twoColHistFreq, "Two-colour histogram (freq.) datasets differ")
         assert_array_equal(self.value, self.luckCalc.twoColHistValues, "Two-colour histogram (value) datasets differ")
         assert_array_equal(self.value, self.luckCalc.twoColHistValues, "Two-colour histogram (value) datasets differ")
-
+    
 class PlanckCalcsTest(CalculationsTest):
     def runTest(self):
         self.assertEqual(self.TPNR, self.luckCalc.planckTemp, "Wrong Planck temperature calculated")
@@ -210,4 +212,28 @@ class HistogramCalcsTest(CalculationsTest):
     def runTest(self):
         self.assertEqual(self.Thist, self.luckCalc.histTemp, "Wrong temperature calculated from histogram fit")
         self.assertEqual(self.errTot, self.luckCalc.histErr, "Wrong histogram fit error calculated")
+        
+class UpdateTest(CalculationsTest):
+    def runTest(self):
+        #Initial state
+        data = self.luckCalc.dataSet
+        integConf = self.luckCalc.intConf
+        calibSet = self.luckCalc.calibSet
+        bulbTemp = self.luckCalc.bulbTemp
+        
+        newIntConf = [300,700,100]
+        
+        def updateInteg(newIntConf):
+            self.luckCalc.update(integConf=newIntConf)
+            invWlIntLim = self.invX[newIntConf[0]:newIntConf[1]]
+            wlIntLim = self.x[newIntConf[0]:newIntConf[1]]
+            normIntLim = self.Norm[newIntConf[0]:newIntConf[1]]
+        
+            self.assertNotEqual(integConf, self.luckCalc.intConf, "Old integconf & curren have the same value")
+            self.assertEqual(newIntConf, self.luckCalc.intConf, "New integconf & current have different values")
+            assert_array_equal(invWlIntLim, self.luckCalc.invWLIntegLim, "Integration limited inverse wavelength datasets differ")
+            assert_array_equal(wlIntLim, self.luckCalc.wlIntegLim, "Integration limited wavelength datasets differ")
+            assert_array_equal(normIntLim, self.luckCalc.normIntegLim, "Integration limited normalised y datasets differ")
+        
+        ##TODO Add tests for updating the data & the calibration
         

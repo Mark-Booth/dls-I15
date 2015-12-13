@@ -26,19 +26,33 @@ class CalculationService(object):
             if calibType[i] == 1:
                 dsCalib = calibConfig.calibFiles[calibFileLabels[2*i]]
                 usCalib = calibConfig.calibFiles[calibFileLabels[2*i+1]]
-        return np.loadtxt(dsCalib), np.loadtxt(usCalib)
+        return np.loadtxt(dsCalib, unpack=True), np.loadtxt(usCalib, unpack=True)
     
     def openData(self, dM):
-        return np.loadtxt(dM.usdsPair[0]), np.loadtxt(dM.usdsPair[1])
+        return np.loadtxt(dM.usdsPair[0], unpack=True), np.loadtxt(dM.usdsPair[1], unpack=True)
     
-    def updateModel(self, dM):        
-        self.dsData, self.usData = self.openData(dM)
-        self.dsCalib, self.usCalib = self.openCalib(dM.calibType, dM.calibConfigData)
+    def updateData(self, dM):
+        pass
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    def updateModel(self, dM):
+        self.dsDataFile, self.usDataFile = self.openData(dM)
+        self.dsCalibFile, self.usCalibFile = self.openCalib(dM.calibType, dM.calibConfigData)
         
         self.integConf = dM.integrationConf
         self.bulbTemp = dM.calibConfigData.bulbTemp
     
-    def updateData(self, usData=None, dsData=None):
+    def updateData2(self, usData=None, dsData=None):
         if (usData == None) and (dsData == None):
             raise BadModelStateException("No data given for data update")
         
@@ -83,9 +97,8 @@ class LuckyCalculations(object):
         self.wienPlotRange = [1e9 / self.planckPlotRange[1], 1e9/self.planckPlotRange[0]]
         
         #Prepare the data
-        self.updateData()
-        self.fitAll()
-                
+        self.normaliseData()
+        
         #Create a plot object
         self.plots = LuckyPlots(self, debug)
     
@@ -95,24 +108,28 @@ class LuckyCalculations(object):
         self.intConf = integConf if (integConf != None) else self.intConf
         self.bulbTemp = bulbTemp if (bulbTemp != None) else self.bulbTemp
         
-        self.updateData()
-        self.fitAll()
-        self.plots.updatePlots(self, redraw=True)
+        if (data != None) or (bulbTemp != None) or (calib != None):
+            self.normaliseData()
+        if integConf != None:
+            self.calculateRanges()
     
-    
-    def updateData(self):
-        #Normalises collected data
+    def normaliseData(self):
         self.planckIdeal = self.planck(self.dataSet[0], 1, self.bulbTemp)
         self.planckIdeal = np.reshape(self.planckIdeal, (1, len(self.planckIdeal)))
-        #This step adds the normalised dataset back to the original data array
+        #This step adds the normalises dataset & concatenates with the original data array
         self.dataSet = np.concatenate((self.dataSet, self.dataSet[1] / self.calibSet[1] * self.planckIdeal), axis=0)
         
+        #We've changed the data so we need to recalculate the ranges:
+        self.calculateRanges()
+    
+    def calculateRanges(self):
         #Data sets for fitting or plotting, limited by integration range
         self.invWL = 1e9 / self.dataSet[0]# For Wien function
         self.invWLIntegLim = self.invWL[self.intConf[0]:self.intConf[1]]
         self.wlIntegLim = self.dataSet[0][self.intConf[0]:self.intConf[1]]
         self.normIntegLim = self.dataSet[2][self.intConf[0]:self.intConf[1]]
         
+    def runCalculations(self):
         #Calculate functions over the range of data
         self.wienData = self.wien(self.dataSet[0], self.dataSet[2])
         self.wienDataIntegLim = self.wienData[self.intConf[0]:self.intConf[1]]
@@ -121,8 +138,7 @@ class LuckyCalculations(object):
         self.twoColHistFreq, self.twoColHistValues = np.histogram(self.twoColDataLim, bins=range(1000,3000), density=False)
         self.twoColHistValues = np.delete(self.twoColHistValues, len(self.twoColHistFreq), 0)
         
-        
-    def fitAll(self):
+        #Do fits
         self.fitPlanck()
         self.fitWien()
         self.fitHistogram()
@@ -239,15 +255,15 @@ class LuckyPlots(object):
         self.ax5.set_xlabel('Temperature / K')
         self.ax5.set_ylabel('Counts / a.u.')
      
-        self.updatePlots(luckyCalcs, redraw=False)
-        
-        if not self.debug:
-            #Draw the plots if we're not debugging
-            plt.ion()
-            plt.show()
-            #Needed to make plt appear!
-            #   http://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
-            plt.pause(0.001)
+#         self.updatePlots(luckyCalcs, redraw=False)
+#         
+#         if not self.debug:
+#             #Draw the plots if we're not debugging
+#             plt.ion()
+#             plt.show()
+#             #Needed to make plt appear!
+#             #   http://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
+#             plt.pause(0.001)
             
     def updatePlots(self, calcs, redraw=True):
         #Raw and calibration data subgraph 

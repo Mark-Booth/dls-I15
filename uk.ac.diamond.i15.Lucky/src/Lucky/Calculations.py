@@ -61,16 +61,24 @@ class CalculationService(object):
         self.dsCalcs.update(calib=self.dsCalib, bulbTemp=self.bulbTemp)
         self.usCalcs.update(calib=self.usCalib, bulbTemp=self.bulbTemp)
     
-    def runCalcs(self, debug=False):
+    def createCalcs(self, debug=False):
         if self.modelValidity:
             self.dsCalcs = LuckyCalculations(self.dsData, self.dsCalib,
                                              self.integConf, self.bulbTemp)
             self.usCalcs = LuckyCalculations(self.usData, self.usCalib,
                                              self.integConf, self.bulbTemp)
+            self.dsCalcs.runCalculations()
+            self.usCalcs.runCalculations()
         else:
             raise BadModelStateException("Current model is not valid for calculations")
-
-
+    
+    def updateCalcs(self):
+        if self.modelValidity:
+            self.dsCalcs.runCalculations()
+            self.usCalcs.runCalculations()
+        else:
+            raise BadModelStateException("Current model is not valid for calculations")
+    
 class LuckyCalculations(object):
     
     def __init__(self, data, calib, integConf, bulbTemp, debug=False):

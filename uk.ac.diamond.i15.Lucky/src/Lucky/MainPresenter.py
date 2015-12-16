@@ -9,6 +9,7 @@ import copy, os, re
 from Lucky.MPStates import State
 from Lucky.DataModel import (CalibrationConfigData, MainData)
 from Lucky.LuckyExceptions import BadModelStateException, IllegalArgumentException
+from Lucky.Calculations import CalculationService
 
 class AllPresenter(object):
     def __init__(self, dM = None):
@@ -40,6 +41,8 @@ class MainPresenter(AllPresenter):
             self.dataModel = dM
         self.stateMach = StateMachine(self)
         
+        self.calcServ = CalculationService(self.dataModel)
+        
     def runTrigger(self):
         self.stateMach.changeState(State.EVENTS.RUN)
         #Start a new calculation thread and kick off the calcs
@@ -56,8 +59,10 @@ class MainPresenter(AllPresenter):
         
         if dataValid:
             event = State.EVENTS.DATAGOOD
+            self.calcServ.modelValidity = True
         else:
             event = State.EVENTS.DATABAD
+            self.calcServ.modelValidity = False
         self.stateMach.changeState(event)
     
     def setModeTrigger(self, uiData):
@@ -333,7 +338,7 @@ class StateMachine(object):
             if nextState == type(self.currentState):
                 break
             self.currentState = nextState()
-            self.currentState.run(self.mainPres.dataModel)
+            self.currentState.run(self.mainPres.dataModel, self.mainPres.calcServ)
     
     def getStateName(self):
         return self.currentState.name

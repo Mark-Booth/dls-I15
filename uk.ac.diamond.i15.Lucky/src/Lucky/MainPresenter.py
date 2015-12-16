@@ -215,39 +215,17 @@ class MainPresenter(AllPresenter):
                 if not test:
                     return False
             
-            if test:
-                if self.dataModel.calibType == (1,0,0):
-                    if (self.dataModel.calibConfigData.calibValid['(US)'] and self.dataModel.calibConfigData.calibValid['(DS)']):
-                        return True
-                elif self.dataModel.calibType == (0,1,0):
-                    if (self.dataModel.calibConfigData.calibValid['F1 (US)'] and self.dataModel.calibConfigData.calibValid['F1 (DS)']):
-                        return True
-                elif self.dataModel.calibType == (0,0,1):
-                    if (self.dataModel.calibConfigData.calibValid['F2 (US)'] and self.dataModel.calibConfigData.calibValid['F2 (DS)']):
-                        return True
+            if self.dataModel.calibType == (1,0,0):
+                if (self.dataModel.calibConfigData.calibValid['(US)'] and self.dataModel.calibConfigData.calibValid['(DS)']):
+                    return True
+            elif self.dataModel.calibType == (0,1,0):
+                if (self.dataModel.calibConfigData.calibValid['F1 (US)'] and self.dataModel.calibConfigData.calibValid['F1 (DS)']):
+                    return True
+            elif self.dataModel.calibType == (0,0,1):
+                if (self.dataModel.calibConfigData.calibValid['F2 (US)'] and self.dataModel.calibConfigData.calibValid['F2 (DS)']):
+                    return True
             return False
         return True
-#         
-#         
-#         
-#         
-#         
-#         
-#         
-#         
-#         if not (all(val == True for val in self.dataModel.dataValid.values())):
-#             if isDataValidWOCalib():
-#                 if self.dataModel.calibType == (1,0,0):
-#                     if (self.dataModel.calibConfigData.calibValid['(US)'] and self.dataModel.calibConfigData.calibValid['(DS)']):
-#                         return True
-#                 elif self.dataModel.calibType == (0,1,0):
-#                     if (self.dataModel.calibConfigData.calibValid['F1 (US)'] and self.dataModel.calibConfigData.calibValid['F1 (DS)']):
-#                         return True
-#                 elif self.dataModel.calibType == (0,0,1):
-#                     if (self.dataModel.calibConfigData.calibValid['F2 (US)'] and self.dataModel.calibConfigData.calibValid['F2 (DS)']):
-#                         return True
-#             return False
-#         return True
     
     def getModeTransition(self, inputMode=None):
         if inputMode == None:

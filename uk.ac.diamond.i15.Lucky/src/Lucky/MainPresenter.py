@@ -39,9 +39,9 @@ class MainPresenter(AllPresenter):
             self.dataModel = MainData()
         else:
             self.dataModel = dM
-        self.stateMach = StateMachine(self)
-        
         self.calcServ = CalculationService(self.dataModel)
+        
+        self.stateMach = StateMachine(self)
         
     def runTrigger(self):
         self.stateMach.changeState(State.EVENTS.RUN)
@@ -305,7 +305,7 @@ class StateMachine(object):
         
         #This is a slightly convoluted way to avoid importing StartState
         self.currentState = State().next(State.EVENTS.START)()
-        self.currentState.run()
+        self.currentState.run(self.mainPres.dataModel, self.mainPres.calcServ)
         
         #Set the StateMachine based on the dataModel of the mainPres
         self.changeState(self.mainPres.getModeTransition())

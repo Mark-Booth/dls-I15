@@ -29,7 +29,7 @@ class StartState(State):
         self.transitions = {State.EVENTS.LIVE : LiveSetup,
                             State.EVENTS.OFFLINE: OfflineSetup}
     
-    def run(self):
+    def run(self, dataModel, calcServ):
         pass
 
 #Live state classes
@@ -38,7 +38,7 @@ class LiveState(State):
     def __init__(self):
         super(LiveState, self).__init__()
     
-    def run(self, dataModel):
+    def run(self, dataModel, calcServ):
         dataModel.mode = (1, 0)
         dataModel.usdsControlsEnabled = False
 
@@ -49,7 +49,7 @@ class LiveSetup(LiveState):
         self.transitions = {State.EVENTS.DATAGOOD : LiveStartable,
                             State.EVENTS.OFFLINE  : OfflineSetup}
     
-    def run(self, dataModel):
+    def run(self, dataModel, calcServ):
         super(LiveSetup, self).run(dataModel)
         dataModel.runEnabled = False
         dataModel.stopEnabled = False
@@ -64,7 +64,7 @@ class LiveStartable(LiveState):
                             State.EVENTS.OFFLINE : OfflineStartable,
                             State.EVENTS.RUN     : LiveStoppable}
     
-    def run(self, dataModel):
+    def run(self, dataModel, calcServ):
         super(LiveStartable, self).run(dataModel)
         dataModel.runEnabled = True
         dataModel.stopEnabled = False
@@ -77,7 +77,7 @@ class LiveStoppable(LiveState):
         self.name = "LiveStoppable"
         self.transitions = {State.EVENTS.STOP : LiveStartable}
     
-    def run(self, dataModel):
+    def run(self, dataModel, calcServ):
         super(LiveStoppable, self).run(dataModel)
         dataModel.runEnabled = False
         dataModel.stopEnabled = True
@@ -91,7 +91,7 @@ class OfflineState(State):
     def __init__(self):
         super(OfflineState, self).__init__()
     
-    def run(self, dataModel):
+    def run(self, dataModel, calcServ):
         dataModel.mode = (0, 1)
         dataModel.usdsControlsEnabled = True
 
@@ -102,7 +102,7 @@ class OfflineSetup(OfflineState):
         self.transitions = {State.EVENTS.LIVE     : LiveSetup,
                             State.EVENTS.DATAGOOD : OfflineStartable}
     
-    def run(self, dataModel):
+    def run(self, dataModel, calcServ):
         super(OfflineSetup, self).run(dataModel)
         dataModel.runEnabled = False
         dataModel.stopEnabled = False
@@ -117,7 +117,7 @@ class OfflineStartable(OfflineState):
                             State.EVENTS.LIVE    : LiveStartable,
                             State.EVENTS.RUN     : OfflineStoppable}
     
-    def run(self, dataModel):
+    def run(self, dataModel, calcServ):
         super(OfflineStartable, self).run(dataModel)
         dataModel.runEnabled = True
         dataModel.stopEnabled = False
@@ -130,10 +130,12 @@ class OfflineStoppable(OfflineState):
         self.name = "OfflineStoppable"
         self.transitions = {State.EVENTS.STOP : OfflineStartable}
     
-    def run(self, dataModel):
+    def run(self, dataModel, calcServ):
         super(OfflineStoppable, self).run(dataModel)
         dataModel.runEnabled = False
         dataModel.stopEnabled = True
         dataModel.allUIControlsEnabled = False
         dataModel.allDataPresent = True
+        
+        calcServ.createCalcs()
         

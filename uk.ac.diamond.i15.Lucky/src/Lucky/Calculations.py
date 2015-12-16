@@ -79,7 +79,7 @@ class CalculationService(object):
         else:
             raise BadModelStateException("Current model is not valid for calculations")
     
-class LuckyCalculations(object):
+class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, integConf & calibset
     
     def __init__(self, data, calib, integConf, bulbTemp, debug=False):
         self.dataSet = data

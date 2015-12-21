@@ -44,12 +44,12 @@ class MainPresenter(AllPresenter):
         self.stateMach = StateMachine(self)
         
     def runTrigger(self):
-        self.stateMach.changeState(State.EVENTS.RUN)
         #Start a new calculation thread and kick off the calcs
+        self.stateMach.changeState(State.EVENTS.RUN)
     
     def stopTrigger(self):
-        self.stateMach.changeState(State.EVENTS.STOP)
         #Kill the calculation thread
+        self.stateMach.changeState(State.EVENTS.STOP)
     
     def dataChangeTrigger(self, noData=False):
         if noData:
@@ -252,6 +252,9 @@ class MainPresenter(AllPresenter):
     
     def getSMState(self):
         return self.stateMach.currentState
+    
+    def getTResults(self):
+        return (self.calcServ.planckResults, self.calcServ.wienResults)
 
 ####
 

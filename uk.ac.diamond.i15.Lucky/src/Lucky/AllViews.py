@@ -310,6 +310,19 @@ class MainView(QWidget, AllViews):
         
         self.presenter.dataChangeTrigger()
         self.updateWidgetStates()
+        
+    def updateTTextLabels(self):
+        def formatLabel(resultsTab):
+            #TODO Do this better!
+            return "(DS) "+str(round(resultsTab[0], 2))+" K  (US) "+str(round(resultsTab[1], 2))+" K"
+        
+        planckResults, wienResults = self.presenter.getTResults()
+        planckLabel = formatLabel(planckResults)
+        self.planckTempValLabel.setText(planckLabel)
+        self.dPlanckTempValLabel.setText(str(round(planckResults[2], 2))+" K")
+        wienLabel = formatLabel(wienResults)
+        self.wienTempValLabel.setText(wienLabel)
+        self.dWienTempValLabel.setText(str(round(wienResults[2], 2))+" K")
 ###
     def updateWidgetStates(self, extraData=None):
         mainData = self.presenter.dataModel if (extraData == None) else extraData

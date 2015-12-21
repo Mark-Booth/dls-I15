@@ -16,6 +16,9 @@ class CalculationService(object):
     def __init__(self, pp):
         self.parentPresenter = pp
         
+        self.planckResults = [0,0,0]
+        self.wienResults = [0,0,0]
+        
     def createCalcs(self, dM, debug=False):
         self.updateModel(dM)
         self.dsCalcs = LuckyCalculations(self.dsData, self.dsCalib,
@@ -24,6 +27,7 @@ class CalculationService(object):
                                          self.integConf, self.bulbTemp)
         self.dsCalcs.runCalculations()
         self.usCalcs.runCalculations()
+        self.updateResults()
         
         #Create plot objects once we've got some data to plot
 #        self.dsPlots = LuckyPlots(self.dsCalcs)
@@ -33,11 +37,21 @@ class CalculationService(object):
         #Perhaps add updateModel call?
         self.dsCalcs.runCalculations()
         self.usCalcs.runCalculations()
+        self.updateResults()
         
         #Update the plots with new values from the calculations
 #        self.dsPlots.updatePlots()
 #        self.usPlots.updatePlots()
     
+    def updateResults(self):
+        self.planckResults[0] = self.dsCalcs.planckTemp
+        self.planckResults[1] = self.usCalcs.planckTemp
+        self.planckResults[2] = self.planckResults[0]-self.planckResults[1]
+        
+        self.wienResults[0] = self.dsCalcs.wienTemp
+        self.wienResults[1] = self.usCalcs.wienTemp
+        self.wienResults[2] = self.wienResults[0]-self.wienResults[1]
+        
     def updateModel(self, dM):
         self.dsData, self.usData = self.openData(dM)
         self.dsCalib, self.usCalib = self.openCalib(dM.calibType, dM.calibConfigData)

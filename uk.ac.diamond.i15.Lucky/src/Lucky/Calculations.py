@@ -13,19 +13,19 @@ from Lucky.LuckyExceptions import BadModelStateException
 
 class CalculationService(object):
     
-    def __init__(self, dM, mV=False):
-        self.modelValidity = False
-        self.dsCalcs = None
-        self.usCalcs = None
-        
-        self.updateModel(dM)
+    def __init__(self, pp):
+        self.parentPresenter = pp
         
     def openCalib(self, calibType, calibConfig):
         calibFileLabels = calibConfig.calibFiles.keys()
+        dsCalib, usCalib = None, None 
         for i in range(len(calibType)):
             if calibType[i] == 1:
-                dsCalib = calibConfig.calibFiles[calibFileLabels[2*i]]
-                usCalib = calibConfig.calibFiles[calibFileLabels[2*i+1]]
+                dsCalib = str(calibConfig.calibFiles[calibFileLabels[2*i]])
+                usCalib = str(calibConfig.calibFiles[calibFileLabels[2*i+1]])
+            
+            if None not in [dsCalib, usCalib]:
+                break
         return np.loadtxt(dsCalib, unpack=True), np.loadtxt(usCalib, unpack=True)
     
     def openData(self, dM):
@@ -61,23 +61,18 @@ class CalculationService(object):
         self.dsCalcs.update(calib=self.dsCalib, bulbTemp=self.bulbTemp)
         self.usCalcs.update(calib=self.usCalib, bulbTemp=self.bulbTemp)
     
-    def createCalcs(self, debug=False):
-        if self.modelValidity:
-            self.dsCalcs = LuckyCalculations(self.dsData, self.dsCalib,
-                                             self.integConf, self.bulbTemp)
-            self.usCalcs = LuckyCalculations(self.usData, self.usCalib,
-                                             self.integConf, self.bulbTemp)
-            self.dsCalcs.runCalculations()
-            self.usCalcs.runCalculations()
-        else:
-            raise BadModelStateException("Current model is not valid for calculations")
+    def createCalcs(self, dM, debug=False):
+        self.updateModel(dM)
+        self.dsCalcs = LuckyCalculations(self.dsData, self.dsCalib,
+                                         self.integConf, self.bulbTemp)
+        self.usCalcs = LuckyCalculations(self.usData, self.usCalib,
+                                         self.integConf, self.bulbTemp)
+        self.dsCalcs.runCalculations()
+        self.usCalcs.runCalculations()
     
     def updateCalcs(self):
-        if self.modelValidity:
             self.dsCalcs.runCalculations()
             self.usCalcs.runCalculations()
-        else:
-            raise BadModelStateException("Current model is not valid for calculations")
     
 class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, integConf & calibset
     
@@ -94,7 +89,7 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
         self.normaliseData()
         
         #Create a plot object
-        self.plots = LuckyPlots(self, debug)
+#        self.plots = LuckyPlots(self, debug)
     
     def update(self, data=None, integConf=None, calib=None, bulbTemp=None):
         self.dataSet = data if (data != None) else self.dataSet
@@ -136,6 +131,9 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
         self.fitPlanck()
         self.fitWien()
         self.fitHistogram()
+        
+        #TODO Need to return values (or indicate they've been calculated)
+        #     to the calculation service at this point!
     
     def fitPlanck(self):
         #Do some fitting for Planck...

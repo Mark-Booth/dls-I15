@@ -71,8 +71,9 @@ class CalculationService(object):
         self.usCalcs.runCalculations()
     
     def updateCalcs(self):
-            self.dsCalcs.runCalculations()
-            self.usCalcs.runCalculations()
+        #Perhaps add updateModel call?
+        self.dsCalcs.runCalculations()
+        self.usCalcs.runCalculations()
     
 class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, integConf & calibset
     

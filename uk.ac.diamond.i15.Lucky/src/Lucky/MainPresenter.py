@@ -39,7 +39,7 @@ class MainPresenter(AllPresenter):
             self.dataModel = MainData()
         else:
             self.dataModel = dM
-        self.calcServ = CalculationService(self.dataModel)
+        self.calcServ = CalculationService(self)
         
         self.stateMach = StateMachine(self)
         

@@ -137,5 +137,5 @@ class OfflineStoppable(OfflineState):
         dataModel.allUIControlsEnabled = False
         dataModel.allDataPresent = True
         
-        calcServ.createCalcs()
+        calcServ.createCalcs(dataModel)
         

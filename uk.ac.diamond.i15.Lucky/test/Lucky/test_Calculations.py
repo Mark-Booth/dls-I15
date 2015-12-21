@@ -5,12 +5,13 @@ Created on 24 Nov 2015
 '''
 import unittest
 import numpy as np
-import os, time
+import os
 from numpy.testing import assert_array_equal
 from scipy.optimize import curve_fit
 
 from Lucky.Calculations import LuckyCalculations, CalculationService
 from Lucky.DataModel import MainData, CalibrationConfigData
+from Lucky.mocks.mock_Calculations import mock_Calculations
 
 class LuckyCalculationsTest(unittest.TestCase):
     def setUp(self):
@@ -50,7 +51,8 @@ class ServiceTest(LuckyCalculationsTest):
         dm = MainData(dataDir=self.wdir, usdsPair=[self.dsDataFile, self.usDataFile])
         dm.calibConfigData = cc
         
-        self.calcServ = CalculationService(dm)
+        self.calcServ = CalculationService(None)
+        self.calcServ.updateModel(dm)
         
     def runTest(self):
         assert_array_equal(self.calcServ.dsData, np.loadtxt(self.dsDataFile, unpack=True), 'dsData ndarrays differ')
@@ -71,6 +73,14 @@ class ServiceTest(LuckyCalculationsTest):
         
         self.calcServ.updateModel(dm)
         assert_array_equal(self.calcServ.dsCalib, self.calcServ.usCalib)
+        
+        #Test the updateResults method
+        self.calcServ.dsCalcs = mock_Calculations(2011.64, 2013.53)
+        self.calcServ.usCalcs = mock_Calculations(2014.76, 2015.99)
+        self.calcServ.updateResults()
+        
+        self.assertEquals(self.calcServ.planckResults, [2011.64, 2014.76, 2011.64-2014.76], "planckResults not consistent with input mock data")
+        self.assertEquals(self.calcServ.wienResults, [2013.53, 2015.99, 2013.53-2015.99], "wienResults not consistent with input mock data")
 
 ###
 

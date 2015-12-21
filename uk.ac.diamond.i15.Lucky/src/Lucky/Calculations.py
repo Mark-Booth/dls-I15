@@ -69,11 +69,19 @@ class CalculationService(object):
                                          self.integConf, self.bulbTemp)
         self.dsCalcs.runCalculations()
         self.usCalcs.runCalculations()
+        
+        #Create plot objects once we've got some data to plot
+#        self.dsPlots = LuckyPlots(self.dsCalcs)
+#        self.usPlots = LuckyPlots(self.usCalcs)
     
     def updateCalcs(self):
         #Perhaps add updateModel call?
         self.dsCalcs.runCalculations()
         self.usCalcs.runCalculations()
+        
+        #Update the plots with new values from the calculations
+#        self.dsPlots.updatePlots()
+#        self.usPlots.updatePlots()
     
 class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, integConf & calibset
     
@@ -88,9 +96,6 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
         
         #Prepare the data
         self.normaliseData()
-        
-        #Create a plot object
-#        self.plots = LuckyPlots(self, debug)
     
     def update(self, data=None, integConf=None, calib=None, bulbTemp=None):
         self.dataSet = data if (data != None) else self.dataSet

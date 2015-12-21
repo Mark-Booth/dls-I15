@@ -16,20 +16,27 @@ class CalculationService(object):
     def __init__(self, pp):
         self.parentPresenter = pp
         
-    def openCalib(self, calibType, calibConfig):
-        calibFileLabels = calibConfig.calibFiles.keys()
-        dsCalib, usCalib = None, None 
-        for i in range(len(calibType)):
-            if calibType[i] == 1:
-                dsCalib = str(calibConfig.calibFiles[calibFileLabels[2*i]])
-                usCalib = str(calibConfig.calibFiles[calibFileLabels[2*i+1]])
-            
-            if None not in [dsCalib, usCalib]:
-                break
-        return np.loadtxt(dsCalib, unpack=True), np.loadtxt(usCalib, unpack=True)
+    def createCalcs(self, dM, debug=False):
+        self.updateModel(dM)
+        self.dsCalcs = LuckyCalculations(self.dsData, self.dsCalib,
+                                         self.integConf, self.bulbTemp)
+        self.usCalcs = LuckyCalculations(self.usData, self.usCalib,
+                                         self.integConf, self.bulbTemp)
+        self.dsCalcs.runCalculations()
+        self.usCalcs.runCalculations()
+        
+        #Create plot objects once we've got some data to plot
+#        self.dsPlots = LuckyPlots(self.dsCalcs)
+#        self.usPlots = LuckyPlots(self.usCalcs)
     
-    def openData(self, dM):
-        return np.loadtxt(dM.usdsPair[0], unpack=True), np.loadtxt(dM.usdsPair[1], unpack=True)
+    def updateCalcs(self):
+        #Perhaps add updateModel call?
+        self.dsCalcs.runCalculations()
+        self.usCalcs.runCalculations()
+        
+        #Update the plots with new values from the calculations
+#        self.dsPlots.updatePlots()
+#        self.usPlots.updatePlots()
     
     def updateModel(self, dM):
         self.dsData, self.usData = self.openData(dM)
@@ -61,27 +68,20 @@ class CalculationService(object):
         self.dsCalcs.update(calib=self.dsCalib, bulbTemp=self.bulbTemp)
         self.usCalcs.update(calib=self.usCalib, bulbTemp=self.bulbTemp)
     
-    def createCalcs(self, dM, debug=False):
-        self.updateModel(dM)
-        self.dsCalcs = LuckyCalculations(self.dsData, self.dsCalib,
-                                         self.integConf, self.bulbTemp)
-        self.usCalcs = LuckyCalculations(self.usData, self.usCalib,
-                                         self.integConf, self.bulbTemp)
-        self.dsCalcs.runCalculations()
-        self.usCalcs.runCalculations()
-        
-        #Create plot objects once we've got some data to plot
-#        self.dsPlots = LuckyPlots(self.dsCalcs)
-#        self.usPlots = LuckyPlots(self.usCalcs)
+    def openCalib(self, calibType, calibConfig):
+        calibFileLabels = calibConfig.calibFiles.keys()
+        dsCalib, usCalib = None, None 
+        for i in range(len(calibType)):
+            if calibType[i] == 1:
+                dsCalib = str(calibConfig.calibFiles[calibFileLabels[2*i]])
+                usCalib = str(calibConfig.calibFiles[calibFileLabels[2*i+1]])
+            
+            if None not in [dsCalib, usCalib]:
+                break
+        return np.loadtxt(dsCalib, unpack=True), np.loadtxt(usCalib, unpack=True)
     
-    def updateCalcs(self):
-        #Perhaps add updateModel call?
-        self.dsCalcs.runCalculations()
-        self.usCalcs.runCalculations()
-        
-        #Update the plots with new values from the calculations
-#        self.dsPlots.updatePlots()
-#        self.usPlots.updatePlots()
+    def openData(self, dM):
+        return np.loadtxt(dM.usdsPair[0], unpack=True), np.loadtxt(dM.usdsPair[1], unpack=True)
     
 class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, integConf & calibset
     

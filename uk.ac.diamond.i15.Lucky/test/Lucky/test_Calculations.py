@@ -79,8 +79,8 @@ class ServiceTest(LuckyCalculationsTest):
         self.calcServ.usCalcs = mock_Calculations(2014.76, 2015.99)
         self.calcServ.updateResults()
         
-        self.assertEquals(self.calcServ.planckResults, [2011.64, 2014.76, 2011.64-2014.76], "planckResults not consistent with input mock data")
-        self.assertEquals(self.calcServ.wienResults, [2013.53, 2015.99, 2013.53-2015.99], "wienResults not consistent with input mock data")
+        self.assertEquals(self.calcServ.planckResults, (2011.64, 2014.76, 2011.64-2014.76), "planckResults not consistent with input mock data")
+        self.assertEquals(self.calcServ.wienResults, (2013.53, 2015.99, 2013.53-2015.99), "wienResults not consistent with input mock data")
 
 ###
 

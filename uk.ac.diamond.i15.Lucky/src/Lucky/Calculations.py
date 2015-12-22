@@ -16,8 +16,8 @@ class CalculationService(object):
     def __init__(self, pp):
         self.parentPresenter = pp
         
-        self.planckResults = [0,0,0]
-        self.wienResults = [0,0,0]
+        self.planckResults = (0, 0, 0)
+        self.wienResults = (0, 0, 0)
         
     def createCalcs(self, dM, debug=False):
         self.updateModel(dM)
@@ -44,13 +44,8 @@ class CalculationService(object):
 #        self.usPlots.updatePlots()
     
     def updateResults(self):
-        self.planckResults[0] = self.dsCalcs.planckTemp
-        self.planckResults[1] = self.usCalcs.planckTemp
-        self.planckResults[2] = self.planckResults[0]-self.planckResults[1]
-        
-        self.wienResults[0] = self.dsCalcs.wienTemp
-        self.wienResults[1] = self.usCalcs.wienTemp
-        self.wienResults[2] = self.wienResults[0]-self.wienResults[1]
+        self.planckResults = (self.dsCalcs.planckTemp, self.usCalcs.planckTemp, self.dsCalcs.planckTemp-self.usCalcs.planckTemp)
+        self.wienResults = (self.dsCalcs.wienTemp, self.usCalcs.wienTemp, self.dsCalcs.wienTemp-self.usCalcs.wienTemp)
         
     def updateModel(self, dM):
         self.dsData, self.usData = self.openData(dM)

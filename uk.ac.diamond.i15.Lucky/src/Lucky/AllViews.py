@@ -313,16 +313,26 @@ class MainView(QWidget, AllViews):
         
     def updateTTextLabels(self):
         def formatLabel(resultsTab):
-            #TODO Do this better!
-            return "(DS) "+str(round(resultsTab[0], 2))+" K  (US) "+str(round(resultsTab[1], 2))+" K"
+            dsVal = round(resultsTab[0], 2)
+            usVal = round(resultsTab[1], 2)
+            delta = round(resultsTab[2], 2)
+            if (dsVal == 0) or (usVal == 0):
+                return "(DS) - K  (US) - K", "- K"
+            else:
+                return "(DS) {0} K  (US) {1} K".format(dsVal, usVal), "{0} K".format(delta)
         
         planckResults, wienResults = self.presenter.getTResults()
-        planckLabel = formatLabel(planckResults)
-        self.planckTempValLabel.setText(planckLabel)
-        self.dPlanckTempValLabel.setText(str(round(planckResults[2], 2))+" K")
-        wienLabel = formatLabel(wienResults)
-        self.wienTempValLabel.setText(wienLabel)
-        self.dWienTempValLabel.setText(str(round(wienResults[2], 2))+" K")
+        
+        #Format & set the Planck T labels
+        planckValText, dPlanckValText = formatLabel(planckResults)
+        self.planckTempValLabel.setText(planckValText)
+        self.dPlanckTempValLabel.setText(dPlanckValText)
+        
+        #Format & set the Wien T labels
+        wienValText, dWienValText = formatLabel(wienResults)
+        self.wienTempValLabel.setText(wienValText)
+        self.dWienTempValLabel.setText(dWienValText)
+        
 ###
     def updateWidgetStates(self, extraData=None):
         mainData = self.presenter.dataModel if (extraData == None) else extraData

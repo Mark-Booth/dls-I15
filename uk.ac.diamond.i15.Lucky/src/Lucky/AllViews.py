@@ -35,10 +35,10 @@ class MainView(QWidget, AllViews):
         
         self.presenter = MainPresenter()
         
-        self.setupUI()
+        self.setupUI(self.presenter.dataModel)
         self.updateWidgetStates(self.presenter.dataModel)
         
-    def setupUI(self):
+    def setupUI(self, mainData):
         ####
         #Creation of supporting layouts
         baseLayout = QVBoxLayout()
@@ -49,8 +49,9 @@ class MainView(QWidget, AllViews):
         modeGrpBox = QGroupBox("Mode:")
         self.modeRadBtns = [QRadioButton("Live"),
                             QRadioButton("Offline")]
-        for radBtn in self.modeRadBtns:
-            radBtn.clicked.connect(self.modeRadBtnClick)
+        for i in range(len(self.modeRadBtns)):
+            self.modeRadBtns[i].setChecked(mainData.mode[i])
+            self.modeRadBtns[i].clicked.connect(self.modeRadBtnClick)
         modeLayout = QHBoxLayout()
         self.addWidgetListToLayout(self.modeRadBtns, modeLayout)
         modeGrpBox.setLayout(modeLayout)
@@ -341,7 +342,6 @@ class MainView(QWidget, AllViews):
         #Mode radio buttons
         for i in range(len(self.modeRadBtns)):
             self.modeRadBtns[i].setEnabled(mainData.allUIControlsEnabled)
-            self.modeRadBtns[i].setChecked(mainData.mode[i])
         
         #Calibration type radio buttons
         for i in range(len(self.calibRadBtns)):

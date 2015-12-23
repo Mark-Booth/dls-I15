@@ -303,9 +303,6 @@ class MainView(QWidget, AllViews):
             integConfig = [self.integStartTextBox.text(),
                            self.integStopTextBox.text(),
                            self.integDeltaTextBox.text()]
-            if any('' in integ for integ in integConfig):
-                #TODO THIS IS A FUDGE
-                return
             if self.presenter.changeIntegrationConfigTrigger(integConfig):
                 self.integStartTextBox.setStyleSheet("color: rgb(0, 0, 0);")
                 self.integStopTextBox.setStyleSheet("color: rgb(0, 0, 0);")
@@ -377,7 +374,6 @@ class MainView(QWidget, AllViews):
         #Buttons
         self.runBtn.setEnabled(mainData.runEnabled)
         self.stopBtn.setEnabled(mainData.stopEnabled)
-        0
 
 
 #####################################

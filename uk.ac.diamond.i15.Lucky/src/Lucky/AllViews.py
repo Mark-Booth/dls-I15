@@ -195,6 +195,7 @@ class MainView(QWidget, AllViews):
     def runBtnClicked(self):
         self.presenter.runTrigger()
         self.updateWidgetStates()
+        self.updateTTextLabels()
         0
     
     def stopBtnClicked(self):

@@ -64,8 +64,9 @@ class MainView(QWidget, AllViews):
         self.calibRadBtns = [QRadioButton("Calibration"),
                              QRadioButton("Calibration F1"),
                              QRadioButton("Calibration F2")]
-        for radBtn in self.calibRadBtns:
-            radBtn.clicked.connect(self.calibRadBtnClick)
+        for i in range(len(self.calibRadBtns)):
+            self.calibRadBtns[i].clicked.connect(self.calibRadBtnClick)
+            self.calibRadBtns[i].setChecked(mainData.calibType[i])
         calibGrpLayout = QVBoxLayout()
         self.addWidgetListToLayout(self.calibRadBtns, calibGrpLayout)
         calibGrpBox.setLayout(calibGrpLayout)
@@ -80,7 +81,8 @@ class MainView(QWidget, AllViews):
         ####
         #Data location
         dataDirGrpBox = QGroupBox("Data directory:")
-        self.dataDirTextBox = QLineEdit()#Default needs to be set from the model!
+        self.dataDirTextBox = QLineEdit()
+        self.dataDirTextBox.setText(str(mainData.dataDir))
         self.dataDirTextBox.textChanged.connect(self.dataDirPathChanged)
         self.browseDataDirBtn = QPushButton("Browse...")
         self.browseDataDirBtn.clicked.connect(self.dataDirBrowseBtnClick)
@@ -103,6 +105,11 @@ class MainView(QWidget, AllViews):
         self.usdsPairTextBoxes = []
         for i in range(2):
             self.usdsPairTextBoxes.append(QLineEdit())
+            #Set initial values of USDS pair boxes.
+            if mainData.usdsPair[i] == '':
+                self.usdsPairTextBoxes[i].setText(mainData.usdsPair[i])
+            else:
+                self.usdsPairTextBoxes[i].setText(os.path.basename(mainData.usdsPair[i]))
             self.usdsPairTextBoxes[i].textChanged.connect(self.usdsPairTextChanged)
             self.usdsPairTextBoxes[i].setFixedWidth(100)
         
@@ -116,18 +123,22 @@ class MainView(QWidget, AllViews):
         
         ###
         #Integration range
+        # - N.B. set text values before setting the textchanged slot
         integrationTextInputWidth = 40
         startLabel = QLabel("Beginning:")
         self.integStartTextBox = QLineEdit()#Default needs to be set from the model!
         self.integStartTextBox.setFixedWidth(integrationTextInputWidth)
+        self.integStartTextBox.setText(str(mainData.integrationConf[0]))
         self.integStartTextBox.textChanged.connect(self.integConfigChanged)
         stopLabel = QLabel("End:")
         self.integStopTextBox = QLineEdit()#Default needs to be set from the model!
         self.integStopTextBox.setFixedWidth(integrationTextInputWidth)
+        self.integStopTextBox.setText(str(mainData.integrationConf[1]))
         self.integStopTextBox.textChanged.connect(self.integConfigChanged)
         deltaLabel = QLabel("Window Size:")
         self.integDeltaTextBox = QLineEdit()#Default needs to be set from the model!
         self.integDeltaTextBox.setFixedWidth(integrationTextInputWidth)
+        self.integDeltaTextBox.setText(str(mainData.integrationConf[2]))
         self.integDeltaTextBox.textChanged.connect(self.integConfigChanged)
         nmLabel1, nmLabel2, nmLabel3 = QLabel("nm"), QLabel("nm"), QLabel("nm")
         
@@ -346,30 +357,21 @@ class MainView(QWidget, AllViews):
         #Calibration type radio buttons
         for i in range(len(self.calibRadBtns)):
             self.calibRadBtns[i].setEnabled(mainData.allUIControlsEnabled)
-            self.calibRadBtns[i].setChecked(mainData.calibType[i])
         
         #Datadir
         self.browseDataDirBtn.setEnabled(mainData.allUIControlsEnabled)
         self.dataDirTextBox.setEnabled(mainData.allUIControlsEnabled)
-        self.dataDirTextBox.setText(str(mainData.dataDir))
         
         #US/DS pair
         self.prevUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
         self.nextUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
         for i in range(2):
-            self.usdsPairTextBoxes[i].setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
-            if mainData.usdsPair[i] == '':
-                self.usdsPairTextBoxes[i].setText(mainData.usdsPair[i])
-            else:
-                self.usdsPairTextBoxes[i].setText(os.path.basename(mainData.usdsPair[i])) 
+            self.usdsPairTextBoxes[i].setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled)) 
         
         #Integration controls
         self.integStartTextBox.setEnabled(mainData.allUIControlsEnabled)
-        self.integStartTextBox.setText(str(mainData.integrationConf[0]))
         self.integStopTextBox.setEnabled(mainData.allUIControlsEnabled)
-        self.integStopTextBox.setText(str(mainData.integrationConf[1]))
         self.integDeltaTextBox.setEnabled(mainData.allUIControlsEnabled)
-        self.integDeltaTextBox.setText(str(mainData.integrationConf[2]))
         
         ###
         #Buttons
@@ -390,11 +392,11 @@ class CalibrationConfigView(QDialog, AllViews):
         self.presenter = CalibPresenter(calibConfig)
         
         #This needs to run after we've read & set the original calibConfig
-        self.setupUI()
+        self.setupUI(calibConfig)
         self.updateWidgetStates()
         
     
-    def setupUI(self):
+    def setupUI(self, mainData):
         ####
         #Creation of supporting layouts
         baseLayout = QVBoxLayout()
@@ -403,6 +405,7 @@ class CalibrationConfigView(QDialog, AllViews):
         #Select the base directory to look for calibration files
         calibDirGrpBox = QGroupBox("Calibration Directory:")
         self.calibDirTextBox = QLineEdit()
+        self.calibDirTextBox.setText(mainData.calibDir)
         self.calibDirTextBox.textChanged.connect(self.calibDirPathChanged)
         self.browseCalibDirBtn = QPushButton("Browse...")
         self.browseCalibDirBtn.clicked.connect(self.calibDirBrowseBtnClick)
@@ -452,6 +455,7 @@ class CalibrationConfigView(QDialog, AllViews):
         bulbTLabel = QLabel("Bulb Temperature:")
         self.calibTempTextBox = QLineEdit()#Populate from model
         self.calibTempTextBox.setFixedWidth(40)#Same as integrationTextInputWidth in MainView
+        self.calibTempTextBox.setText(str(mainData.bulbTemp))
         self.calibTempTextBox.textChanged.connect(self.bulbTempChanged)
         kTempLabel = QLabel("K")
         calibTempLayout = QHBoxLayout()
@@ -512,10 +516,8 @@ class CalibrationConfigView(QDialog, AllViews):
     def updateWidgetStates(self, extraData=None):
         mainData = self.presenter.calibModel if (extraData == None) else extraData
         
-        self.calibDirTextBox.setText(mainData.calibDir)
         for name in mainData.calibFiles.keys():
             self.calibFileTextBoxes[name].setText(mainData.calibFiles[name])
-        self.calibTempTextBox.setText(str(mainData.bulbTemp))
         
     def okClick(self):
         validity = self.presenter.isValidConfig()

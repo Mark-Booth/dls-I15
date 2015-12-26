@@ -100,9 +100,7 @@ class MainPresenter(AllPresenter):
         self.dataModel.dataValid['integrationConf'] = False
     
     def changeIntegrationConfigTrigger(self, uiNumbs):
-        intUINumbs = []
-        for val in uiNumbs:
-            intUINumbs.append(int(val))
+        intUINumbs = [int(val) for val in uiNumbs]
         
         self.dataModel.integrationConf = intUINumbs
         if ((intUINumbs[0] < intUINumbs[1]) and (intUINumbs[2] < (intUINumbs[1] - intUINumbs[0]))):

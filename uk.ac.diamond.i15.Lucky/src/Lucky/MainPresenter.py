@@ -59,10 +59,8 @@ class MainPresenter(AllPresenter):
         
         if dataValid:
             event = State.EVENTS.DATAGOOD
-            self.calcServ.modelValidity = True
         else:
             event = State.EVENTS.DATABAD
-            self.calcServ.modelValidity = False
         self.stateMach.changeState(event)
     
     def setModeTrigger(self, uiData):
@@ -92,11 +90,11 @@ class MainPresenter(AllPresenter):
     
     def changeIntegrationValueTrigger(self, uiText):
         if uiText == '':
-            return False, True #Valid string, not valid int
+            return False
         elif self.isValidInt(uiText):
-            return True, True #Valid string, valid int
+            return True
         else:
-            return False, False #Not valid
+            return False
     
     def invalidateIntegration(self):
         self.dataModel.dataValid['integrationConf'] = False

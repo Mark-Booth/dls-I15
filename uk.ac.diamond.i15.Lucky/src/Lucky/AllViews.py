@@ -290,7 +290,6 @@ class MainView(QWidget, AllViews):
     
     def integConfigChanged(self):
         textBox = self.sender()
-        #TODO Restructure integration UI as an array
         changeResult = self.presenter.changeIntegrationValueTrigger(textBox.text())
         
         if changeResult:

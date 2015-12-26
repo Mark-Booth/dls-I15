@@ -293,24 +293,20 @@ class MainView(QWidget, AllViews):
         #TODO Restructure integration UI as an array
         changeResult = self.presenter.changeIntegrationValueTrigger(textBox.text())
         
-        if changeResult == (True, True):
-            integConfig = [self.integStartTextBox.text(),
-                           self.integStopTextBox.text(),
-                           self.integDeltaTextBox.text()]
+        if changeResult:
+            integConfig = [integTextBox.text() for integTextBox in self.integElemTextBoxes]
             if self.presenter.changeIntegrationConfigTrigger(integConfig):
-                self.integStartTextBox.setStyleSheet("color: rgb(0, 0, 0);")
-                self.integStopTextBox.setStyleSheet("color: rgb(0, 0, 0);")
-                self.integDeltaTextBox.setStyleSheet("color: rgb(0, 0, 0);")
+                styleSheetColour = "color: rgb(0, 0, 0);"
             else:
-                self.integStartTextBox.setStyleSheet("color: rgb(255, 0, 0);")
-                self.integStopTextBox.setStyleSheet("color: rgb(255, 0, 0);")
-                self.integDeltaTextBox.setStyleSheet("color: rgb(255, 0, 0);")
-        elif changeResult == (False, True):
-            self.presenter.invalidateIntegration()#TODO THIS IS NOT UPDATING THE VALUES
-            textBox.setStyleSheet("color: rgb(0, 0, 0);")
+                styleSheetColour = "color: rgb(255, 0, 0);"
+            [integTextBox.setStyleSheet(styleSheetColour) for integTextBox in self.integElemTextBoxes]
         else:
-            self.presenter.invalidateIntegration()
-            textBox.setStyleSheet("color: rgb(255, 0, 0);")
+            if textBox.text() == '':
+                textBox.setStyleSheet("color: rgb(0, 0, 0);")
+                self.presenter.invalidateIntegration()
+            else:
+                textBox.setStyleSheet("color: rgb(255, 0, 0);")
+                self.presenter.invalidateIntegration()
         
         self.presenter.dataChangeTrigger()
         self.updateWidgetStates()

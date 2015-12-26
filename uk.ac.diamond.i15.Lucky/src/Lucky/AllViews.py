@@ -124,35 +124,29 @@ class MainView(QWidget, AllViews):
         ###
         #Integration range
         # - N.B. set text values before setting the textchanged slot
-        integrationTextInputWidth = 40
-        startLabel = QLabel("Beginning:")
-        self.integStartTextBox = QLineEdit()#Default needs to be set from the model!
-        self.integStartTextBox.setFixedWidth(integrationTextInputWidth)
-        self.integStartTextBox.setText(str(mainData.integrationConf[0]))
-        self.integStartTextBox.textChanged.connect(self.integConfigChanged)
-        stopLabel = QLabel("End:")
-        self.integStopTextBox = QLineEdit()#Default needs to be set from the model!
-        self.integStopTextBox.setFixedWidth(integrationTextInputWidth)
-        self.integStopTextBox.setText(str(mainData.integrationConf[1]))
-        self.integStopTextBox.textChanged.connect(self.integConfigChanged)
-        deltaLabel = QLabel("Window Size:")
-        self.integDeltaTextBox = QLineEdit()#Default needs to be set from the model!
-        self.integDeltaTextBox.setFixedWidth(integrationTextInputWidth)
-        self.integDeltaTextBox.setText(str(mainData.integrationConf[2]))
-        self.integDeltaTextBox.textChanged.connect(self.integConfigChanged)
-        nmLabel1, nmLabel2, nmLabel3 = QLabel("nm"), QLabel("nm"), QLabel("nm")
-        
         integRangeGrpBox = QGroupBox("Integration Range:")
         integRangeLayout = QGridLayout()
-        integRangeLayout.addWidget(startLabel, 0, 0)
-        integRangeLayout.addWidget(self.integStartTextBox, 0, 1)
-        integRangeLayout.addWidget(nmLabel1, 0, 2)
-        integRangeLayout.addWidget(stopLabel, 0, 3)
-        integRangeLayout.addWidget(self.integStopTextBox, 0, 4)
-        integRangeLayout.addWidget(nmLabel2, 0, 5)
-        integRangeLayout.addWidget(deltaLabel, 1, 0)
-        integRangeLayout.addWidget(self.integDeltaTextBox, 1, 1)
-        integRangeLayout.addWidget(nmLabel3, 1, 2)
+        integrationTextInputWidth = 40
+        integElemNames = ["Beginning:", "End:", "Window Size:"]
+        integElemLabels = []
+        integNmLabels = []
+        self.integElemTextBoxes = []
+        colNr, rowNr = 0, 0
+        for i in range(len(integElemNames)):
+            integElemLabels.append(QLabel(integElemNames[i]))
+            self.integElemTextBoxes.append(QLineEdit())
+            self.integElemTextBoxes[i].setFixedWidth(integrationTextInputWidth)
+            self.integElemTextBoxes[i].setText(str(mainData.integrationConf[i]))
+            self.integElemTextBoxes[i].textChanged.connect(self.integConfigChanged)
+            integNmLabels.append(QLabel("nm"))
+            
+            colNr = i%2
+            if colNr == 0:
+                rowNr += 1
+            integRangeLayout.addWidget(integElemLabels[i], rowNr, 3*colNr)
+            integRangeLayout.addWidget(self.integElemTextBoxes[i], rowNr, (3*colNr)+1)
+            integRangeLayout.addWidget(integNmLabels[i], rowNr, (3*colNr)+2)
+        
         integRangeGrpBox.setLayout(integRangeLayout)
         controlsLayout.addWidget(integRangeGrpBox, 2, 1, 2, 2)
         
@@ -366,9 +360,8 @@ class MainView(QWidget, AllViews):
             self.usdsPairTextBoxes[i].setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled)) 
         
         #Integration controls
-        self.integStartTextBox.setEnabled(mainData.allUIControlsEnabled)
-        self.integStopTextBox.setEnabled(mainData.allUIControlsEnabled)
-        self.integDeltaTextBox.setEnabled(mainData.allUIControlsEnabled)
+        for textBox in self.integElemTextBoxes:
+            textBox.setEnabled(mainData.allUIControlsEnabled)
         
         ###
         #Buttons

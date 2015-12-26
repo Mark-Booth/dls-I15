@@ -92,11 +92,11 @@ class MainPresenter(AllPresenter):
     
     def changeIntegrationValueTrigger(self, uiText):
         if uiText == '':
-            return False, True
+            return False, True #Valid string, not valid int
         elif self.isValidInt(uiText):
-            return True, True
+            return True, True #Valid string, valid int
         else:
-            return False, False
+            return False, False #Not valid
     
     def invalidateIntegration(self):
         self.dataModel.dataValid['integrationConf'] = False

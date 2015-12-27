@@ -173,7 +173,7 @@ class MainPresenter(AllPresenter):
                     if dec:
                         newUSDSPair[i] = shiftFileName(i, -2)
                     if inc:
-                        newUSDSPair[i] = shiftFileName(i, 2)                
+                        newUSDSPair[i] = shiftFileName(i, 2)
                 newUSDSPair[i] = os.path.join(self.dataModel.dataDir, newUSDSPair[i])
             except:
                 return False

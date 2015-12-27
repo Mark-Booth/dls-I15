@@ -44,8 +44,13 @@ class CalculationService(object):
 #        self.usPlots.updatePlots()
     
     def updateResults(self):
-        self.planckResults = (self.dsCalcs.planckTemp, self.usCalcs.planckTemp, self.dsCalcs.planckTemp-self.usCalcs.planckTemp)
-        self.wienResults = (self.dsCalcs.wienTemp, self.usCalcs.wienTemp, self.dsCalcs.wienTemp-self.usCalcs.wienTemp)
+        def calculateResults(dsVal, usVal):
+            avs = (dsVal + usVal)/2
+            diff = dsVal - usVal
+            return [dsVal, usVal, avs, diff]
+        
+        self.planckResults = calculateResults(self.dsCalcs.planckTemp, self.usCalcs.planckTemp)
+        self.wienResults = calculateResults(self.dsCalcs.wienTemp, self.usCalcs.wienTemp)
         
     def updateModel(self, dM):
         self.dsData, self.usData = self.openData(dM)

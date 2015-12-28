@@ -152,25 +152,42 @@ class MainView(QWidget, AllViews):
         
         ###
         #Calculation results
-        planckTempLabel = QLabel("Planck Temperature:")
-        self.planckTempValLabel = QLabel("- K")#Default needs to be set from the model!
+        planckTempLabel = QLabel("Average T(Planck):")
+        self.planckTempValLabel = QLabel()
+        #self.planckTempValLabel.setFixedWidth(50)
+        planckKLabel = QLabel("K")
+        planckKLabel.setFixedWidth(10)
         dPlancKTempLabel = QLabel(u"\u0394 T(Planck):")
-        self.dPlanckTempValLabel = QLabel("- K")#Default needs to be set from the model!
-        wienTempLabel = QLabel("Wien Temperature:")
-        self.wienTempValLabel = QLabel("- K")#Default needs to be set from the model!
+        self.dPlanckTempValLabel = QLabel()
+        #self.dPlanckTempValLabel.setFixedWidth(50)
+        dPlanckKLabel = QLabel("K")
+        dPlanckKLabel.setFixedWidth(10)
+        wienTempLabel = QLabel("Average T(Wien):")
+        self.wienTempValLabel = QLabel()
+        #self.wienTempValLabel.setFixedWidth(50)
+        wienKLabel = QLabel("K")
+        wienKLabel.setFixedWidth(10)
         dWienTempLabel = QLabel(u"\u0394 T(Wien):")
-        self.dWienTempValLabel = QLabel("- K")#Default needs to be set from the model!
+        self.dWienTempValLabel = QLabel()
+        #self.dWienTempValLabel.setFixedWidth(50)
+        dWienKLabel = QLabel("K")
+        dWienKLabel.setFixedWidth(10)
+        self.updateTTextLabels()
         
         resultsLayout = QGridLayout()
         resultsLayout.addWidget(planckTempLabel, 0, 0)
         resultsLayout.addWidget(self.planckTempValLabel, 0, 1, alignment=QtCore.Qt.AlignRight)
+        resultsLayout.addWidget(planckKLabel, 0, 2, alignment=QtCore.Qt.AlignLeft)
         resultsLayout.addWidget(dPlancKTempLabel, 1, 0)
         resultsLayout.addWidget(self.dPlanckTempValLabel, 1, 1, alignment=QtCore.Qt.AlignRight)
-        resultsLayout.addWidget(QWidget(), 0, 2) #This is in effect a spacer
+        resultsLayout.addWidget(dPlanckKLabel, 1, 2, alignment=QtCore.Qt.AlignLeft)
         resultsLayout.addWidget(wienTempLabel, 0, 3)
         resultsLayout.addWidget(self.wienTempValLabel, 0, 4, alignment=QtCore.Qt.AlignRight)
+        resultsLayout.addWidget(wienKLabel, 0, 5, alignment=QtCore.Qt.AlignLeft)
         resultsLayout.addWidget(dWienTempLabel, 1, 3)
         resultsLayout.addWidget(self.dWienTempValLabel, 1, 4, alignment=QtCore.Qt.AlignRight)
+        resultsLayout.addWidget(dWienKLabel, 1, 5, alignment=QtCore.Qt.AlignLeft)
+        
         controlsLayout.addLayout(resultsLayout, 4, 0, 1, 3)
         
         ####
@@ -311,26 +328,23 @@ class MainView(QWidget, AllViews):
         self.updateWidgetStates()
         
     def updateTTextLabels(self):
-        def formatLabel(resultsTab):
-            dsVal = round(resultsTab[0], 2)
-            usVal = round(resultsTab[1], 2)
-            delta = round(resultsTab[2], 2)
-            if (dsVal == 0) or (usVal == 0):
-                return "(DS) - K  (US) - K", "- K"
-            else:
-                return "(DS) {0} K  (US) {1} K".format(dsVal, usVal), "{0} K".format(delta)
-        
         planckResults, wienResults = self.presenter.getTResults()
         
-        #Format & set the Planck T labels
-        planckValText, dPlanckValText = formatLabel(planckResults)
-        self.planckTempValLabel.setText(planckValText)
-        self.dPlanckTempValLabel.setText(dPlanckValText)
+        if (planckResults[0] <= 0) and (planckResults[1] <=0):
+            planckT = "-"
+            dPlanckT = "-"
+            wienT = "-"
+            dWienT = "-"
+        else:
+            planckT = "{0:10.2f}".format(planckResults[2])
+            dPlanckT = "{0:10.2f}".format(planckResults[3])
+            wienT = "{0:10.2f}".format(wienResults[2])
+            dWienT = "{0:10.2f}".format(wienResults[3])
         
-        #Format & set the Wien T labels
-        wienValText, dWienValText = formatLabel(wienResults)
-        self.wienTempValLabel.setText(wienValText)
-        self.dWienTempValLabel.setText(dWienValText)
+        self.planckTempValLabel.setText(planckT)
+        self.dPlanckTempValLabel.setText(dPlanckT)
+        self.wienTempValLabel.setText(wienT)
+        self.dWienTempValLabel.setText(dWienT)
         
 ###
     def updateWidgetStates(self, extraData=None):

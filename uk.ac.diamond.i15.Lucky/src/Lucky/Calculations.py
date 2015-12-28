@@ -16,8 +16,8 @@ class CalculationService(object):
     def __init__(self, pp):
         self.parentPresenter = pp
         
-        self.planckResults = (0, 0, 0)
-        self.wienResults = (0, 0, 0)
+        self.planckResults = (0, 0, 0, 0)
+        self.wienResults = (0, 0, 0, 0)
         
     def createCalcs(self, dM, debug=False):
         self.updateModel(dM)

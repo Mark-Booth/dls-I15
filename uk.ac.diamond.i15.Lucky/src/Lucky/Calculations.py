@@ -39,7 +39,7 @@ class CalculationService(object):
         self.usCalcs.runCalculations()
         self.updateResults()
         
-        #Update the plots with new values from the calculations
+        #Update the plots with new values from the calculations //TODO Enable these to update plots every re-calculation.
 #        self.dsPlots.updatePlots()
 #        self.usPlots.updatePlots()
     

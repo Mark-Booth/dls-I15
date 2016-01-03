@@ -201,7 +201,7 @@ class MainView(QWidget, AllViews):
         self.stopBtn = QPushButton('Stop')
         self.runBtn.clicked.connect(self.stopBtnClicked)
         quitBtn = QPushButton('Quit')
-        quitBtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
+        quitBtn.clicked.connect(QtCore.QCoreApplication.instance().quit)#TODO Add control to kill plots properly
         
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self.runBtn)

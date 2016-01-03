@@ -19,6 +19,7 @@ class CalculationService(object):
         self.planckResults = (0, 0, 0, 0)
         self.wienResults = (0, 0, 0, 0)
         
+        #TODO Spawn calculations and plots in a separate thread
     def createCalcs(self, dM, debug=False):
         self.updateModel(dM)
         self.dsCalcs = LuckyCalculations(self.dsData, self.dsCalib,

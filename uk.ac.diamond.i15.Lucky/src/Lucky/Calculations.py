@@ -30,8 +30,8 @@ class CalculationService(object):
         self.updateResults()
         
         #Create plot objects once we've got some data to plot
-#        self.dsPlots = LuckyPlots(self.dsCalcs)
-#        self.usPlots = LuckyPlots(self.usCalcs)
+        self.dsPlots = LuckyPlots(self.dsCalcs)
+        self.usPlots = LuckyPlots(self.usCalcs)
     
     def updateCalcs(self):
         #Perhaps add updateModel call?
@@ -152,9 +152,6 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
         self.fitWien()
         self.fitHistogram()
         
-        #TODO Need to return values (or indicate they've been calculated)
-        #     to the calculation service at this point!
-    
     def fitPlanck(self):
         #Do some fitting for Planck...
         ###
@@ -170,8 +167,6 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
         self.wienFit, wienCov = curve_fit(self.fWien, self.invWLIntegLim[(np.isfinite(self.wienDataIntegLim))], self.wienDataIntegLim[(np.isfinite(self.wienDataIntegLim))], p0=[1, self.planckTemp])
         self.wienResidual = self.wienDataIntegLim - self.fWien(self.invWLIntegLim[(np.isfinite(self.wienDataIntegLim))], *self.wienFit)
         self.wienTemp = self.wienFit[1]
-
-        pass
     
     def fitHistogram(self):
         #Gaussian fit of two colour histogram
@@ -267,15 +262,15 @@ class LuckyPlots(object):
         self.ax5.set_xlabel('Temperature / K')
         self.ax5.set_ylabel('Counts / a.u.')
      
-#         self.updatePlots(luckyCalcs, redraw=False)
-#         
-#         if not self.debug:
-#             #Draw the plots if we're not debugging
-#             plt.ion()
-#             plt.show()
-#             #Needed to make plt appear!
-#             #   http://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
-#             plt.pause(0.001)
+        self.updatePlots(luckyCalcs, redraw=False)
+         
+        if not self.debug:
+            #Draw the plots if we're not debugging
+            plt.ion()
+            plt.show()
+            #Needed to make plt appear!
+            #   http://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
+            plt.pause(0.001)
             
     def updatePlots(self, calcs, redraw=True):
         #Raw and calibration data subgraph 

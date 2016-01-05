@@ -23,9 +23,9 @@ class CalculationService(object):
     def createCalcs(self, dM, debug=False):
         self.updateModel(dM)
         self.dsCalcs = LuckyCalculations(self.dsData, self.dsCalib,
-                                         self.integConf, self.bulbTemp)
+                                         self.integConf, self.bulbTemp, "Downstream Measurement")
         self.usCalcs = LuckyCalculations(self.usData, self.usCalib,
-                                         self.integConf, self.bulbTemp)
+                                         self.integConf, self.bulbTemp, "Upstream Measurement")
         self.dsCalcs.runCalculations()
         self.usCalcs.runCalculations()
         self.updateResults()
@@ -100,11 +100,12 @@ class CalculationService(object):
     
 class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, integConf & calibset
     
-    def __init__(self, data, calib, integConf, bulbTemp, debug=False):
+    def __init__(self, data, calib, integConf, bulbTemp, label, debug=False):
         self.dataSet = data
         self.calibSet = calib
         self.intConf = integConf
         self.bulbTemp = bulbTemp
+        self.label = label
         
         self.planckPlotRange = [500, 1000]
         self.wienPlotRange = [1e9 / self.planckPlotRange[1], 1e9/self.planckPlotRange[0]]
@@ -233,33 +234,35 @@ class LuckyPlots(object):
         self.debug = debug
         
         self.fig = plt.figure()
+        self.fig.suptitle(luckyCalcs.label, fontsize="16", weight="bold")
         self.ax1 = self.fig.add_subplot(3, 2, 1)#Raw+Calib
         self.ax2 = self.fig.add_subplot(3, 2, 3)#Planck
         self.ax3 = self.fig.add_subplot(3, 2, 4)#Wien
         self.ax4 = self.fig.add_subplot(3, 2, 5)#2Colour
         self.ax5 = self.fig.add_subplot(3, 2, 6)#Histogram
-        plt.subplots_adjust(wspace=0.3, hspace=0.3)
+        #Layout settings for the plots
+        plt.subplots_adjust(wspace=0.3, hspace=0.7)
         
         #One-time configuration of plots
-        self.ax1.set_title('Raw & Calibration Data')
+        self.ax1.set_title('Raw & Calibration Data', fontsize='medium', style='italic')
         self.ax1.set_xlabel('Wavelength / nm')
         self.ax1.grid(True, linestyle='-')
         
-        self.ax2.set_title('Planck Function Data')
+        self.ax2.set_title('Planck Function Data', fontsize='medium', style='italic')
         self.ax2.set_xlabel('Wavelength / nm')
         self.ax2.set_yticks([])
         
-        self.ax3.set_title('Wien Function Data')
+        self.ax3.set_title('Wien Function Data', fontsize='medium', style='italic')
         self.ax3.set_xlabel(r'1/Wavelength / m$^{-1}$')
         self.ax3.set_ylabel("Wien Function")
         self.ax3.set_yticks([])
         
-        self.ax4.set_title('Sliding Two-Colour Function')
+        self.ax4.set_title('Sliding Two-Colour Function', fontsize='medium', style='italic')
         self.ax4.set_xlabel('Wavelength  / nm')
         self.ax4.set_ylabel('Temperature / K')
         self.ax4.grid(True, linestyle='-')
         
-        self.ax5.set_title('Histogram (from Two-Colour Function)')
+        self.ax5.set_title('Histogram (from Two-Colour Function)', fontsize='medium', style='italic')
         self.ax5.set_xlabel('Temperature / K')
         self.ax5.set_ylabel('Counts / a.u.')
      

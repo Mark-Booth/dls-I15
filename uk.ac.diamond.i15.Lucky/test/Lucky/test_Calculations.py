@@ -5,11 +5,11 @@ Created on 24 Nov 2015
 '''
 import unittest
 import numpy as np
-import os
+import os, time
 from numpy.testing import assert_array_equal
 from scipy.optimize import curve_fit
 
-from Lucky.Calculations import LuckyCalculations, CalculationService
+from Lucky.Calculations import LuckyCalculations, CalculationService, LuckyPlots
 from Lucky.DataModel import MainData, CalibrationConfigData
 from Lucky.mocks.mock_Calculations import mock_Calculations
 
@@ -31,15 +31,16 @@ class LuckyCalculationsTest(unittest.TestCase):
         self.bulbTemp = 2436
 
 
-# class PlottingTest(LuckyCalculationsTest):
-#     def setUp(self):
-#         LuckyCalculationsTest.setUp(self)
-#       
-#     def runTest(self):
-#         self.luckCalcA = LuckyCalculations(self.dsData, self.calib, self.integConf, self.bulbTemp, debug=False)
-#         self.luckCalcB = LuckyCalculations(self.dsData, self.calib, self.integConf, self.bulbTemp, debug=False)
-#         print "Test sleeping for 20s"
-#         time.sleep(20)
+class PlottingTest(LuckyCalculationsTest):
+    def setUp(self):
+        LuckyCalculationsTest.setUp(self)
+       
+    def runTest(self):
+        luckCalcPlot = LuckyCalculations(self.dsData, self.calib, self.integConf, self.bulbTemp, "TestData", debug=False)
+        luckCalcPlot.runCalculations()
+        LuckyPlots(luckCalcPlot)
+        print "Test sleeping for 20s"
+        time.sleep(20)
  
 ###
        
@@ -79,8 +80,8 @@ class ServiceTest(LuckyCalculationsTest):
         self.calcServ.usCalcs = mock_Calculations(2014.76, 2015.99)
         self.calcServ.updateResults()
         
-        self.assertEquals(self.calcServ.planckResults, (2011.64, 2014.76, 2011.64-2014.76), "planckResults not consistent with input mock data")
-        self.assertEquals(self.calcServ.wienResults, (2013.53, 2015.99, 2013.53-2015.99), "wienResults not consistent with input mock data")
+        self.assertEquals(self.calcServ.planckResults, [2011.64, 2014.76, (2011.64+2014.76)/2, 2011.64-2014.76], "planckResults not consistent with input mock data")
+        self.assertEquals(self.calcServ.wienResults, [2013.53, 2015.99, (2013.53+2015.99)/2, 2013.53-2015.99], "wienResults not consistent with input mock data")
 
 ###
 
@@ -88,7 +89,7 @@ class CalculationsTest(LuckyCalculationsTest):
     def setUp(self):
         LuckyCalculationsTest.setUp(self)
         
-        self.luckCalc = LuckyCalculations(self.dsData, self.calib, self.integConf, self.bulbTemp, debug=True)
+        self.luckCalc = LuckyCalculations(self.dsData, self.calib, self.integConf, self.bulbTemp, "TestData", debug=True)
         self.luckCalc.runCalculations()
         
         self.workingCalcs(self.dsData, self.calib, self.integConf)

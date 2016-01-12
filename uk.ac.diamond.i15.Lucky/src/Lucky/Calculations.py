@@ -107,7 +107,7 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
         self.bulbTemp = bulbTemp
         self.label = label
         
-        self.planckPlotRange = [500, 1000]
+        self.planckPlotRange = [550, 900]
         self.wienPlotRange = [1e9 / self.planckPlotRange[1], 1e9/self.planckPlotRange[0]]
         
         #Prepare the data
@@ -198,20 +198,20 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
     
     #Two colour function
     def twoColour(self, wavelength, intens, delta):
-        twoCol = []
         wavelength = wavelength * 1e-9
         nPoints = len(wavelength)
         nWindows = nPoints - delta
+        twoCol = []#*nPoints
         
         def twoColCalc(wavelength, intens):
             return np.log(intens * np.power(wavelength, 5) / (2 * pi * h * np.power(c, 2))) * (k / (h *c))
-        
+         
         for i in range(nWindows):
-            f1 = (h * c) / (wavelength[i] * k)
-            f2 = (h * c) / (wavelength[i + delta] * k)
+            f1 = 1 / (wavelength[i])
+            f2 = 1/ (wavelength[i + delta])
             i1 = twoColCalc(wavelength[i], intens[i])
             i2 = twoColCalc(wavelength[i + delta], intens[i+delta])
-            twoCol.append((f1 - f2) / (i2 - i1))
+            twoCol.append((f2 - f1) / (i2 - i1))
         
         for i in range(nWindows, nPoints):
             twoCol.append(float('nan'))

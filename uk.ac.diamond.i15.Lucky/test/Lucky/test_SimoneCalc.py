@@ -20,5 +20,6 @@ calib = np.loadtxt('./testData/Calib.txt', unpack=True) ##Calib file
 integConf = [315, 800, 200] #Values lifted out of PreLucky_Variant.py
 bulbTemp = 2436
 
-luckCalc = LuckyCalculations(dsData, calib, integConf, bulbTemp, debug=True)
+luckCalc = LuckyCalculations(dsData, calib, integConf, bulbTemp, "TestData", debug=True)
 luckCalc.runCalculations()
+print calib

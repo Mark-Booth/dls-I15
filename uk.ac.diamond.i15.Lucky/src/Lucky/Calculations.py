@@ -147,7 +147,7 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
         self.wienDataIntegLim = self.wienData[self.intConf[0]:self.intConf[1]]
         self.twoColData = self.twoColour(self.dataSet[0], self.dataSet[2], self.intConf[2])
         self.twoColDataLim = self.twoColData[self.intConf[0]:self.intConf[1]]
-        self.twoColHistFreq, self.twoColHistValues = np.histogram(self.twoColDataLim, bins=range(1000,3000), density=False)
+        self.twoColHistFreq, self.twoColHistValues = np.histogram(self.twoColDataLim, bins=range(1500,5000,1), density=False)
         self.twoColHistValues = np.delete(self.twoColHistValues, len(self.twoColHistFreq), 0)
         
         #Do fits
@@ -227,7 +227,6 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
 
 
 import matplotlib.pyplot as plt
-
 class LuckyPlots(object):
     def __init__(self, luckyCalcs, debug=False):
         if debug:
@@ -239,13 +238,12 @@ class LuckyPlots(object):
         self.ax1 = self.fig.add_subplot(3, 2, 1)#Raw+Calib
         self.ax2 = self.fig.add_subplot(3, 2, 3)#Planck
         self.ax3 = self.fig.add_subplot(3, 2, 4)#Wien
+        self.ax3.xaxis.get_major_formatter().set_powerlimits((0, 1))
         self.ax4 = self.fig.add_subplot(3, 2, 5)#2Colour
         self.ax5 = self.fig.add_subplot(3, 2, 6)#Histogram
-        #self.ax6 = self.fig.add_subplot(3, 2, 2)#Residuals
-        #Defining Residual subPlot in Wien
-        # rect = [0.1,0.1,0.1,0.1]
+        self.ax5.xaxis.get_major_formatter().set_powerlimits((0, 1))
         self.ax6 = self.ax3.twinx()
-        #self.ax6 = self.fig.add_axes(self.ax3)
+        
         #Layout settings for the plots
         plt.subplots_adjust(wspace=0.3, hspace=0.7)
         
@@ -272,10 +270,6 @@ class LuckyPlots(object):
         self.ax5.set_xlabel('Temperature / K')
         self.ax5.set_ylabel('Counts / a.u.')
      
-     
-        #self.ax6.set_title('Wien Residual', fontsize='medium', style='italic')
-        #self.ax6.set_xlabel(r'1/Wavelength / m$^{-1}$')
-        #self.ax6.yaxis.tick_right()
         self.ax6.set_ylabel('Wien Residual', color='g')
         
         self.updatePlots(luckyCalcs, redraw=False)
@@ -302,20 +296,22 @@ class LuckyPlots(object):
           
         #Wien data subgraph
         self.ax3.plot(calcs.invWL, calcs.wienData,
-                 calcs.invWLIntegLim, calcs.fWien(calcs.invWLIntegLim,*calcs.wienFit), 'red')#, 
-                 #calcs.invWLIntegLim, calcs.wienResidual)
+                 calcs.invWLIntegLim, calcs.fWien(calcs.invWLIntegLim,*calcs.wienFit), 'red')
         self.ax3.set_xlim(*calcs.wienPlotRange)
         #Two Colour data subgraph
         self.ax4.plot(calcs.dataSet[0], calcs.twoColData, 
                  calcs.wlIntegLim, calcs.twoColDataLim, 'red')
         self.ax4.set_xlim(*calcs.planckPlotRange)
+        #self.ax4.set_ylim([np.amin(calcs.TwoColDataLim),np.amax(calcs.TwoColDataLim)])
+        #self.ax4.set_ylim(*calcs.twoColDataLim)
         
         #Histogram subgraph
         self.ax5.plot(calcs.twoColHistValues, calcs.twoColHistFreq,
                  calcs.twoColHistValues, calcs.gaus(calcs.twoColHistValues, *calcs.histFit), 'red')
-                 
+        #self.ax5.set_xlim(1800,4000)
         #Residual subgraph of the Wien
-        self.ax6.plot(calcs.invWLIntegLim, calcs.wienResidual,'green')
+        ordin = len(calcs.invWL)*[0]
+        self.ax6.plot(calcs.invWLIntegLim, calcs.wienResidual,'green',calcs.invWL,ordin,'black')
         
         if redraw and not self.debug:
             plt.draw()

@@ -284,37 +284,46 @@ class MainView(QWidget, AllViews):
         else:
             raise IllegalArgumentException(str(btn)+" unknown in this context")
         
-        for i in range(2):
-            pathParts = os.path.split(self.presenter.dataModel.usdsPair[i])
-            self.usdsPairTextBoxes[i].setText(pathParts[1])
-        
-        self.updateWidgetStates()
+        self.validateUSDSChanges()
     
     def usdsPairTextChanged(self):
         textBox = self.sender()
+        
         if textBox == self.usdsPairTextBoxes[0]:
-            if self.presenter.changeUSDSPairTrigger(usFile=textBox.text()):
-                textBox.setStyleSheet("color: rgb(0, 0, 0);")
-            else:
-                textBox.setStyleSheet("color: rgb(255, 0, 0);")
+            self.presenter.changeUSDSPairTrigger(usFile=textBox.text())
         elif textBox == self.usdsPairTextBoxes[1]:
-            if self.presenter.changeUSDSPairTrigger(dsFile=textBox.text()):
-                textBox.setStyleSheet("color: rgb(0, 0, 0);")
-            else:
-                textBox.setStyleSheet("color: rgb(255, 0, 0);")
+            self.presenter.changeUSDSPairTrigger(dsFile=textBox.text())
         else:
             raise IllegalArgumentException(str(textBox)+" unknown in this context")
         
-        prevState = self.presenter.dataModel.usdsPairGTE
-        if self.presenter.dsLTEqualusFile():
-            for i in range(2):
-                self.usdsPairTextBoxes[i].setStyleSheet("color: rgb(255, 0, 0);")
-        elif not prevState == self.presenter.dataModel.usdsPairGTE:
-            for i in range(2):
-                self.usdsPairTextBoxes[i].textChanged.emit(self.presenter.dataModel.usdsPair[i])
+        self.validateUSDSChanges()
         
-        self.presenter.dataChangeTrigger()
-        self.updateWidgetStates()
+    def validateUSDSChanges(self):
+        pass
+        
+        
+        
+#             if self.presenter.changeUSDSPairTrigger(usFile=textBox.text()):
+#                 textBox.setStyleSheet("color: rgb(0, 0, 0);")
+#             else:
+#                 textBox.setStyleSheet("color: rgb(255, 0, 0);")
+#         elif textBox == self.usdsPairTextBoxes[1]:
+#             if self.presenter.changeUSDSPairTrigger(dsFile=textBox.text()):
+#                 textBox.setStyleSheet("color: rgb(0, 0, 0);")
+#             else:
+#                 textBox.setStyleSheet("color: rgb(255, 0, 0);")
+#         
+#         
+#         prevState = self.presenter.dataModel.usdsPairGTE
+#         if self.presenter.dsLTEqualusFile():
+#             for i in range(2):
+#                 self.usdsPairTextBoxes[i].setStyleSheet("color: rgb(255, 0, 0);")
+#         elif not prevState == self.presenter.dataModel.usdsPairGTE:
+#             for i in range(2):
+#                 self.usdsPairTextBoxes[i].textChanged.emit(self.presenter.dataModel.usdsPair[i])
+#         
+#         self.presenter.dataChangeTrigger()
+#         self.updateWidgetStates()
     
     def integConfigChanged(self):
         textBox = self.sender()

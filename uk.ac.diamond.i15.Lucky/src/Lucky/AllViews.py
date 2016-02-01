@@ -286,7 +286,8 @@ class MainView(QWidget, AllViews):
             raise IllegalArgumentException(str(btn)+" unknown in this context")
         
         for i in range(2):
-            self.usdsPairTextBoxes[i].setText(self.presenter.dataModel.usdsPair[i])
+            pathParts = os.path.split(self.presenter.dataModel.usdsPair[i])
+            self.usdsPairTextBoxes[i].setText(pathParts[1])
         
         self.updateWidgetStates()
     

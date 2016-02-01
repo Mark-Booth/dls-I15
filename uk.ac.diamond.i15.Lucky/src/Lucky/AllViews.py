@@ -97,7 +97,7 @@ class MainView(QWidget, AllViews):
         
         ####
         #US/DS selector
-        fileGrpBox = QGroupBox("Spectrum data files (DS/US) :")
+        fileGrpBox = QGroupBox("Spectrum data files (US/DS) :")
         self.prevUSDSPairBtn = QPushButton("<")
         self.prevUSDSPairBtn.setFixedWidth(40)
         self.prevUSDSPairBtn.clicked.connect(self.changeUSDSPairBtnClick)
@@ -294,12 +294,12 @@ class MainView(QWidget, AllViews):
     def usdsPairTextChanged(self):
         textBox = self.sender()
         if textBox == self.usdsPairTextBoxes[0]:
-            if self.presenter.changeUSDSPairTrigger(dsFile=textBox.text()):
+            if self.presenter.changeUSDSPairTrigger(usFile=textBox.text()):
                 textBox.setStyleSheet("color: rgb(0, 0, 0);")
             else:
                 textBox.setStyleSheet("color: rgb(255, 0, 0);")
         elif textBox == self.usdsPairTextBoxes[1]:
-            if self.presenter.changeUSDSPairTrigger(usFile=textBox.text()):
+            if self.presenter.changeUSDSPairTrigger(dsFile=textBox.text()):
                 textBox.setStyleSheet("color: rgb(0, 0, 0);")
             else:
                 textBox.setStyleSheet("color: rgb(255, 0, 0);")
@@ -436,9 +436,6 @@ class CalibrationConfigView(QDialog, AllViews):
         calibFileLayout = QGridLayout()
         calibFileGrpBox = QGroupBox("Calibration Files:")
         nrLabels = len(self.presenter.calibModel.calibFiles)
-#         calibFileLabels = [[QLabel("Calibration (US):"), QLabel("Calibration (DS):")],
-#                            [QLabel("Calibration F1 (US):"), QLabel("Calibration F1 (DS):")],
-#                            [QLabel("Calibration F2 (US):"), QLabel("Calibration F2 (DS):")]]
         self.calibFileLabels = {}
         self.calibFileTextBoxes={}
         self.calibFileBrowseBtns = {}

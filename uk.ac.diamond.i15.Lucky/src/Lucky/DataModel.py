@@ -42,16 +42,16 @@ class CalibrationConfigData(object):
                  calibF2US='', calibF2DS=''):
         self.calibDir = calibDir
         self.bulbTemp = bulbTemp
-        self.calibFiles = OrderedDict([('(DS)',calibDS),
-                                       ('(US)',calibUS),
-                                       ('F1 (DS)',calibF1DS),
-                                       ('F1 (US)',calibF1US),
-                                       ('F2 (DS)',calibF2DS),
-                                       ('F2 (US)',calibF2US)])
+        self.calibFiles = OrderedDict([('(US)',calibDS),
+                                       ('(DS)',calibUS),
+                                       ('F1 (US)',calibF1DS),
+                                       ('F1 (DS)',calibF1US),
+                                       ('F2 (US)',calibF2DS),
+                                       ('F2 (DS)',calibF2US)])
         self.calibValid = {'bulbTemp':False,
-                           '(DS)':False,
                            '(US)':False,
-                           'F1 (DS)':False,
+                           '(DS)':False,
                            'F1 (US)':False,
-                           'F2 (DS)':False,
-                           'F2 (US)':False}
+                           'F1 (DS)':False,
+                           'F2 (US)':False,
+                           'F2 (DS)':False}

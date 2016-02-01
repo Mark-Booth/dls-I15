@@ -33,6 +33,8 @@ class MainView(QWidget, AllViews):
         self.setWindowTitle("Lucky")
         #self.SetWindowIcon(QtGui.QIcon('SomeLocalIcon.png'))
         
+        self.alreadyUpdating = False
+        
         self.presenter = MainPresenter()
         
         self.setupUI(self.presenter.dataModel)
@@ -269,7 +271,9 @@ class MainView(QWidget, AllViews):
     def dataDirBrowseBtnClick(self):
         currDir = self.presenter.dataModel.dataDir
         newDir = self.showDirBrowserDialog(initDir=currDir, caption="Select a new data directory")
-        if newDir != None:
+        if (newDir == None) or (newDir == ''):
+            return
+        else:
             self.dataDirTextBox.setText(newDir) #No need to fire an update as it happens automatically
     
     def changeUSDSPairBtnClick(self):
@@ -280,6 +284,9 @@ class MainView(QWidget, AllViews):
             self.presenter.changeUSDSPairTrigger(inc=True)
         else:
             raise IllegalArgumentException(str(btn)+" unknown in this context")
+        
+        for i in range(2):
+            self.usdsPairTextBoxes[i].setText(self.presenter.dataModel.usdsPair[i])
         
         self.updateWidgetStates()
     
@@ -352,6 +359,10 @@ class MainView(QWidget, AllViews):
         
 ###
     def updateWidgetStates(self, extraData=None):
+        if self.alreadyUpdating:
+            return
+        else:
+            self.alreadyUpdating = True
         mainData = self.presenter.dataModel if (extraData == None) else extraData
         
         #Mode radio buttons
@@ -380,6 +391,8 @@ class MainView(QWidget, AllViews):
         #Buttons
         self.runBtn.setEnabled(mainData.runEnabled)
         self.stopBtn.setEnabled(mainData.stopEnabled)
+        
+        self.alreadyUpdating = False
 
 
 #####################################
@@ -490,7 +503,9 @@ class CalibrationConfigView(QDialog, AllViews):
     def calibDirBrowseBtnClick(self):
         currDir = self.presenter.calibModel.calibDir
         newDir = self.showDirBrowserDialog(initDir=currDir, caption="Select a new calibration directory")
-        if newDir != None:
+        if (newDir == None) or (newDir == ''):
+            return
+        else:
             self.calibDirTextBox.setText(newDir) #No need to fire an update as it happens automatically
     
     def calibFilePathChanged(self):
@@ -505,7 +520,9 @@ class CalibrationConfigView(QDialog, AllViews):
         calibId = [uiElemName for uiElemName, btn in self.calibFileBrowseBtns.iteritems() if (btn == self.sender())][0]
         
         calibFile = self.showFileBrowserDialog(initDir=self.presenter.calibModel.calibDir)
-        if (calibFile != None):
+        if (calibFile == None) or (calibFile == ''):
+            return
+        else:
             self.calibFileTextBoxes[calibId].setText(calibFile)
             
     def bulbTempChanged(self):

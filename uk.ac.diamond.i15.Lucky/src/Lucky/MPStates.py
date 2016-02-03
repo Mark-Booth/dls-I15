@@ -13,7 +13,7 @@ class State(object):
         self.name = None
         self.transitions = {State.EVENTS.START : StartState}
     
-    def run(self, dataModel):
+    def run(self, parentPresenter):
         assert 0, "Run not implemented"
     
     def next(self, event):
@@ -29,7 +29,7 @@ class StartState(State):
         self.transitions = {State.EVENTS.LIVE : LiveSetup,
                             State.EVENTS.OFFLINE: OfflineSetup}
     
-    def run(self, dataModel, calcServ):
+    def run(self, parentPresenter):
         pass
 
 #Live state classes
@@ -38,9 +38,9 @@ class LiveState(State):
     def __init__(self):
         super(LiveState, self).__init__()
     
-    def run(self, dataModel, calcServ):
-        dataModel.mode = (1, 0)
-        dataModel.usdsControlsEnabled = False
+    def run(self, parentPresenter):
+        parentPresenter.dataModel.mode = (1, 0)
+        parentPresenter.dataModel.usdsControlsEnabled = False
 
 class LiveSetup(LiveState):
     def __init__(self):
@@ -49,12 +49,12 @@ class LiveSetup(LiveState):
         self.transitions = {State.EVENTS.DATAGOOD : LiveStartable,
                             State.EVENTS.OFFLINE  : OfflineSetup}
     
-    def run(self, dataModel, calcServ):
-        super(LiveSetup, self).run(dataModel, calcServ)
-        dataModel.runEnabled = False
-        dataModel.stopEnabled = False
-        dataModel.allUIControlsEnabled = True
-        dataModel.allDataPresent = False
+    def run(self, parentPresenter):
+        super(LiveSetup, self).run(parentPresenter)
+        parentPresenter.dataModel.runEnabled = False
+        parentPresenter.dataModel.stopEnabled = False
+        parentPresenter.dataModel.allUIControlsEnabled = True
+        parentPresenter.dataModel.allDataPresent = False
 
 class LiveStartable(LiveState):
     def __init__(self):
@@ -64,12 +64,12 @@ class LiveStartable(LiveState):
                             State.EVENTS.OFFLINE : OfflineStartable,
                             State.EVENTS.RUN     : LiveStoppable}
     
-    def run(self, dataModel, calcServ):
-        super(LiveStartable, self).run(dataModel, calcServ)
-        dataModel.runEnabled = True
-        dataModel.stopEnabled = False
-        dataModel.allUIControlsEnabled = True
-        dataModel.allDataPresent = True
+    def run(self, parentPresenter):
+        super(LiveStartable, self).run(parentPresenter)
+        parentPresenter.dataModel.runEnabled = True
+        parentPresenter.dataModel.stopEnabled = False
+        parentPresenter.dataModel.allUIControlsEnabled = True
+        parentPresenter.dataModel.allDataPresent = True
 
 class LiveStoppable(LiveState):
     def __init__(self):
@@ -77,12 +77,12 @@ class LiveStoppable(LiveState):
         self.name = "LiveStoppable"
         self.transitions = {State.EVENTS.STOP : LiveStartable}
     
-    def run(self, dataModel, calcServ):
-        super(LiveStoppable, self).run(dataModel, calcServ)
-        dataModel.runEnabled = False
-        dataModel.stopEnabled = True
-        dataModel.allUIControlsEnabled = False
-        dataModel.allDataPresent = True
+    def run(self, parentPresenter):
+        super(LiveStoppable, self).run(parentPresenter)
+        parentPresenter.dataModel.runEnabled = False
+        parentPresenter.dataModel.stopEnabled = True
+        parentPresenter.dataModel.allUIControlsEnabled = False
+        parentPresenter.dataModel.allDataPresent = True
 
 
 #Offline state classes
@@ -91,9 +91,9 @@ class OfflineState(State):
     def __init__(self):
         super(OfflineState, self).__init__()
     
-    def run(self, dataModel, calcServ):
-        dataModel.mode = (0, 1)
-        dataModel.usdsControlsEnabled = True
+    def run(self, parentPresenter):
+        parentPresenter.dataModel.mode = (0, 1)
+        parentPresenter.dataModel.usdsControlsEnabled = True
 
 class OfflineSetup(OfflineState):
     def __init__(self):
@@ -102,12 +102,12 @@ class OfflineSetup(OfflineState):
         self.transitions = {State.EVENTS.LIVE     : LiveSetup,
                             State.EVENTS.DATAGOOD : OfflineStartable}
     
-    def run(self, dataModel, calcServ):
-        super(OfflineSetup, self).run(dataModel, calcServ)
-        dataModel.runEnabled = False
-        dataModel.stopEnabled = False
-        dataModel.allUIControlsEnabled = True
-        dataModel.allDataPresent = False
+    def run(self, parentPresenter):
+        super(OfflineSetup, self).run(parentPresenter)
+        parentPresenter.dataModel.runEnabled = False
+        parentPresenter.dataModel.stopEnabled = False
+        parentPresenter.dataModel.allUIControlsEnabled = True
+        parentPresenter.dataModel.allDataPresent = False
 
 class OfflineStartable(OfflineState):
     def __init__(self):
@@ -117,12 +117,12 @@ class OfflineStartable(OfflineState):
                             State.EVENTS.LIVE    : LiveStartable,
                             State.EVENTS.RUN     : OfflineStoppable}
     
-    def run(self, dataModel, calcServ):
-        super(OfflineStartable, self).run(dataModel, calcServ)
-        dataModel.runEnabled = True
-        dataModel.stopEnabled = False
-        dataModel.allUIControlsEnabled = True
-        dataModel.allDataPresent = True
+    def run(self, parentPresenter):
+        super(OfflineStartable, self).run(parentPresenter)
+        parentPresenter.dataModel.runEnabled = True
+        parentPresenter.dataModel.stopEnabled = False
+        parentPresenter.dataModel.allUIControlsEnabled = True
+        parentPresenter.dataModel.allDataPresent = True
 
 class OfflineStoppable(OfflineState):
     def __init__(self):
@@ -130,12 +130,12 @@ class OfflineStoppable(OfflineState):
         self.name = "OfflineStoppable"
         self.transitions = {State.EVENTS.STOP : OfflineStartable}
     
-    def run(self, dataModel, calcServ):
-        super(OfflineStoppable, self).run(dataModel, calcServ)
-        dataModel.runEnabled = False
-        dataModel.stopEnabled = True
-        dataModel.allUIControlsEnabled = False
-        dataModel.allDataPresent = True
+    def run(self, parentPresenter):
+        super(OfflineStoppable, self).run(parentPresenter)
+        parentPresenter.dataModel.runEnabled = False
+        parentPresenter.dataModel.stopEnabled = True
+        parentPresenter.dataModel.allUIControlsEnabled = False
+        parentPresenter.dataModel.allDataPresent = True
         
-        calcServ.createCalcs(dataModel)
+        parentPresenter.calcServ.createCalcs(parentPresenter.dataModel)
         

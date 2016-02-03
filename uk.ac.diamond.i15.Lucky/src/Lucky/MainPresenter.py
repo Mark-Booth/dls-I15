@@ -180,6 +180,10 @@ class MainPresenter(AllPresenter):
 
             self.dataModel.usdsPair = newUSDSPair
             
+            #If calculations have been created update the existing ones.
+            if "Stoppable" in self.getSMStateName():
+                self.calcServ.updateCalcs()
+            
             return True #This should just be ignored...
     
     def dsLTEqualusFile(self):
@@ -304,7 +308,7 @@ class StateMachine(object):
         
         #This is a slightly convoluted way to avoid importing StartState
         self.currentState = State().next(State.EVENTS.START)()
-        self.currentState.run(self.mainPres.dataModel, self.mainPres.calcServ)
+        self.currentState.run(self.mainPres)
         
         #Set the StateMachine based on the dataModel of the mainPres
         self.changeState(self.mainPres.getModeTransition())
@@ -315,7 +319,7 @@ class StateMachine(object):
             if nextState == type(self.currentState):
                 break
             self.currentState = nextState()
-            self.currentState.run(self.mainPres.dataModel, self.mainPres.calcServ)
+            self.currentState.run(self.mainPres)
     
     def getStateName(self):
         return self.currentState.name

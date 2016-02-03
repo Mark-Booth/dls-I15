@@ -98,6 +98,10 @@ class CalculationService(object):
     def openData(self, dM):
         return np.loadtxt(dM.usdsPair[0], unpack=True), np.loadtxt(dM.usdsPair[1], unpack=True)
     
+    def disposePlots(self):
+        self.dsPlots.dispose()
+        self.usPlots.dispose()
+    
 class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, integConf & calibset
     
     def __init__(self, data, calib, integConf, bulbTemp, label, debug=False):
@@ -228,13 +232,15 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
 
 import matplotlib.pyplot as plt
 class LuckyPlots(object):
-    def __init__(self, luckyCalcs, debug=False):
+    def __init__(self, calcs, debug=False):
         if debug:
             return
         self.debug = debug
         
-        self.fig = plt.figure()
-        self.fig.suptitle(luckyCalcs.label, fontsize="16", weight="bold")
+        self.luckyCalcs = calcs
+        
+        self.fig = plt.figure(self.luckyCalcs.label)
+        self.fig.suptitle(self.luckyCalcs.label, fontsize="16", weight="bold")
         self.ax1 = self.fig.add_subplot(3, 2, 1)#Raw+Calib
         self.ax2 = self.fig.add_subplot(3, 2, 3)#Planck
         self.ax3 = self.fig.add_subplot(3, 2, 4)#Wien
@@ -272,7 +278,7 @@ class LuckyPlots(object):
      
         self.ax6.set_ylabel('Wien Residual', color='g')
         
-        self.updatePlots(luckyCalcs, redraw=False)
+        self.updatePlots(redraw=False)
          
         if not self.debug:
             #Draw the plots if we're not debugging
@@ -282,36 +288,36 @@ class LuckyPlots(object):
             #   http://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
             plt.pause(0.001)
             
-    def updatePlots(self, calcs, redraw=True):
+    def updatePlots(self, redraw=True):
         #Raw and calibration data subgraph 
-        self.ax1.plot(calcs.dataSet[0], calcs.dataSet[1], 
-                 calcs.dataSet[0], calcs.calibSet[1],'green',calcs.wlIntegLim,calcs.RawIntegLim,'red')
-        self.ax1.set_ylim(0, self.getYMax(calcs.dataSet[1], calcs.calibSet[1]))
+        self.ax1.plot(self.luckyCalcs.dataSet[0], self.luckyCalcs.dataSet[1], 
+                 self.luckyCalcs.dataSet[0], self.luckyCalcs.calibSet[1],'green',self.luckyCalcs.wlIntegLim,self.luckyCalcs.RawIntegLim,'red')
+        self.ax1.set_ylim(0, self.getYMax(self.luckyCalcs.dataSet[1], self.luckyCalcs.calibSet[1]))
 #        self.ax1.set_ylim(0,50000) #TODO Get max fn.
         
         #Planck data subgraph
-        self.ax2.plot(calcs.dataSet[0], calcs.dataSet[2], 
-                 calcs.wlIntegLim, calcs.planckFitData, 'red')
-        self.ax2.set_xlim(*calcs.planckPlotRange)
+        self.ax2.plot(self.luckyCalcs.dataSet[0], self.luckyCalcs.dataSet[2], 
+                 self.luckyCalcs.wlIntegLim, self.luckyCalcs.planckFitData, 'red')
+        self.ax2.set_xlim(*self.luckyCalcs.planckPlotRange)
           
         #Wien data subgraph
-        self.ax3.plot(calcs.invWL, calcs.wienData,
-                 calcs.invWLIntegLim, calcs.fWien(calcs.invWLIntegLim,*calcs.wienFit), 'red')
-        self.ax3.set_xlim(*calcs.wienPlotRange)
+        self.ax3.plot(self.luckyCalcs.invWL, self.luckyCalcs.wienData,
+                 self.luckyCalcs.invWLIntegLim, self.luckyCalcs.fWien(self.luckyCalcs.invWLIntegLim,*self.luckyCalcs.wienFit), 'red')
+        self.ax3.set_xlim(*self.luckyCalcs.wienPlotRange)
         #Two Colour data subgraph
-        self.ax4.plot(calcs.dataSet[0], calcs.twoColData, 
-                 calcs.wlIntegLim, calcs.twoColDataLim, 'red')
-        self.ax4.set_xlim(*calcs.planckPlotRange)
+        self.ax4.plot(self.luckyCalcs.dataSet[0], self.luckyCalcs.twoColData, 
+                 self.luckyCalcs.wlIntegLim, self.luckyCalcs.twoColDataLim, 'red')
+        self.ax4.set_xlim(*self.luckyCalcs.planckPlotRange)
         #self.ax4.set_ylim([np.amin(calcs.TwoColDataLim),np.amax(calcs.TwoColDataLim)])
         #self.ax4.set_ylim(*calcs.twoColDataLim)
         
         #Histogram subgraph
-        self.ax5.plot(calcs.twoColHistValues, calcs.twoColHistFreq,
-                 calcs.twoColHistValues, calcs.gaus(calcs.twoColHistValues, *calcs.histFit), 'red')
+        self.ax5.plot(self.luckyCalcs.twoColHistValues, self.luckyCalcs.twoColHistFreq,
+                 self.luckyCalcs.twoColHistValues, self.luckyCalcs.gaus(self.luckyCalcs.twoColHistValues, *self.luckyCalcs.histFit), 'red')
         #self.ax5.set_xlim(1800,4000)
         #Residual subgraph of the Wien
-        ordin = len(calcs.invWL)*[0]
-        self.ax6.plot(calcs.invWLIntegLim, calcs.wienResidual,'green',calcs.invWL,ordin,'black')
+        ordin = len(self.luckyCalcs.invWL)*[0]
+        self.ax6.plot(self.luckyCalcs.invWLIntegLim, self.luckyCalcs.wienResidual,'green',self.luckyCalcs.invWL,ordin,'black')
         
         if redraw and not self.debug:
             plt.draw()
@@ -337,4 +343,5 @@ class LuckyPlots(object):
         
         return max(maxes)*1.1
     
-    
+    def dispose(self):
+        plt.close(self.luckyCalcs.label)

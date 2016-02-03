@@ -7,7 +7,7 @@ import unittest
 
 from Lucky.MainPresenter import StateMachine
 from Lucky.MPStates import State
-from Lucky.mocks.MockObjects import MockMainPresenter
+from Lucky.test.MockObjects import MockMainPresenter
 
 class FSMTest(unittest.TestCase):
     def setUp(self):

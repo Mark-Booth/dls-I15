@@ -11,7 +11,7 @@ from scipy.optimize import curve_fit
 
 from Lucky.Calculations import LuckyCalculations, CalculationService, LuckyPlots
 from Lucky.DataModel import MainData, CalibrationConfigData
-from Lucky.mocks.mock_Calculations import mock_Calculations
+from Lucky.test.mock_Calculations import mock_Calculations
 
 class LuckyCalculationsTest(unittest.TestCase):
     def setUp(self):

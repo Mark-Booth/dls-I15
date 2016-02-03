@@ -223,10 +223,12 @@ class MainView(QWidget, AllViews):
     
     def runBtnClicked(self):
         self.presenter.runTrigger()
+        self.updateWidgetStates()
         self.updateTTextLabels()
     
     def stopBtnClicked(self):
         self.presenter.stopTrigger()
+        self.updateWidgetStates()
     
     def getRadBtnStates(self, btnList):
         return tuple([int(radBtn.isChecked()) for radBtn in btnList])
@@ -370,8 +372,8 @@ class MainView(QWidget, AllViews):
         self.dataDirTextBox.setEnabled(mainData.allUIControlsEnabled)
         
         #US/DS pair
-        self.prevUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
-        self.nextUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled))
+        self.prevUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) or (mainData.usdsControlsEnabled))
+        self.nextUSDSPairBtn.setEnabled((mainData.allUIControlsEnabled) or (mainData.usdsControlsEnabled))
         for i in range(2):
             self.usdsPairTextBoxes[i].setEnabled((mainData.allUIControlsEnabled) and (mainData.usdsControlsEnabled)) 
         

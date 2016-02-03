@@ -223,12 +223,10 @@ class MainView(QWidget, AllViews):
     
     def runBtnClicked(self):
         self.presenter.runTrigger()
-        self.updateWidgetStates()
         self.updateTTextLabels()
     
     def stopBtnClicked(self):
         self.presenter.stopTrigger()
-        self.updateWidgetStates()
     
     def getRadBtnStates(self, btnList):
         return tuple([int(radBtn.isChecked()) for radBtn in btnList])
@@ -287,8 +285,6 @@ class MainView(QWidget, AllViews):
         for i in range(2):
             pathParts = os.path.split(self.presenter.dataModel.usdsPair[i])
             self.usdsPairTextBoxes[i].setText(pathParts[1])
-        
-        self.updateWidgetStates()
     
     def usdsPairTextChanged(self):
         textBox = self.sender()
@@ -359,10 +355,6 @@ class MainView(QWidget, AllViews):
         
 ###
     def updateWidgetStates(self, extraData=None):
-        if self.alreadyUpdating:
-            return
-        else:
-            self.alreadyUpdating = True
         mainData = self.presenter.dataModel if (extraData == None) else extraData
         
         #Mode radio buttons
@@ -391,8 +383,6 @@ class MainView(QWidget, AllViews):
         #Buttons
         self.runBtn.setEnabled(mainData.runEnabled)
         self.stopBtn.setEnabled(mainData.stopEnabled)
-        
-        self.alreadyUpdating = False
 
 
 #####################################

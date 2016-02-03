@@ -136,3 +136,4 @@ class OfflineStoppable(OfflineState):
         parentPresenter.dataModel.stopEnabled = True
         parentPresenter.dataModel.allUIControlsEnabled = False
         parentPresenter.dataModel.allDataPresent = True
+        parentPresenter.dataModel.usdsControlsEnabled = True

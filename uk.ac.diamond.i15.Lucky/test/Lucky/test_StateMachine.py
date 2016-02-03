@@ -6,26 +6,18 @@ Created on 11 Nov 2015
 import unittest
 
 from Lucky.MainPresenter import StateMachine
-from Lucky.DataModel import MainData
 from Lucky.MPStates import State
+from Lucky.mocks.MockObjects import MockMainPresenter
 
 class FSMTest(unittest.TestCase):
     def setUp(self):
-        self.dM = MainData()
-        self.mp = MockMainPresenter(self.dM)
+        self.mp = MockMainPresenter()
         self.fsm = StateMachine(self.mp)
 
     def tearDown(self):
         self.dM = None
         self.fsm = None
         
-class MockMainPresenter(object):
-    def __init__(self, dM):
-        self.dataModel = dM
-    
-    def getModeTransition(self):
-        return State.EVENTS.LIVE
-
 class GetStateTest(FSMTest):
     def runTest(self):
         self.assertEqual(self.fsm.getStateName(), "LiveSetup")
@@ -73,3 +65,9 @@ class StateChangesTest(FSMTest):
         self.fsm.changeState(State.EVENTS.RUN)
         self.assertEqual(self.fsm.getStateName(), "OfflineSetup")
     
+class StateNameMatchTest(FSMTest):
+    def runTest(self):
+        if "Setup" in self.fsm.getStateName():
+            pass
+        else:
+            self.fail("Didn't match \"Setup\" in state name")

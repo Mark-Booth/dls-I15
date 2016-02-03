@@ -201,7 +201,7 @@ class MainView(QWidget, AllViews):
         self.runBtn = QPushButton('Run')
         self.runBtn.clicked.connect(self.runBtnClicked)
         self.stopBtn = QPushButton('Stop')
-        self.runBtn.clicked.connect(self.stopBtnClicked)
+        self.stopBtn.clicked.connect(self.stopBtnClicked)
         quitBtn = QPushButton('Quit')
         quitBtn.clicked.connect(QtCore.QCoreApplication.instance().quit)#TODO Add control to kill plots properly
         
@@ -225,7 +225,6 @@ class MainView(QWidget, AllViews):
         self.presenter.runTrigger()
         self.updateWidgetStates()
         self.updateTTextLabels()
-        0
     
     def stopBtnClicked(self):
         self.presenter.stopTrigger()

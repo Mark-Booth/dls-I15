@@ -263,7 +263,7 @@ class MainView(QWidget, AllViews):
         #If dataDir changes, US/DS files change too:
         for i in range(2):
             updatedPath = os.path.join(str(textBox.text()), os.path.basename(self.presenter.dataModel.usdsPair[i]))
-            self.usdsPairTextBoxes[i].textChanged.emit(updatedPath)
+            self.usdsPairTextBoxes[i].textChanged.emit(updatedPath) #TODO This is one of numerous problem points
         
         self.presenter.dataChangeTrigger()
         self.updateWidgetStates()

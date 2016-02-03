@@ -46,10 +46,12 @@ class MainPresenter(AllPresenter):
     def runTrigger(self):
         #Start a new calculation thread and kick off the calcs
         self.stateMach.changeState(State.EVENTS.RUN)
+        self.calcServ.createCalcs(self.dataModel)
     
     def stopTrigger(self):
         #Kill the calculation thread
         self.stateMach.changeState(State.EVENTS.STOP)
+        self.calcServ.disposePlots()
     
     def dataChangeTrigger(self, noData=False):
         if noData:

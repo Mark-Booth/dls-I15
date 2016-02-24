@@ -6,6 +6,7 @@ Created on 24 Nov 2015
 
 from scipy.constants import c, h, k, pi
 from scipy.optimize import curve_fit
+from collections import OrderedDict
 import numpy as np
 from Lucky.LuckyExceptions import BadModelStateException
 
@@ -18,6 +19,7 @@ class CalculationService(object):
         
         self.planckResults = (0, 0, 0, 0)
         self.wienResults = (0, 0, 0, 0)
+        self.twoColResults = (0, 0, 0, 0)
         
         #TODO Spawn calculations and plots in a separate thread
     def createCalcs(self, dM, debug=False):
@@ -52,6 +54,7 @@ class CalculationService(object):
         
         self.planckResults = calculateResults(self.dsCalcs.planckTemp, self.usCalcs.planckTemp)
         self.wienResults = calculateResults(self.dsCalcs.wienTemp, self.usCalcs.wienTemp)
+        self.twoColResults = calculateResults(self.dsCalcs.twoColTemp, self.usCalcs.twoColTemp)
         
     def updateModel(self, dM):
         self.dsData, self.usData = self.openData(dM)
@@ -179,8 +182,8 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
         #Gaussian fit of two colour histogram
         ###
         self.histFit, histCov = curve_fit(self.gaus, self.twoColHistValues, self.twoColHistFreq, p0=[1000,self.planckTemp,100])
-        self.histTemp = self.histFit[1]
-        self.histErr = self.histFit[2]
+        self.twoColTemp = self.histFit[1]
+        self.twoColErr = self.histFit[2]
     
     #Planck function
     def planck(self, wavelength, emiss, temp):
@@ -318,6 +321,22 @@ class LuckyPlots(object):
         #Residual subgraph of the Wien
         ordin = len(self.luckyCalcs.invWL)*[0]
         self.ax6.plot(self.luckyCalcs.invWLIntegLim, self.luckyCalcs.wienResidual,'green',self.luckyCalcs.invWL,ordin,'black')
+        
+        #Create text label for calculated T values
+        textLabel = OrderedDict([("T"+r"$_{Planck}$","{0:10.2f}".format(self.luckyCalcs.planckTemp)),
+                                 ("T"+r"$_{Wien}$","{0:10.2f}".format(self.luckyCalcs.wienTemp)),
+                                 ("T"+r"$_{Two Colour}$","{0:10.2f}".format(self.luckyCalcs.twoColTemp))]) 
+        
+#         {"T"+r"$_{Planck}$" : "{0:10.2f}".format(self.luckyCalcs.planckTemp),
+#                      "T"+r"$_{Wien}$" : "{0:10.2f}".format(self.luckyCalcs.wienTemp),
+#                      "T"+r"$_{Two Colour}$":"{0:10.2f}".format(self.luckyCalcs.twoColTemp)}
+        labelPosition = (0.6, 0.85)
+        rowNr = 0
+        for label,tVal in textLabel.iteritems( ):
+            plt.figtext(labelPosition[0], labelPosition[1]-(0.05*rowNr), label, fontdict = None, size = 'large')
+            plt.figtext(labelPosition[0]+0.095, labelPosition[1]-(0.05*rowNr), tVal, fontdict = None, size = 'large')
+            rowNr += 1
+
         
         if redraw and not self.debug:
             plt.draw()

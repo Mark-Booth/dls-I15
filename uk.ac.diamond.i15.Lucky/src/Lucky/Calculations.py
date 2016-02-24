@@ -179,8 +179,8 @@ class LuckyCalculations(object): #TODO Make calcs use calcserv to get bulbTemp, 
         #Gaussian fit of two colour histogram
         ###
         self.histFit, histCov = curve_fit(self.gaus, self.twoColHistValues, self.twoColHistFreq, p0=[1000,self.planckTemp,100])
-        self.histTemp = self.histFit[1]
-        self.histErr = self.histFit[2]
+        self.twoColTemp = self.histFit[1]
+        self.twoColErr = self.histFit[2]
     
     #Planck function
     def planck(self, wavelength, emiss, temp):

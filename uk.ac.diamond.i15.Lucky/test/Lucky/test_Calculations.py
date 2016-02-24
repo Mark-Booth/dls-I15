@@ -221,8 +221,8 @@ class WienCalcsTest(CalculationsTest):
         
 class HistogramCalcsTest(CalculationsTest):
     def runTest(self):
-        self.assertEqual(self.Thist, self.luckCalc.histTemp, "Wrong temperature calculated from histogram fit")
-        self.assertEqual(self.errTot, self.luckCalc.histErr, "Wrong histogram fit error calculated")
+        self.assertEqual(self.Thist, self.luckCalc.twoColTemp, "Wrong temperature calculated from two-colour fit")
+        self.assertEqual(self.errTot, self.luckCalc.twoColErr, "Wrong two-colour fit error calculated")
         
 class UpdateTest(CalculationsTest):
     def runTest(self):

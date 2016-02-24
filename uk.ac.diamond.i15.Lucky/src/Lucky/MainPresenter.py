@@ -166,7 +166,11 @@ class MainPresenter(AllPresenter):
             def shiftFileName(usdsIndex, shiftVal):
                 filePathParts = self.getUSDSFileParts(usdsIndex)
                 fileNr = int(filePathParts[2])
-                filePathParts[2] = str(fileNr + shiftVal)
+                newFileNr = fileNr + shiftVal
+                if newFileNr < 0: #TODO This too is ugliness in python format
+                    return None
+                else:
+                    filePathParts[2] = '{0:02d}'.format(fileNr + shiftVal)
                 return ''.join(filePathParts)
             
             newUSDSPair = ['', '']
@@ -176,7 +180,10 @@ class MainPresenter(AllPresenter):
                         newUSDSPair[i] = shiftFileName(i, -2)
                     if inc:
                         newUSDSPair[i] = shiftFileName(i, 2)
+                    if (newUSDSPair[i] == None):
+                        return False
                     newUSDSPair[i] = os.path.join(self.dataModel.dataDir, newUSDSPair[i])
+                    
             except:
                 return False
 

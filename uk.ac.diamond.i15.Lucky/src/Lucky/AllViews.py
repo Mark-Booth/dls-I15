@@ -284,9 +284,15 @@ class MainView(QWidget, AllViews):
         else:
             raise IllegalArgumentException(str(btn)+" unknown in this context")
         
-        for i in range(2):
-            pathParts = os.path.split(self.presenter.dataModel.usdsPair[i])
-            self.usdsPairTextBoxes[i].setText(pathParts[1])
+        #TODO This is such an ugly hack
+        dsFileName = os.path.split(self.presenter.dataModel.usdsPair[0])[1]
+        usFileName = os.path.split(self.presenter.dataModel.usdsPair[1])[1]
+        self.usdsPairTextBoxes[0].setText(usFileName)
+        self.usdsPairTextBoxes[1].setText(dsFileName)
+        
+#         for i in range(2):
+#             pathParts = os.path.split(self.presenter.dataModel.usdsPair[i])
+#             self.usdsPairTextBoxes[i].setText(pathParts[1])
     
     def usdsPairTextChanged(self):
         textBox = self.sender()

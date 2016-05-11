@@ -313,6 +313,7 @@ class LuckyPlots(object):
         self.ax4.set_xlim(*self.luckyCalcs.planckPlotRange)
         #self.ax4.set_ylim([np.amin(calcs.TwoColDataLim),np.amax(calcs.TwoColDataLim)])
         #self.ax4.set_ylim(*calcs.twoColDataLim)
+        self.ax4.set_ylim(1500,4000)
         
         #Histogram subgraph
         self.ax5.plot(self.luckyCalcs.twoColHistValues, self.luckyCalcs.twoColHistFreq,

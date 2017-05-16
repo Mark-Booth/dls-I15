@@ -5,20 +5,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
-import org.eclipse.dawnsci.analysis.api.tree.DataNode;
 import org.eclipse.dawnsci.hdf5.nexus.NexusFileFactoryHDF5;
 import org.eclipse.dawnsci.nexus.NXentry;
 import org.eclipse.dawnsci.nexus.NXinstrument;
 import org.eclipse.dawnsci.nexus.NXroot;
-import org.eclipse.dawnsci.nexus.NXsource;
 import org.eclipse.dawnsci.nexus.NXuser;
 import org.eclipse.dawnsci.nexus.NexusException;
 import org.eclipse.dawnsci.nexus.NexusNodeFactory;
 import org.eclipse.dawnsci.nexus.ServiceHolder;
 import org.eclipse.dawnsci.nexus.builder.NexusFileBuilder;
 import org.eclipse.dawnsci.nexus.builder.impl.DefaultNexusFileBuilder;
-import org.eclipse.january.dataset.DatasetFactory;
-import org.eclipse.january.dataset.DoubleDataset;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,9 +45,15 @@ public class XPDFNexusWritingTest {
 		fakeNow = LocalDateTime.of(2017, 5, 16, 12, 24, 6).atZone(ZoneId.of("Europe/London")).toInstant();
 	}
 	
+	@After
+	public void tearDown() {
+		XPDFInstrumentNexusSpec.setNexusTree(null);
+	}
+	
 	@Test
-	public void testEmptyBeamlineNeXusWriting() {
+	public void testEmptyBeamlineNeXusWriting() throws NexusException {
 		nexusBuilder = new DefaultNexusFileBuilder(testScratchDirectoryName+beamlineFileName);
+		XPDFInstrumentNexusSpec.setNexusTree(nexusBuilder.getNexusTree());
 		NXroot root = nexusBuilder.getNXroot();
 		root.setAttributeFile_name(testScratchDirectoryName+beamlineFileName);
 
@@ -63,18 +66,14 @@ public class XPDFNexusWritingTest {
 		entry.setEnd_timeScalar(endTime);
 		root.setAttributeFile_time(endTime.toString());
 
-		try {
-			nexusBuilder.createFile(false).close();
-			System.out.println("Success writing NeXus file to " + testScratchDirectoryName+beamlineFileName);
-		} catch (NexusException nE) {
-			System.err.println("Error writing NeXus file to " + testScratchDirectoryName+beamlineFileName + ": " + nE.toString());
-		}
-
+		nexusBuilder.createFile(false).close();
+		System.out.println("Success writing NeXus file to " + testScratchDirectoryName+beamlineFileName);
 	}
 	
 	@Test
-	public void testContainerNeXusWriting() {
+	public void testContainerNeXusWriting() throws NexusException {
 		nexusBuilder = new DefaultNexusFileBuilder(testScratchDirectoryName+containerFileName);
+		XPDFInstrumentNexusSpec.setNexusTree(nexusBuilder.getNexusTree());
 		NXroot root = nexusBuilder.getNXroot();
 		root.setAttributeFile_name(testScratchDirectoryName+containerFileName);
 		
@@ -89,17 +88,14 @@ public class XPDFNexusWritingTest {
 		entry.setEnd_timeScalar(endTime);
 		root.setAttributeFile_time(endTime.toString());
 
-		try {
-			nexusBuilder.createFile(false).close();
-			System.out.println("Success writing NeXus file to " + testScratchDirectoryName+containerFileName);
-		} catch (NexusException nE) {
-			System.err.println("Error writing NeXus file to " + testScratchDirectoryName+containerFileName + ": " + nE.toString());
-		}
+		nexusBuilder.createFile(false).close();
+		System.out.println("Success writing NeXus file to " + testScratchDirectoryName+containerFileName);
 	}
 	
 	@Test
-	public void testSampleNeXusWriting() {
+	public void testSampleNeXusWriting() throws NexusException {
 		nexusBuilder = new DefaultNexusFileBuilder(testScratchDirectoryName+sampleFilename);
+		XPDFInstrumentNexusSpec.setNexusTree(nexusBuilder.getNexusTree());
 		NXroot root = nexusBuilder.getNXroot();
 		root.setAttributeFile_name(testScratchDirectoryName+sampleFilename);
 
@@ -114,12 +110,8 @@ public class XPDFNexusWritingTest {
 		entry.setEnd_timeScalar(endTime);
 		root.setAttributeFile_time(endTime.toString());
 
-		try {
-			nexusBuilder.createFile(false).close();
-			System.out.println("Success writing NeXus file to " + testScratchDirectoryName+sampleFilename);
-		} catch (NexusException nE) {
-			System.err.println("Error writing NeXus file to " + testScratchDirectoryName+sampleFilename + ": " + nE.toString());
-		}
+		nexusBuilder.createFile(false).close();
+		System.out.println("Success writing NeXus file to " + testScratchDirectoryName+sampleFilename);
 	}
 	
 	private void createBasicStructure(NXroot root, long durationSecs) {
@@ -158,55 +150,11 @@ public class XPDFNexusWritingTest {
 		entry.addGroupNode("user", NexusNodeFactory.createNXuser());
 		entry.addGroupNode("local_contact", NexusNodeFactory.createNXuser());
 		
-		populateNXinstrument(entry.getChild("instrument", NXinstrument.class), durationSecs);
+		XPDFInstrumentNexusSpec.populateNXinstrument(entry.getChild("instrument", NXinstrument.class), fakeNow, durationSecs);
 		populateNXusers(entry);
 	}
 	
-	private void populateNXinstrument(NXinstrument instrument, long durationSecs) {
-		//Set names
-		instrument.setNameScalar("i15-1");
-		DataNode dn = NexusNodeFactory.createDataNode();
-		dn.setDataset(DatasetFactory.createFromObject(new String[]{"XPDF"}, new int[]{1}));
-		instrument.addDataNode("alt_name", dn);
-		
-		//Add beamline devices
-		instrument.addGroupNode("insertion_device", NexusNodeFactory.createNXinsertion_device());
-		instrument.addGroupNode("primary_slit", NexusNodeFactory.createNXslit());
-		instrument.addGroupNode("attenuator_1", NexusNodeFactory.createNXattenuator());
-		instrument.addGroupNode("attenuator_2", NexusNodeFactory.createNXattenuator());
-		instrument.addGroupNode("attenuator_3", NexusNodeFactory.createNXattenuator());
-		instrument.addGroupNode("bent_laue_monochromator", NexusNodeFactory.createNXmonochromator());
-		instrument.addGroupNode("beam_position_monitor_1", NexusNodeFactory.createNXmonitor());
-		instrument.addGroupNode("secondary_slit", NexusNodeFactory.createNXslit());
-		instrument.addGroupNode("multilayer_mirror", NexusNodeFactory.createNXmirror());
-		instrument.addGroupNode("optical_rail", NexusNodeFactory.createNXcollection()); //TODO NXstage!
-		instrument.addGroupNode("beam_defining_aperture", NexusNodeFactory.createNXslit());
-		instrument.addGroupNode("beam_position_monitor_2", NexusNodeFactory.createNXmonitor());
-		instrument.addGroupNode("first_sample_slit", NexusNodeFactory.createNXslit());
-		instrument.addGroupNode("second_sample_slit", NexusNodeFactory.createNXslit());
-		instrument.addGroupNode("i0_beam_position_monitor_3", NexusNodeFactory.createNXmonitor());
-		instrument.addGroupNode("cleanup", NexusNodeFactory.createNXaperture());
-		instrument.addGroupNode("sample_stage", NexusNodeFactory.createNXcollection()); //TODO NXstage
-		instrument.addGroupNode("detector_1", NexusNodeFactory.createNXdetector());
-		instrument.addGroupNode("detector_2", NexusNodeFactory.createNXdetector());
-		
-		//Source
-		NXsource source = NexusNodeFactory.createNXsource();
-		source.setNameScalar("Diamond Light Source");
-		source.setTypeScalar("Synchrotron X-ray Source");
-		source.setProbeScalar("x-ray");
-		source.setEnergyScalar(3.0);
-		source.setAttribute("energy", "units", "GeV");
-		source.setCurrent(DatasetFactory.createLinearSpace(DoubleDataset.class, 301.1, 295.5, (int)durationSecs));
-		source.setAttribute("current", "description", "Variation of ring current over the course of the experiment");
-//		source.setTop_upScalar(new Boolean(false)); //FIXME (DAQ-614)
-		source.setLast_fillScalar(301.2);
-		source.setLast_fillAttributeTime(Date.from(fakeNow.minusSeconds(487)));
-//		source. notes
-		source.setDistanceScalar(-35.5);
-		source.setAttribute("distance", "units", "m");
-		instrument.setSource(source);
-	}
+
 	
 	private void populateNXusers(NXentry entry) {
 		//PI - i.e. the one on the beach
@@ -231,6 +179,5 @@ public class XPDFNexusWritingTest {
 		contact.setEmailScalar("nota.realaddr@diamond.ac.uk");
 		contact.setTelephone_numberScalar("+44 1235 77 9999");
 	}
-
 
 }

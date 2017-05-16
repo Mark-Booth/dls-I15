@@ -10,12 +10,14 @@ import org.eclipse.dawnsci.nexus.NXattenuator;
 import org.eclipse.dawnsci.nexus.NXbeam;
 import org.eclipse.dawnsci.nexus.NXcollection;
 import org.eclipse.dawnsci.nexus.NXcrystal;
+import org.eclipse.dawnsci.nexus.NXdetector;
 import org.eclipse.dawnsci.nexus.NXinsertion_device;
 import org.eclipse.dawnsci.nexus.NXinstrument;
 import org.eclipse.dawnsci.nexus.NXlog;
 import org.eclipse.dawnsci.nexus.NXmirror;
 import org.eclipse.dawnsci.nexus.NXmonitor;
 import org.eclipse.dawnsci.nexus.NXmonochromator;
+import org.eclipse.dawnsci.nexus.NXnote;
 import org.eclipse.dawnsci.nexus.NXpositioner;
 import org.eclipse.dawnsci.nexus.NXslit;
 import org.eclipse.dawnsci.nexus.NXsource;
@@ -182,7 +184,7 @@ public final class XPDFInstrumentNexusSpec {
 		/*
 		 * Optical rail
 		 */
-		NXcollection opticalRail = NexusNodeFactory.createNXcollection();
+		NXcollection opticalRail = instrument.getChild("optical_rail", NXcollection.class);//NXstage
 		opticalRail.addGroupNode("transforms", NexusNodeFactory.createNXtransformations());//TODO Basham
 		
 		NXcollection railMotors = NexusNodeFactory.createNXcollection();
@@ -210,7 +212,7 @@ public final class XPDFInstrumentNexusSpec {
 		/*
 		 * BPM 2
 		 */
-		NXmonitor bpm2 = instrument.getChild("beam_position_monitor_1", NXmonitor.class);
+		NXmonitor bpm2 = instrument.getChild("beam_position_monitor_2", NXmonitor.class);
 		bpm2.setField("description", "YAG:Ce screen with camera");
 		bpm2.setTypeScalar("Fluorescent screen");
 		//TODO Do we want any data here? e.g. data, count_time, x/y_centre, x/y_size 
@@ -261,11 +263,30 @@ public final class XPDFInstrumentNexusSpec {
 		/*
 		 * Sample stage
 		 */
+		NXcollection sampleStage = instrument.getChild("sample_stage", NXcollection.class);//TODO NXstage. This is a prototype version really!
+		sampleStage.setField("sample_changer_position", 4);
+		sampleStage.setField("sample_changer_capacity", 10);
+		NXpositioner sampleX = NexusNodeFactory.createNXpositioner();
+		sampleX.setNameScalar("samX");
+		sampleX.setDescriptionScalar("Stage X position");
+		sampleX.setValueScalar(20.18);
+		sampleX.setAttribute("value", "units", "mm");
+		sampleStage.addGroupNode("sample_x", sampleX);
+		sampleStage.setAttribute("sample_x", "controller_record", "EPICS::samX");
+		NXpositioner sampleY = NexusNodeFactory.createNXpositioner();
+		sampleY.setNameScalar("samY");
+		sampleY.setDescriptionScalar("Stage Y position");
+		sampleY.setValueScalar(180.58);
+		sampleY.setAttribute("value", "units", "mm");
+		sampleStage.addGroupNode("sample_y", sampleY);
+		sampleStage.setAttribute("sample_y", "controller_record", "EPICS::samY");
+		sampleStage.addGroupNode("transforms", NexusNodeFactory.createNXtransformations());//TODO Basham
 		
 		/*
 		 * Detectors
 		 */
-		
+		populateDetector1(instrument, durationSecs);
+		populateDetector2(instrument, durationSecs);
 
 	}
 	
@@ -779,4 +800,88 @@ public final class XPDFInstrumentNexusSpec {
 		quadrants.addGroupNode("quadrant_4", quad4);
 	}
 
+	private static void populateDetector1(NXinstrument instrument, long durationSecs) {
+		NXdetector det1 = instrument.getChild("detector_1", NXdetector.class);
+		populateDet(det1, durationSecs);
+	}
+	
+	private static void populateDetector2(NXinstrument instrument, long durationSecs) {
+		NXdetector det2 = instrument.getChild("detector_2", NXdetector.class);
+		populateDet(det2, durationSecs);
+	}
+		
+	private static void populateDet(NXdetector det1, long durationSecs) {
+		
+		//Detector information
+		det1.setLocal_nameScalar("det1");
+		det1.setDescriptionScalar("Perkin Elmer XRD1611 CP3");
+		det1.setTypeScalar("CsI scintillator/a-Si TFT pixel detector");
+		det1.setLayoutScalar("area");
+		//pixel info
+		det1.setX_pixel_sizeScalar(0.2);
+		det1.setAttribute("x_pixel_size", "units", "mm");
+		det1.setY_pixel_sizeScalar(0.2);
+		det1.setAttribute("y_pixel_size", "units", "mm");
+		//mode
+		det1.setGain_settingScalar("0.25");
+		det1.setAttribute("gain_setting", "units", "pF");
+		det1.setGain_settingScalar("1.0");
+		det1.setAttribute("gain_setting", "units", "pF");
+		det1.setField("sensor_density", 4.28);
+		det1.setAttribute("sensor_density", "units", "g cm-3");
+		
+		//Data collection
+		//timings
+		det1.setCount_timeScalar(durationSecs);
+		det1.setAttribute("count_time", "units", "s");
+		det1.setFrame_timeScalar(1.);
+		det1.setAttribute("frame_time", "units", "s");
+		//processing
+//		try{
+////			d1.setPixel_mask_appliedScalar(false); //TODO DAQ-614
+//			String maskPath = null;//"/dls/science/groups/das/ExampleData/i15-1/integration/128991_mask_min1000_max30000.nxs";
+//			Dataset pxMask = DatasetUtils.sliceAndConvertLazyDataset(ProcessingUtils.getLazyDataset(null, maskPath, "/entry/mask/128911 min 1000 max 30000 plus additional pixels"));
+//			det1.setPixel_mask(pxMask);
+//			
+////			d1.setFlatfield_appliedScalar(true); //TODO DAQ-614
+//			String flatPath = null; 
+//			Dataset flatField = DatasetUtils.sliceAndConvertLazyDataset(ProcessingUtils.getLazyDataset(null, flatPath, "/entry/mask/128911 min 1000 max 30000 plus additional pixels"));
+//			det1.setFlatfield(flatField);
+//		} catch (DatasetException de) {
+//			System.err.println("Failed to set external data proc dataset");
+//		}
+		
+
+		// Calibration method copied exactly from output calibration nexus file
+		// Transformation, by hand from the calibration file
+		det1.setBeam_center_xScalar(1057.3957);
+		det1.setBeam_center_yScalar(1028.0555);
+		NXnote calNote = NexusNodeFactory.createNXnote();
+		calNote.setAuthorScalar("DAWNScience");
+		calNote.setDataset("d_space_index", DatasetFactory.createFromObject(new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 13.0, 18.0, 19.0}));
+		calNote.setDescriptionScalar("Manual powder diffraction image calibration using point parameters");
+		calNote.setDataset("residual", DatasetFactory.createFromObject(new double[] {4527590406716483326.0}));
+		det1.addGroupNode("calibration_method", calNote);
+		
+		// calibration data - TODO shouldn't data be real data rather than calibration?
+		String calPath = null;//"/dls/science/groups/das/ExampleData/i15-1/integration/CeO2_NIST_8s_19slices_averaged_fixedE_calibration.nxs";
+//		try {
+//			Dataset calData = DatasetUtils.sliceAndConvertLazyDataset(ProcessingUtils.getLazyDataset(null, calPath, "/entry/instrument/detector/data"));
+//			det1.setData(calData);
+//		} catch (DatasetException dE) {
+//			System.err.println("Failed to set external calibration dataset");
+//		}
+		// detector orientation matrix
+		det1.setDataset("detector_orientation", DatasetFactory.createFromObject(new double[]{
+				-0.28420125, 0.95876440, -0.00069477874,
+				-0.95876153, -0.28420210, -0.0023438571,
+				-0.0024446643, 0.0000000, 0.99999701}));
+		// distance
+		det1.setDistanceScalar(237.29744);
+		det1.setAttribute("distance", "units", "mm");
+		// pixel size and number
+		// pixel size already set in the specified detector values
+		det1.setDataset("x_pixel_number", DatasetFactory.createFromObject( new double[]{2048}));
+		det1.setDataset("y_pixel_number", DatasetFactory.createFromObject( new double[]{2048}));
+	}
 }

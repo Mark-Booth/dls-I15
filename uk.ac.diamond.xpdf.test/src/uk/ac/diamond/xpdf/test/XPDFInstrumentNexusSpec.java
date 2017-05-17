@@ -1,10 +1,8 @@
 package uk.ac.diamond.xpdf.test;
 
-import java.time.Instant;
 import java.util.Date;
 
 import org.eclipse.dawnsci.analysis.api.tree.DataNode;
-import org.eclipse.dawnsci.analysis.api.tree.TreeFile;
 import org.eclipse.dawnsci.nexus.NXaperture;
 import org.eclipse.dawnsci.nexus.NXattenuator;
 import org.eclipse.dawnsci.nexus.NXbeam;
@@ -27,17 +25,7 @@ import org.eclipse.january.dataset.DoubleDataset;
 
 public final class XPDFInstrumentNexusSpec {
 	
-	public static TreeFile nexusTree;
-	
-	public static TreeFile getNexusTree() {
-		return nexusTree;
-	}
-
-	public static void setNexusTree(TreeFile nexusTree) {
-		XPDFInstrumentNexusSpec.nexusTree = nexusTree;
-	}
-	
-	public static void populateNXinstrument(NXinstrument instrument, Instant fakeNow, long durationSecs) {
+	public static void populateNXinstrument(NXinstrument instrument, long durationSecs) {
 		//Set names
 		instrument.setNameScalar("i15-1");
 		instrument.setField("alt_name", "XPDF");
@@ -77,7 +65,7 @@ public final class XPDFInstrumentNexusSpec {
 		source.setAttribute("current", "description", "Variation of ring current over the course of the experiment");
 //		source.setTop_upScalar(new Boolean(false)); //FIXME (DAQ-614)
 		source.setLast_fillScalar(301.2);
-		source.setLast_fillAttributeTime(Date.from(fakeNow.minusSeconds(487)));
+		source.setLast_fillAttributeTime(Date.from(XPDFTestUtils.getFakeNow().minusSeconds(487)));
 		source.setField("machine_status_message_1", "User beam");//TODO Question for Basham: could this be done as a Dataset of Strings (e.g. a list?)
 		source.setField("machine_status_message_2", "Low alpha mode");
 		source.setDistanceScalar(-35.5);
@@ -389,7 +377,7 @@ public final class XPDFInstrumentNexusSpec {
 		monoBeam.setAttribute("incident_wavelength_spread", "units", "angstrom");
 		monoBeam.setFinal_wavelength_spreadScalar(0.001);
 		monoBeam.setAttribute("final_wavelength_spread", "units", "angstrom");
-		monoBeam.addSymbolicNode("incident_beam_divergence", NexusNodeFactory.createSymbolicNode(nexusTree.getSourceURI(), "/entry1/instrument/primary_slit/beam/final_beam_divergence"));
+		monoBeam.addSymbolicNode("incident_beam_divergence", NexusNodeFactory.createSymbolicNode(XPDFTestUtils.getNexusTree().getSourceURI(), "/entry1/instrument/primary_slit/beam/final_beam_divergence"));
 		monoBeam.setFinal_beam_divergence(DatasetFactory.createFromObject(new double[]{0.25, 0.61}, new int[]{2})); //TODO Numbers will be needed from Phil)
 		monoBeam.setAttribute("final_beam_divergence", "units", "radians");
 		blm.addGroupNode("beam", monoBeam);
@@ -459,9 +447,9 @@ public final class XPDFInstrumentNexusSpec {
 		secSlit.addGroupNode("transforms", NexusNodeFactory.createNXtransformations());//TODO Basham
 		
 		NXbeam secSlitBeam = NexusNodeFactory.createNXbeam();
-		secSlitBeam.addSymbolicNode("incident_wavelength_spread", NexusNodeFactory.createSymbolicNode(nexusTree.getSourceURI(), "/entry1/instrument/bent_laue_monochromator/beam/final_wavelength_spread"));
+		secSlitBeam.addSymbolicNode("incident_wavelength_spread", NexusNodeFactory.createSymbolicNode(XPDFTestUtils.getNexusTree().getSourceURI(), "/entry1/instrument/bent_laue_monochromator/beam/final_wavelength_spread"));
 		secSlitBeam.setFinal_wavelength_spreadScalar(0.0008);
-		secSlit.addSymbolicNode("incident_beam_divergence", NexusNodeFactory.createSymbolicNode(nexusTree.getSourceURI(), "/entry1/instrument/bent_laue_monochromator/beam/final_beam_divergence"));
+		secSlit.addSymbolicNode("incident_beam_divergence", NexusNodeFactory.createSymbolicNode(XPDFTestUtils.getNexusTree().getSourceURI(), "/entry1/instrument/bent_laue_monochromator/beam/final_beam_divergence"));
 		secSlitBeam.setFinal_beam_divergence(DatasetFactory.createFromObject(new double[]{0.3, 0.68}, new int[]{2})); //TODO Numbers will be needed from Phil
 		secSlitBeam.setAttribute("final_beam_divergence", "units", "radians");
 		secSlit.addGroupNode("beam", secSlitBeam);
@@ -538,9 +526,9 @@ public final class XPDFInstrumentNexusSpec {
 		mlm.addGroupNode("transforms", NexusNodeFactory.createNXtransformations());//TODO Basham
 		
 		NXbeam mlmBeam = NexusNodeFactory.createNXbeam();
-		mlmBeam.addSymbolicNode("incident_wavelength_spread", NexusNodeFactory.createSymbolicNode(nexusTree.getSourceURI(), "/entry1/instrument/secondary_slit/beam/final_wavelength_spread"));
+		mlmBeam.addSymbolicNode("incident_wavelength_spread", NexusNodeFactory.createSymbolicNode(XPDFTestUtils.getNexusTree().getSourceURI(), "/entry1/instrument/secondary_slit/beam/final_wavelength_spread"));
 		mlmBeam.setFinal_wavelength_spreadScalar(0.0008);
-		mlmBeam.addSymbolicNode("incident_beam_divergence", NexusNodeFactory.createSymbolicNode(nexusTree.getSourceURI(), "/entry1/instrument/secondary_slit/beam/final_beam_divergence"));
+		mlmBeam.addSymbolicNode("incident_beam_divergence", NexusNodeFactory.createSymbolicNode(XPDFTestUtils.getNexusTree().getSourceURI(), "/entry1/instrument/secondary_slit/beam/final_beam_divergence"));
 		mlmBeam.setFinal_beam_divergence(DatasetFactory.createFromObject(new double[]{0.21, 0.57}, new int[]{2})); //TODO Numbers will be needed from Phil
 		mlmBeam.setAttribute("final_beam_divergence", "units", "radians");
 		
@@ -606,11 +594,11 @@ public final class XPDFInstrumentNexusSpec {
 		 * - third line (i.e. the one I want) fails.
 		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		 */
-		beamDefApBeam.addSymbolicNode("incident_wavelength_spread", NexusNodeFactory.createSymbolicNode(nexusTree.getSourceURI(), "/entry1/instrument/bent_laue_monochromator/beam/final_wavelength_spread"));
+		beamDefApBeam.addSymbolicNode("incident_wavelength_spread", NexusNodeFactory.createSymbolicNode(XPDFTestUtils.getNexusTree().getSourceURI(), "/entry1/instrument/bent_laue_monochromator/beam/final_wavelength_spread"));
 //		beamDefApBeam.addSymbolicNode("incident_wavelength_spread", NexusNodeFactory.createSymbolicNode(nexusTree.getSourceURI(), "/entry1/instrument/secondary_slit/beam/final_wavelength_spread"));
 //		beamDefApBeam.addSymbolicNode("incident_wavelength_spread", NexusNodeFactory.createSymbolicNode(nexusTree.getSourceURI(), "/entry1/instrument/multi_layer_mirror/beam/final_wavelength_spread"));
 		beamDefApBeam.setFinal_wavelength_spreadScalar(0.0008);
-		beamDefApBeam.addSymbolicNode("incident_beam_divergence", NexusNodeFactory.createSymbolicNode(nexusTree.getSourceURI(), "/entry1/instrument/multi_layer_mirror/beam/final_beam_divergence"));
+		beamDefApBeam.addSymbolicNode("incident_beam_divergence", NexusNodeFactory.createSymbolicNode(XPDFTestUtils.getNexusTree().getSourceURI(), "/entry1/instrument/multi_layer_mirror/beam/final_beam_divergence"));
 		beamDefApBeam.setFinal_beam_divergence(DatasetFactory.createFromObject(new double[]{0.20, 0.55}, new int[]{2})); //TODO Numbers will be needed from Phil
 		beamDefApBeam.setAttribute("final_beam_divergence", "units", "radians");
 		beamDefAp.addGroupNode("beam", beamDefApBeam);
@@ -844,7 +832,7 @@ public final class XPDFInstrumentNexusSpec {
 //			det1.setPixel_mask(pxMask);
 //			
 ////			d1.setFlatfield_appliedScalar(true); //TODO DAQ-614
-//			String flatPath = null; 
+			String flatPath = null; 
 //			Dataset flatField = DatasetUtils.sliceAndConvertLazyDataset(ProcessingUtils.getLazyDataset(null, flatPath, "/entry/mask/128911 min 1000 max 30000 plus additional pixels"));
 //			det1.setFlatfield(flatField);
 //		} catch (DatasetException de) {

@@ -10,11 +10,15 @@
 package uk.ac.diamond.xpdf.test;
 
 import java.io.File;
+import java.time.Instant;
 
-import org.eclipse.dawnsci.hdf5.nexus.NexusFileFactoryHDF5;
-import org.eclipse.dawnsci.hdf5.nexus.NexusFileHDF5;
+import org.eclipse.dawnsci.analysis.api.tree.TreeFile;
 
-public class TestUtils {
+public class XPDFTestUtils {
+	
+	private static String testScratchDirectoryName;
+	private static Instant fakeNow;
+	private static TreeFile nexusTree;
 	
 	/**
 	 * Prefix to folder in which test files are to be generated
@@ -83,5 +87,36 @@ public class TestUtils {
 		if (!((new File(testScratchDirectoryname)).mkdirs())) {
 			throw new Exception("Unable to create new test scratch directory " + testScratchDirectoryname);
 		}
+		
+		XPDFTestUtils.testScratchDirectoryName = testScratchDirectoryname;
+	}
+
+	public static String getTestScratchDirectoryName() {
+		return testScratchDirectoryName;
+	}
+
+	public static void setTestScratchDirectoryName(String testScratchDirectoryName) {
+		XPDFTestUtils.testScratchDirectoryName = testScratchDirectoryName;
+	}
+
+	public static Instant getFakeNow() {
+		return fakeNow;
+	}
+
+	public static void setFakeNow(Instant fakeNow) {
+		XPDFTestUtils.fakeNow = fakeNow;
+	}
+
+	public static TreeFile getNexusTree() {
+		return nexusTree;
+	}
+
+	public static void setNexusTree(TreeFile nexusTree) {
+		XPDFTestUtils.nexusTree = nexusTree;
+	}
+	
+	public static void resetFields() {
+		fakeNow = null;
+		nexusTree = null;
 	}
 }

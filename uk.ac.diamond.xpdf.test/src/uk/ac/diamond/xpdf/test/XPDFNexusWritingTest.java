@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import org.eclipse.dawnsci.analysis.api.tree.TreeFile;
 import org.eclipse.dawnsci.hdf5.nexus.NexusFileFactoryHDF5;
 import org.eclipse.dawnsci.nexus.NXentry;
 import org.eclipse.dawnsci.nexus.NXinstrument;
@@ -22,18 +23,18 @@ import org.junit.Test;
 
 public class XPDFNexusWritingTest {
 	
-	private static String testScratchDirectoryName;
+	
 	private static final String beamlineFileName = "empty-xpdf.nxs",
 								containerFileName = "capillary-xpdf.nxs",
 								sampleFilename = "capillary_sample-xpdf.nxs";
 	private NexusFileBuilder nexusBuilder;
 	
-	private Instant fakeNow;
+	
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		testScratchDirectoryName = TestUtils.generateDirectorynameFromClassname(XPDFNexusWritingTest.class.getSimpleName());
-		TestUtils.makeScratchDirectory(testScratchDirectoryName); 
+		String testScratchDirectoryName = XPDFTestUtils.generateDirectorynameFromClassname(XPDFNexusWritingTest.class.getSimpleName());
+		XPDFTestUtils.makeScratchDirectory(testScratchDirectoryName); 
 	}
 	
 	@Before
@@ -42,76 +43,85 @@ public class XPDFNexusWritingTest {
 		ServiceHolder.setNexusFileFactory(new NexusFileFactoryHDF5());
 //		LocalServiceManager.setLoaderService(new LoaderServiceImpl()); TODO Needed?
 		
-		fakeNow = LocalDateTime.of(2017, 5, 16, 12, 24, 6).atZone(ZoneId.of("Europe/London")).toInstant();
+		XPDFTestUtils.setFakeNow(LocalDateTime.of(2017, 5, 16, 12, 24, 6).atZone(ZoneId.of("Europe/London")).toInstant());
 	}
 	
 	@After
 	public void tearDown() {
-		XPDFInstrumentNexusSpec.setNexusTree(null);
+		XPDFTestUtils.resetFields();
 	}
 	
 	@Test
 	public void testEmptyBeamlineNeXusWriting() throws NexusException {
-		nexusBuilder = new DefaultNexusFileBuilder(testScratchDirectoryName+beamlineFileName);
-		XPDFInstrumentNexusSpec.setNexusTree(nexusBuilder.getNexusTree());
-		NXroot root = nexusBuilder.getNXroot();
-		root.setAttributeFile_name(testScratchDirectoryName+beamlineFileName);
-
+		//Configuring test
+		String nxsFileNamePath = XPDFTestUtils.getTestScratchDirectoryName()+beamlineFileName;
+		nexusBuilder = new DefaultNexusFileBuilder(nxsFileNamePath);
+		XPDFTestUtils.setNexusTree(nexusBuilder.getNexusTree());
 		long experimentDuration = 600;
+		
+		//File spec starts here
+		NXroot root = nexusBuilder.getNXroot();
+		root.setAttributeFile_name(nxsFileNamePath);
 		createBasicStructure(root, experimentDuration);
 		
 		//These are the last two fields to populate
-		Date endTime = Date.from(fakeNow.plusSeconds(experimentDuration));
+		Date endTime = Date.from(XPDFTestUtils.getFakeNow().plusSeconds(experimentDuration));
 		NXentry entry = root.getChild("entry1", NXentry.class);
 		entry.setEnd_timeScalar(endTime);
 		root.setAttributeFile_time(endTime.toString());
 
 		nexusBuilder.createFile(false).close();
-		System.out.println("Success writing NeXus file to " + testScratchDirectoryName+beamlineFileName);
+		System.out.println("Success writing NeXus file to " + nxsFileNamePath);
 	}
 	
 	@Test
 	public void testContainerNeXusWriting() throws NexusException {
-		nexusBuilder = new DefaultNexusFileBuilder(testScratchDirectoryName+containerFileName);
-		XPDFInstrumentNexusSpec.setNexusTree(nexusBuilder.getNexusTree());
-		NXroot root = nexusBuilder.getNXroot();
-		root.setAttributeFile_name(testScratchDirectoryName+containerFileName);
-		
+		//Configuring test
+		String nxsFileNamePath = XPDFTestUtils.getTestScratchDirectoryName()+containerFileName;
+		nexusBuilder = new DefaultNexusFileBuilder(nxsFileNamePath);
+		XPDFTestUtils.setNexusTree(nexusBuilder.getNexusTree());
 		long experimentDuration = 600;
+		
+		//File spec starts here
+		NXroot root = nexusBuilder.getNXroot();
+		root.setAttributeFile_name(nxsFileNamePath);
 		createBasicStructure(root, experimentDuration);
 		
 		NXentry entry = root.getChild("entry1", NXentry.class);
-		entry.addGroupNode("sample", NexusNodeFactory.createNXsample());
+		entry.addGroupNode("sample", XPDFSampleContainerNexusSpec.createContainerSample());
 		
 		//These are the last two fields to populate
-		Date endTime = Date.from(fakeNow.plusSeconds(experimentDuration));
+		Date endTime = Date.from(XPDFTestUtils.getFakeNow().plusSeconds(experimentDuration));
 		entry.setEnd_timeScalar(endTime);
 		root.setAttributeFile_time(endTime.toString());
 
 		nexusBuilder.createFile(false).close();
-		System.out.println("Success writing NeXus file to " + testScratchDirectoryName+containerFileName);
+		System.out.println("Success writing NeXus file to " + nxsFileNamePath);
 	}
 	
 	@Test
 	public void testSampleNeXusWriting() throws NexusException {
-		nexusBuilder = new DefaultNexusFileBuilder(testScratchDirectoryName+sampleFilename);
-		XPDFInstrumentNexusSpec.setNexusTree(nexusBuilder.getNexusTree());
-		NXroot root = nexusBuilder.getNXroot();
-		root.setAttributeFile_name(testScratchDirectoryName+sampleFilename);
-
+		//Configuring test
+		String nxsFileNamePath = XPDFTestUtils.getTestScratchDirectoryName()+sampleFilename;
+		nexusBuilder = new DefaultNexusFileBuilder(nxsFileNamePath);
+		XPDFTestUtils.setNexusTree(nexusBuilder.getNexusTree());
 		long experimentDuration = 600;
+		
+		//File spec starts here
+		NXroot root = nexusBuilder.getNXroot();
+		root.setAttributeFile_name(nxsFileNamePath);
 		createBasicStructure(root, experimentDuration);
 		
 		NXentry entry = root.getChild("entry1", NXentry.class);
-		entry.addGroupNode("sample", NexusNodeFactory.createNXsample());
+		entry.addGroupNode("sample", XPDFSampleContainerNexusSpec.createSampleSample());
 		
 		//These are the last two fields to populate
-		Date endTime = Date.from(fakeNow.plusSeconds(experimentDuration));
+		Date endTime = Date.from(XPDFTestUtils.getFakeNow().plusSeconds(experimentDuration));
 		entry.setEnd_timeScalar(endTime);
 		root.setAttributeFile_time(endTime.toString());
 
 		nexusBuilder.createFile(false).close();
-		System.out.println("Success writing NeXus file to " + testScratchDirectoryName+sampleFilename);
+		System.out.println("Success writing NeXus file to " + nxsFileNamePath);
 	}
 	
 	private void createBasicStructure(NXroot root, long durationSecs) {
@@ -127,7 +137,7 @@ public class XPDFNexusWritingTest {
 		 */
 		root.addGroupNode("entry1", NexusNodeFactory.createNXentry());
 		NXentry entry = root.getChild("entry1", NXentry.class);
-		entry.setStart_timeScalar(Date.from(fakeNow));
+		entry.setStart_timeScalar(Date.from(XPDFTestUtils.getFakeNow()));
 		entry.setExperiment_identifierScalar("ee15900");
 		entry.setEntry_identifierScalar("2793");
 		entry.setProgram_nameScalar("GDA");
@@ -150,7 +160,7 @@ public class XPDFNexusWritingTest {
 		entry.addGroupNode("user", NexusNodeFactory.createNXuser());
 		entry.addGroupNode("local_contact", NexusNodeFactory.createNXuser());
 		
-		XPDFInstrumentNexusSpec.populateNXinstrument(entry.getChild("instrument", NXinstrument.class), fakeNow, durationSecs);
+		XPDFInstrumentNexusSpec.populateNXinstrument(entry.getChild("instrument", NXinstrument.class), durationSecs);
 		populateNXusers(entry);
 	}
 	
